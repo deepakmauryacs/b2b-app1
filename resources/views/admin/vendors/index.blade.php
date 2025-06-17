@@ -70,16 +70,6 @@
                         </form>
                     </div>
 
-                    <div class="progress-container mt-3" style="display:none;">
-                        <div class="progress">
-                            <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
-                                style="width: 0%" role="progressbar"></div>
-                        </div>
-                        <div class="d-flex justify-content-between mt-1">
-                            <span id="progress-percentage">0%</span>
-                            <span id="progress-status">Starting...</span>
-                        </div>
-                    </div>
 
                     <!-- Progress bar container for export -->
                     <!-- <div class="progress-container mt-3">
@@ -151,17 +141,7 @@
         </div>
     </div>
 
-    <!-- Progress Container -->
-    <div class="progress-container mt-3" style="display:none;">
-        <div class="progress">
-            <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"
-                role="progressbar"></div>
-        </div>
-        <div class="d-flex justify-content-between mt-1">
-            <span id="progress-percentage">0%</span>
-            <span id="progress-status">Starting...</span>
-        </div>
-    </div>
+    <!-- Progress Container removed -->
 
 
 
@@ -306,93 +286,24 @@
             });
 
             $('#startExportBtn').click(function() {
-                const $btn = $('#export-vendors');
                 const selectedRange = $('#exportRange').val();
                 const [range_start, range_end] = selectedRange.split('-');
-
-                $('#exportRangeModal').modal('hide');
-
-                $btn.prop('disabled', true).html(
-                    '<span class="spinner-border spinner-border-sm"></span> Exporting...');
-                $('.progress-container').show();
-                updateProgress(0, 'Preparing export...');
-
-                const exportFilters = {
+                const params = {
                     name: $('#name').val(),
                     email: $('#email').val(),
                     status: $('#status').val(),
                     gst_no: $('#gst_no').val(),
                     phone: $('#phone').val(),
                     range_start,
-                    range_end,
-                    _token: "{{ csrf_token() }}"
+                    range_end
                 };
 
-                $.ajax({
-                    url: "{{ route('admin.vendors.export.start') }}",
-                    method: 'POST',
-                    data: exportFilters,
-                    success: function(response) {
-                        if (response.status === 'started') {
-                            pollProgress(response.export_id, $btn);
-                        } else {
-                            toastr.error('Failed to start export');
-                            resetButton($btn);
-                            $('.progress-container').hide();
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error('Error initiating export');
-                        resetButton($btn);
-                        $('.progress-container').hide();
-                    }
-                });
+                const query = $.param(params);
+                $('#exportRangeModal').modal('hide');
+                window.location.href = "{{ route('admin.vendors.export') }}?" + query;
             });
 
-            function pollProgress(exportId, $btn) {
-                const interval = setInterval(function() {
-                    $.ajax({
-                        url: "{{ route('admin.vendors.export.progress') }}",
-                        method: 'GET',
-                        data: {
-                            export_id: exportId
-                        },
-                        success: function(response) {
-                            updateProgress(response.progress, response.message);
-
-                            if (response.status === 'completed') {
-                                clearInterval(interval);
-                                if (response.download_url) {
-                                    window.location.href = response.download_url;
-                                }
-                                resetButton($btn);
-                                setTimeout(() => $('.progress-container').hide(), 3000);
-                            } else if (response.status === 'failed') {
-                                clearInterval(interval);
-                                toastr.error('Export failed: ' + response.message);
-                                resetButton($btn);
-                                $('.progress-container').hide();
-                            }
-                        },
-                        error: function() {
-                            clearInterval(interval);
-                            toastr.error('Error checking export progress');
-                            resetButton($btn);
-                            $('.progress-container').hide();
-                        }
-                    });
-                }, 1000);
-            }
-
-            function updateProgress(percent, message) {
-                $('#progress-bar').css('width', percent + '%').attr('aria-valuenow', percent);
-                $('#progress-percentage').text(percent + '%');
-                $('#progress-status').text(message);
-            }
-
-            function resetButton($btn) {
-                $btn.prop('disabled', false).html('<i class="bi bi-file-earmark-excel"></i> Export');
-            }
+            // Progress related functions removed for simplified export
 
         });
     </script>

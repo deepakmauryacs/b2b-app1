@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Cache;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\VendorsExport;
 use Log; // Make sure to include Log for error logging
 
 class VendorController extends Controller
@@ -330,6 +332,25 @@ class VendorController extends Controller
                 'message' => 'Error updating profile verification status: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Export vendors to an Excel file based on filters and range.
+     */
+    public function exportVendors(Request $request)
+    {
+        $filters = $request->only([
+            'name',
+            'email',
+            'status',
+            'gst_no',
+            'phone',
+            'range_start',
+            'range_end',
+        ]);
+
+        $fileName = 'vendors_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+        return Excel::download(new VendorsExport($filters), $fileName);
     }
 
 
