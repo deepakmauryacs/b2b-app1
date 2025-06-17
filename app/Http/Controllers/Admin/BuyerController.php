@@ -21,11 +21,15 @@ class BuyerController extends Controller
     public function getBuyers(Request $request)
     {
         $buyers = User::where('role', 'buyer')
+            ->with('buyerProfile')
             ->when($request->name, function($query, $name) {
                 $query->where('name', 'like', "%{$name}%");
             })
             ->when($request->email, function($query, $email) {
                 $query->where('email', 'like', "%{$email}%");
+            })
+            ->when($request->phone, function($query, $phone) {
+                $query->where('phone', $phone);
             })
             ->when($request->status !== null, function($query) use ($request) {
                 $query->where('status', $request->status);
@@ -66,11 +70,15 @@ class BuyerController extends Controller
 
         $buyersQuery = User::query()
             ->where('role', 'buyer')
+            ->with('buyerProfile')
             ->when($request->name, function ($q, $name) {
                 $q->where('name', 'like', "{$name}%");
             })
             ->when($request->email, function ($q, $email) {
                 $q->where('email', $email);
+            })
+            ->when($request->phone, function ($q, $phone) {
+                $q->where('phone', $phone);
             })
             ->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
                 $q->where('status', (int) $request->status);
@@ -188,6 +196,27 @@ class BuyerController extends Controller
                 ->with('error', 'Failed to update buyer: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    // Show buyer details
+    public function show($id)
+    {
+        $buyer = User::select([
+                    'users.*',
+                    'buyer_profiles.phone as profile_phone',
+                    'buyer_profiles.email as profile_email',
+                    'buyer_profiles.country',
+                    'buyer_profiles.state',
+                    'buyer_profiles.city',
+                    'buyer_profiles.pincode',
+                    'buyer_profiles.address'
+                ])
+                ->leftJoin('buyer_profiles', 'users.id', '=', 'buyer_profiles.user_id')
+                ->where('users.id', $id)
+                ->where('users.role', 'buyer')
+                ->firstOrFail();
+
+        return view('admin.buyers.show', compact('buyer'));
     }
 
     // Delete buyer
