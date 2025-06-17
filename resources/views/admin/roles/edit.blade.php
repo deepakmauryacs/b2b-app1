@@ -28,29 +28,36 @@
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Permissions</label>
-                                <div class="row gy-2">
-                                    <div class="col-12">
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" id="select_all">
-                                            <label class="form-check-label" for="select_all">Select All Permissions</label>
-                                        </div>
+                                <div class="mb-3">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="select_all">
+                                        <label class="form-check-label" for="select_all">Select All Permissions</label>
                                     </div>
+
                                     @php($rolePerms = $role->permissions->keyBy('module'))
-                                    @php($actions = $actions ?? ['add','edit','view','export'])
+                                    @php($actions = ['view' => 'Show', 'add' => 'Add', 'edit' => 'Edit', 'export' => 'Export'])
                                     @foreach ($modules as $module)
                                         @php($perm = $rolePerms->get($module))
-                                        <div class="col-12 module-block" data-module="{{ $module }}">
-                                            <strong class="d-block mb-1 text-capitalize">{{ $module }}</strong>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input module-select-all" type="checkbox" data-module="{{ $module }}" id="{{ $module }}_all">
-                                                <label class="form-check-label" for="{{ $module }}_all">All</label>
+                                        <div class="card mb-3 module-block" data-module="{{ $module }}">
+                                            <div class="card-header fw-semibold text-capitalize">{{ $module }}</div>
+                                            <div class="card-body d-flex flex-wrap gap-3">
+                                                @foreach ($actions as $key => $label)
+                                                    <div class="d-flex flex-column align-items-start border rounded p-3" style="min-width: 180px;">
+                                                        <label class="form-check-label mb-2" for="{{ $module }}_{{ $key }}">
+                                                            {{ $label }} {{ ucfirst($module) }}
+                                                        </label>
+                                                        <div class="form-check form-switch">
+                                                            <input
+                                                                class="form-check-input perm-checkbox"
+                                                                type="checkbox"
+                                                                name="permissions[{{ $module }}][]"
+                                                                value="{{ $key }}"
+                                                                data-module="{{ $module }}"
+                                                                id="{{ $module }}_{{ $key }}" @if($perm && $perm->{'can_'.$key}) checked @endif>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
                                             </div>
-                                            @foreach ($actions as $action)
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[{{ $module }}][]" value="{{ $action }}" data-module="{{ $module }}" id="{{ $module }}_{{ $action }}" @if($perm && $perm->{'can_'.$action}) checked @endif>
-                                                    <label class="form-check-label" for="{{ $module }}_{{ $action }}">{{ ucfirst($action) }}</label>
-                                                </div>
-                                            @endforeach
                                         </div>
                                     @endforeach
                                 </div>
@@ -71,28 +78,13 @@
 
             $('#select_all').on('change', function() {
                 const checked = $(this).prop('checked');
-                $('.perm-checkbox, .module-select-all').prop('checked', checked);
-            });
-
-            $('.module-select-all').on('change', function() {
-                const module = $(this).data('module');
-                const checked = $(this).prop('checked');
-                $(`.perm-checkbox[data-module="${module}"]`).prop('checked', checked);
-                updateGlobalSelect();
+                $('.perm-checkbox').prop('checked', checked);
             });
 
             $('.perm-checkbox').on('change', function() {
-                const module = $(this).data('module');
-                const all = $(`.perm-checkbox[data-module="${module}"]`).length === $(`.perm-checkbox[data-module="${module}"]:checked`).length;
-                $(`.module-select-all[data-module="${module}"]`).prop('checked', all);
                 updateGlobalSelect();
             });
 
-            $('.module-block').each(function() {
-                const module = $(this).data('module');
-                const allChecked = $(`.perm-checkbox[data-module="${module}"]`).length === $(`.perm-checkbox[data-module="${module}"]:checked`).length;
-                $(`.module-select-all[data-module="${module}"]`).prop('checked', allChecked);
-            });
             updateGlobalSelect();
 
             $('#roleForm').validate({
