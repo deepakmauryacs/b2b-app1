@@ -423,6 +423,14 @@
                         </a>
                     </li>
 
+                    <!-- Users Menu (single item) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.users.index') }}">
+                            <span class="nav-icon"><i class="bi bi-person"></i></span>
+                            <span class="nav-text"> Users </span>
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.activity-logs.index') }}">
                             <i class="bi bi-info-circle"></i> Activity Logs
