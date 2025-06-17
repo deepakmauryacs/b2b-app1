@@ -83,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin/roles')->name('admin.roles.')->group(function () {
         Route::get('list', [RoleController::class, 'index'])->name('index');
         Route::get('data', [RoleController::class, 'getRoles'])->name('data');
+        Route::get('render-table', [RoleController::class, 'renderRolesTable'])->name('render-table');
         Route::get('create', [RoleController::class, 'create'])->name('create');
         Route::post('store', [RoleController::class, 'store'])->name('store');
         Route::get('edit/{id}', [RoleController::class, 'edit'])->name('edit');
