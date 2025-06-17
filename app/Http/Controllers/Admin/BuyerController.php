@@ -313,13 +313,17 @@ class BuyerController extends Controller
     {
         $buyer = User::select([
                     'users.*',
+                    'buyer_profiles.store_name',
                     'buyer_profiles.phone as profile_phone',
                     'buyer_profiles.email as profile_email',
                     'buyer_profiles.country',
                     'buyer_profiles.state',
                     'buyer_profiles.city',
                     'buyer_profiles.pincode',
-                    'buyer_profiles.address'
+                    'buyer_profiles.address',
+                    'buyer_profiles.gst_no',
+                    'buyer_profiles.gst_doc',
+                    'buyer_profiles.store_logo'
                 ])
                 ->leftJoin('buyer_profiles', 'users.id', '=', 'buyer_profiles.user_id')
                 ->where('users.id', $id)
