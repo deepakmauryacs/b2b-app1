@@ -86,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('store', [BuyerController::class, 'store'])->name('store');
         Route::get('edit/{id}', [BuyerController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [BuyerController::class, 'update'])->name('update');
+        Route::post('update-profile-verification', [BuyerController::class, 'updateProfileVerification'])->name('update-profile-verification');
         Route::get('{id}', [BuyerController::class, 'show'])->name('show');
         Route::delete('delete/{id}', [BuyerController::class, 'destroy'])->name('delete');
     });

@@ -28,6 +28,11 @@
                 @endphp
                 <span class="{{ $statusClass }}">{{ ucfirst($status) }}</span>
             </td>
+            <td>
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input profile-verified-toggle" data-id="{{ $buyer->id }}" {{ $buyer->is_profile_verified == 1 ? 'checked' : '' }}>
+                </div>
+            </td>
             <td>{{ \Carbon\Carbon::parse($buyer->created_at)->format('d M Y') }}</td>
             <td>
                 <div class="d-flex gap-2">
@@ -42,7 +47,7 @@
         </tr>
     @empty
         <tr>
-            <td colspan="8" class="text-center">No buyers found.</td>
+            <td colspan="9" class="text-center">No buyers found.</td>
         </tr>
     @endforelse
 </tbody>
