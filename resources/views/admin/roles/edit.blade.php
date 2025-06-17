@@ -26,6 +26,25 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Permissions</label>
+                                <div class="row gy-2">
+                                    @php($rolePerms = $role->permissions->keyBy('module'))
+                                    @php($actions = $actions ?? ['add','edit','view','export'])
+                                    @foreach ($modules as $module)
+                                        @php($perm = $rolePerms->get($module))
+                                        <div class="col-12">
+                                            <strong class="d-block mb-1 text-capitalize">{{ $module }}</strong>
+                                            @foreach ($actions as $action)
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox" name="permissions[{{ $module }}][]" value="{{ $action }}" id="{{ $module }}_{{ $action }}" @if($perm && $perm->{'can_'.$action}) checked @endif>
+                                                    <label class="form-check-label" for="{{ $module }}_{{ $action }}">{{ ucfirst($action) }}</label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary mt-3">Update Role</button>
                     </form>
