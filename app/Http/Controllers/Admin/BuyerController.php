@@ -351,4 +351,29 @@ class BuyerController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Update profile verification status for a buyer.
+     */
+    public function updateProfileVerification(Request $request)
+    {
+        try {
+            $buyer = User::where('id', $request->id)
+                ->where('role', 'buyer')
+                ->firstOrFail();
+
+            $buyer->is_profile_verified = $request->is_profile_verified;
+            $buyer->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile verification status updated successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating profile verification status: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

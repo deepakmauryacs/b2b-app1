@@ -76,6 +76,7 @@
                                     <th>Phone</th>
                                     <th>Store Info</th>
                                     <th>Status</th>
+                                    <th>Verified</th>
                                     <th>Created At</th>
                                     <th>Action</th>
                                 </tr>
@@ -83,12 +84,12 @@
                             {{-- Table body and pagination will be loaded via AJAX --}}
                             <tbody id="buyers-table-body-content">
                                 <tr>
-                                    <td colspan="8" class="text-center">Loading Buyers...</td>
+                                    <td colspan="9" class="text-center">Loading Buyers...</td>
                                 </tr>
                             </tbody>
                             <tfoot id="buyers-table-foot-content">
                                 <tr>
-                                    <td colspan="8" class="text-center"></td>
+                                    <td colspan="9" class="text-center"></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -166,6 +167,36 @@
 
             $(document).on('change', '#perPage', function() {
                 fetchBuyersData(1, $(this).val());
+            });
+
+            // Handle profile verification toggle change
+            $(document).on('change', '.profile-verified-toggle', function() {
+                var $toggle = $(this);
+                var userId = $toggle.data('id');
+                var isVerified = $toggle.is(':checked') ? 1 : 0;
+
+                $.ajax({
+                    url: "{{ route('admin.buyers.update-profile-verification') }}",
+                    method: 'POST',
+                    data: {
+                        id: userId,
+                        is_profile_verified: isVerified,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                        } else {
+                            toastr.error(response.message);
+                            $toggle.prop('checked', !$toggle.is(':checked'));
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('An error occurred. Please try again.');
+                        console.error('AJAX error:', xhr.responseText);
+                        $toggle.prop('checked', !$toggle.is(':checked'));
+                    }
+                });
             });
 
         });
