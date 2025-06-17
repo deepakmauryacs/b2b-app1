@@ -63,9 +63,9 @@
                                     <i class="bi bi-arrow-clockwise"></i> RESET
                                 </button>
 
-                                <button type="button" id="export-vendors" class="btn btn-success">
-                                    <i class="bi bi-file-earmark-excel"></i> Export
-                                </button>
+                                <a href="{{ route('admin.vendor-exports.index') }}" class="btn btn-success">
+                                    <i class="bi bi-file-earmark-excel"></i> Exports
+                                </a>
                             </div>
                         </form>
                     </div>
@@ -117,31 +117,7 @@
             </div>
         </div>
     </div>
-    <!-- Export Range Modal -->
-    <!-- Export Range Modal -->
-    <div class="modal fade" id="exportRangeModal" tabindex="-1" aria-labelledby="exportRangeModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Select Export Range</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <select class="form-select" id="exportRange">
-                        <option value="0-50000">0 - 50,000</option>
-                        <option value="50000-100000">50,000 - 100,000</option>
-                        <option value="100000-150000">100,000 - 150,000</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="startExportBtn" class="btn btn-primary">Start Export</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Progress Container removed -->
 
 
 
@@ -280,30 +256,7 @@
                 });
             });
 
-            // --- Export Functionality ---
-            $('#export-vendors').click(function() {
-                $('#exportRangeModal').modal('show');
-            });
 
-            $('#startExportBtn').click(function() {
-                const selectedRange = $('#exportRange').val();
-                const [range_start, range_end] = selectedRange.split('-');
-                const params = {
-                    name: $('#name').val(),
-                    email: $('#email').val(),
-                    status: $('#status').val(),
-                    gst_no: $('#gst_no').val(),
-                    phone: $('#phone').val(),
-                    range_start,
-                    range_end
-                };
-
-                const query = $.param(params);
-                $('#exportRangeModal').modal('hide');
-                window.location.href = "{{ route('admin.vendors.export') }}?" + query;
-            });
-
-            // Progress related functions removed for simplified export
 
         });
     </script>

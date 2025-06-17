@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\VendorController;
+use App\Http\Controllers\Admin\VendorExportController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\PendingProductController;
 use App\Http\Controllers\Admin\ApprovedProductController;
@@ -63,10 +64,17 @@ Route::middleware(['auth'])->group(function () {
         Route::put('update/{id}', [VendorController::class, 'update'])->name('update');
         Route::post('update-profile-verification', [VendorController::class, 'updateProfileVerification'])->name('update-profile-verification');
         Route::get('{id}', [VendorController::class, 'show'])->name('show');
-        Route::get('export', [VendorController::class, 'exportVendors'])->name('export');
         Route::get('search', [VendorController::class, 'search'])->name('search');
         Route::get('fetch', [VendorController::class, 'fetchVendors'])->name('fetch');
         Route::get('render-table', [VendorController::class, 'renderVendorsTable'])->name('render-table');
+    });
+
+    Route::prefix('admin/vendor-exports')->name('admin.vendor-exports.')->group(function () {
+        Route::get('/', [VendorExportController::class, 'index'])->name('index');
+        Route::get('create', [VendorExportController::class, 'create'])->name('create');
+        Route::post('store', [VendorExportController::class, 'store'])->name('store');
+        Route::get('{id}/download', [VendorExportController::class, 'download'])->name('download');
+        Route::delete('{id}', [VendorExportController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('admin/buyers')->name('admin.buyers.')->group(function () {
