@@ -16,6 +16,26 @@ class RoleController extends Controller
         return view('admin.roles.index');
     }
 
+    /**
+     * Render roles table similar to vendors/users list for AJAX pagination.
+     */
+    public function renderRolesTable(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
+
+        $query = Role::query()
+            ->with('parent')
+            ->when($request->name, function ($q, $name) {
+                $q->where('name', 'like', "{$name}%");
+            })
+            ->orderBy('name', 'asc');
+
+        $roles = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return view('admin.roles._roles_table', compact('roles'));
+    }
+
     // Fetch roles for DataTable
     public function getRoles()
     {
