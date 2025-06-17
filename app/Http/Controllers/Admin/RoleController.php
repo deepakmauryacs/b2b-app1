@@ -6,13 +6,45 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\RolePermission;
+use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
 {
+    // Show role list page
     public function index()
     {
-        $roles = Role::with('permissions')->get();
-        return response()->json($roles);
+        return view('admin.roles.index');
+    }
+
+    // Fetch roles for DataTable
+    public function getRoles()
+    {
+        $roles = Role::with('parent')->orderBy('name', 'asc');
+        return DataTables::of($roles)
+            ->addIndexColumn()
+            ->addColumn('parent', function ($role) {
+                return $role->parent ? $role->parent->name : '-';
+            })
+            ->addColumn('action', function ($role) {
+                return '<a href="'.route('admin.roles.edit', $role->id).'" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    // Show create role form
+    public function create()
+    {
+        $roles = Role::orderBy('name', 'asc')->get();
+        return view('admin.roles.create', compact('roles'));
+    }
+
+    // Show edit role form
+    public function edit($id)
+    {
+        $role = Role::findOrFail($id);
+        $roles = Role::where('id', '!=', $id)->orderBy('name', 'asc')->get();
+        return view('admin.roles.edit', compact('role', 'roles'));
     }
 
     public function store(Request $request)
