@@ -28,13 +28,23 @@
                             <div class="col-md-12">
                                 <label class="form-label">Permissions</label>
                                 <div class="row gy-2">
+                                    <div class="col-12">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="select_all">
+                                            <label class="form-check-label" for="select_all">Select All Permissions</label>
+                                        </div>
+                                    </div>
                                     @php($actions = $actions ?? ['add','edit','view','export'])
                                     @foreach ($modules as $module)
-                                        <div class="col-12">
+                                        <div class="col-12 module-block" data-module="{{ $module }}">
                                             <strong class="d-block mb-1 text-capitalize">{{ $module }}</strong>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input module-select-all" type="checkbox" data-module="{{ $module }}" id="{{ $module }}_all">
+                                                <label class="form-check-label" for="{{ $module }}_all">All</label>
+                                            </div>
                                             @foreach ($actions as $action)
                                                 <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox" name="permissions[{{ $module }}][]" value="{{ $action }}" id="{{ $module }}_{{ $action }}">
+                                                    <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[{{ $module }}][]" value="{{ $action }}" data-module="{{ $module }}" id="{{ $module }}_{{ $action }}">
                                                     <label class="form-check-label" for="{{ $module }}_{{ $action }}">{{ ucfirst($action) }}</label>
                                                 </div>
                                             @endforeach
@@ -49,36 +59,72 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script>
         $(function() {
-            $('#roleForm').on('submit', function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    beforeSend: function() {
-                        $('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
-                    },
-                    success: function(res) {
-                        if (res.status === 'success') {
-                            toastr.success('Role created successfully');
-                            setTimeout(function() { window.location.href = "{{ route('admin.roles.index') }}"; }, 1000);
-                        } else {
-                            toastr.error('Failed to create role');
+            function updateGlobalSelect() {
+                $('#select_all').prop('checked', $('.perm-checkbox:checked').length === $('.perm-checkbox').length);
+            }
+
+            $('#select_all').on('change', function() {
+                const checked = $(this).prop('checked');
+                $('.perm-checkbox, .module-select-all').prop('checked', checked);
+            });
+
+            $('.module-select-all').on('change', function() {
+                const module = $(this).data('module');
+                const checked = $(this).prop('checked');
+                $(`.perm-checkbox[data-module="${module}"]`).prop('checked', checked);
+                updateGlobalSelect();
+            });
+
+            $('.perm-checkbox').on('change', function() {
+                const module = $(this).data('module');
+                const all = $(`.perm-checkbox[data-module="${module}"]`).length === $(`.perm-checkbox[data-module="${module}"]:checked`).length;
+                $(`.module-select-all[data-module="${module}"]`).prop('checked', all);
+                updateGlobalSelect();
+            });
+
+            $('.module-block').each(function() {
+                const module = $(this).data('module');
+                const allChecked = $(`.perm-checkbox[data-module="${module}"]`).length === $(`.perm-checkbox[data-module="${module}"]:checked`).length;
+                $(`.module-select-all[data-module="${module}"]`).prop('checked', allChecked);
+            });
+            updateGlobalSelect();
+
+            $('#roleForm').validate({
+                rules: {
+                    name: 'required'
+                },
+                submitHandler: function(form) {
+                    $.ajax({
+                        url: $(form).attr('action'),
+                        type: 'POST',
+                        data: $(form).serialize(),
+                        beforeSend: function() {
+                            $('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+                        },
+                        success: function(res) {
+                            if (res.status === 'success') {
+                                toastr.success('Role created successfully');
+                                setTimeout(function() { window.location.href = "{{ route('admin.roles.index') }}"; }, 1000);
+                            } else {
+                                toastr.error('Failed to create role');
+                            }
+                        },
+                        error: function(xhr) {
+                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                                $.each(xhr.responseJSON.errors, function(key, val) { toastr.error(val[0]); });
+                            } else {
+                                toastr.error('An error occurred');
+                            }
+                        },
+                        complete: function() {
+                            $('button[type="submit"]').prop('disabled', false).html('Save Role');
                         }
-                    },
-                    error: function(xhr) {
-                        if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            $.each(xhr.responseJSON.errors, function(key, val) { toastr.error(val[0]); });
-                        } else {
-                            toastr.error('An error occurred');
-                        }
-                    },
-                    complete: function() {
-                        $('button[type="submit"]').prop('disabled', false).html('Save Role');
-                    }
-                });
+                    });
+                    return false;
+                }
             });
         });
     </script>
