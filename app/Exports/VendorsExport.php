@@ -49,7 +49,13 @@ class VendorsExport implements FromQuery, WithHeadings, WithMapping, WithStyles,
             ->when($this->filters['phone'] ?? null, function ($q, $phone) {
                 $q->where('phone', 'like', "%{$phone}%");
             })
-            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc')
+            ->when(isset($this->filters['range_start'], $this->filters['range_end']), function ($q) {
+                $start = (int) $this->filters['range_start'];
+                $end = (int) $this->filters['range_end'];
+                $limit = $end - $start;
+                $q->skip($start)->take($limit);
+            });
     }
 
     public function headings(): array

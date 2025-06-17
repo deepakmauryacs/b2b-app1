@@ -64,9 +64,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('update-profile-verification', [VendorController::class, 'updateProfileVerification'])->name('update-profile-verification');
         Route::get('{id}', [VendorController::class, 'show'])->name('show');
         Route::get('export', [VendorController::class, 'exportVendors'])->name('export');
-        Route::post('export/start', [VendorController::class, 'startExport'])->name('export.start');
-        Route::get('export/progress', [VendorController::class, 'getProgress'])->name('export.progress');
-        Route::get('export/download', [VendorController::class, 'download'])->name('export.download');
         Route::get('search', [VendorController::class, 'search'])->name('search');
         Route::get('fetch', [VendorController::class, 'fetchVendors'])->name('fetch');
         Route::get('render-table', [VendorController::class, 'renderVendorsTable'])->name('render-table');
