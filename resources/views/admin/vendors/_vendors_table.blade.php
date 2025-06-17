@@ -35,25 +35,28 @@
             <td>
                 @php
                     $status = $vendor->status == 1 ? 'active' : 'inactive';
-                    $statusClass = $vendor->status == 1
-                        ? 'badge border border-success text-success px-2 py-1 fs-13'
-                        : 'badge border border-danger text-danger px-2 py-1 fs-13';
+                    $statusClass =
+                        $vendor->status == 1
+                            ? 'badge border border-success text-success px-2 py-1 fs-13'
+                            : 'badge border border-danger text-danger px-2 py-1 fs-13';
                 @endphp
                 <span class="{{ $statusClass }}">{{ ucfirst($status) }}</span>
             </td>
             <td>
                 <div class="form-check form-switch">
-                    <input type="checkbox" class="form-check-input profile-verified-toggle"
-                        data-id="{{ $vendor->id }}" {{ $vendor->is_profile_verified == 1 ? 'checked' : '' }}>
+                    <input type="checkbox" class="form-check-input profile-verified-toggle" data-id="{{ $vendor->id }}"
+                        {{ $vendor->is_profile_verified == 1 ? 'checked' : '' }}>
                 </div>
             </td>
             <td>{{ \Carbon\Carbon::parse($vendor->created_at)->format('d M Y') }}</td>
             <td>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('admin.vendors.show', $vendor->id) }}" class="btn btn-sm btn-soft-info" title="View">
+                    <a href="{{ route('admin.vendors.show', $vendor->id) }}" class="btn btn-sm btn-soft-info"
+                        title="View">
                         <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
                     </a>
-                    <a href="{{ route('admin.vendors.edit', $vendor->id) }}" class="btn btn-sm btn-soft-primary" title="Edit">
+                    <a href="{{ route('admin.vendors.edit', $vendor->id) }}" class="btn btn-sm btn-soft-primary"
+                        title="Edit">
                         <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
                     </a>
                 </div>
@@ -71,5 +74,3 @@
         <x-custom-pagination :paginator="$vendors" />
     </tr>
 </tfoot>
-
-
