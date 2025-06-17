@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+
+class ApprovedProductController extends Controller
+{
+    public function index()
+    {
+        return view('admin.products.approved');
+    }
+
+    public function getApprovedProducts(Request $request)
+    {
+        $products = Product::with(['vendor', 'category'])
+            ->where('status', 'approved')
+            ->when($request->product_name, function($query, $name) {
+                $query->where('product_name', 'like', "%{$name}%");
+            })
+            ->when($request->vendor_id, function($query, $vendorId) {
+                $query->where('vendor_id', $vendorId);
+            })
+            ->orderBy('created_at', 'desc');
+
+        return DataTables::of($products)
+            ->addIndexColumn()
+            ->addColumn('vendor', function($product) {
+                return $product->vendor->name ?? 'N/A';
+            })
+            ->addColumn('category', function($product) {
+                return $product->category->name ?? 'N/A';
+            })
+            ->editColumn('price', function($product) {
+                return '₹' . number_format($product->price, 2);
+            })
+            ->editColumn('created_at', function($product) {
+                return $product->created_at->format('d M Y');
+            })
+            ->editColumn('approved_at', function($product) {
+                return $product->updated_at->format('d M Y');
+            })
+            ->addColumn('action', function($product) {
+                return '
+                    <div class="d-flex gap-2">
+                        <a href="'.route('admin.products.approved.show', $product->id).'" class="btn btn-sm btn-soft-info">
+                            <i class="bi bi-eye"></i> 
+                        </a>
+                        <button class="btn btn-sm btn-soft-warning revoke-approval" data-id="'.$product->id.'">
+                            <i class="bi bi-arrow-counterclockwise"></i> 
+                        </button>
+                    </div>
+                ';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function show($id)
+    {
+        $product = Product::with(['vendor', 'category'])->findOrFail($id);
+        return view('admin.products.show', compact('product'));
+    }
+
+    public function revokeApproval($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->update(['status' => 'pending']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product approval revoked successfully!'
+        ]);
+    }
+}
