@@ -32,10 +32,10 @@
             <td>
                 <div class="d-flex gap-2">
                     <a href="{{ route('admin.buyers.show', $buyer->id) }}" class="btn btn-sm btn-soft-info" title="View">
-                        <i class="bi bi-eye"></i>
+                        <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
                     </a>
                     <a href="{{ route('admin.buyers.edit', $buyer->id) }}" class="btn btn-sm btn-soft-primary" title="Edit">
-                        <i class="bi bi-pencil"></i>
+                        <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
                     </a>
                 </div>
             </td>
