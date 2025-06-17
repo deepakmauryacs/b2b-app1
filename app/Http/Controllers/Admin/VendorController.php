@@ -353,5 +353,62 @@ class VendorController extends Controller
         return Excel::download(new VendorsExport($filters), $fileName);
     }
 
+    /**
+     * Provide vendor data as JSON for ExcelJS export via AJAX.
+     */
+    public function exportData(Request $request)
+    {
+        $filters = $request->only([
+            'name',
+            'email',
+            'status',
+            'gst_no',
+            'phone',
+            'range_start',
+            'range_end',
+        ]);
+
+        $query = User::query()
+            ->where('role', 'vendor')
+            ->with('vendorProfile')
+            ->withCount([
+                'products as approved_products_count' => function ($q) {
+                    $q->where('status', 'approved');
+                },
+                'products as pending_products_count' => function ($q) {
+                    $q->where('status', 'pending');
+                },
+            ])
+            ->when($filters['name'] ?? null, function ($q, $name) {
+                $q->where('name', 'like', "%{$name}%");
+            })
+            ->when($filters['email'] ?? null, function ($q, $email) {
+                $q->where('email', 'like', "%{$email}%");
+            })
+            ->when(isset($filters['status']) && $filters['status'] !== '', function ($q) use ($filters) {
+                $q->where('status', (int) $filters['status']);
+            })
+            ->when($filters['gst_no'] ?? null, function ($q, $gstNo) {
+                $q->whereHas('vendorProfile', function ($q2) use ($gstNo) {
+                    $q2->where('gst_no', 'like', "%{$gstNo}%");
+                });
+            })
+            ->when($filters['phone'] ?? null, function ($q, $phone) {
+                $q->where('phone', 'like', "%{$phone}%");
+            })
+            ->orderBy('created_at', 'desc');
+
+        if (isset($filters['range_start'], $filters['range_end'])) {
+            $start = (int) $filters['range_start'];
+            $end = (int) $filters['range_end'];
+            $limit = $end - $start;
+            $query->skip($start)->take($limit);
+        }
+
+        $vendors = $query->get();
+
+        return response()->json($vendors);
+    }
+
 
 }

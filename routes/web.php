@@ -67,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('search', [VendorController::class, 'search'])->name('search');
         Route::get('fetch', [VendorController::class, 'fetchVendors'])->name('fetch');
         Route::get('render-table', [VendorController::class, 'renderVendorsTable'])->name('render-table');
+        Route::get('export-data', [VendorController::class, 'exportData'])->name('export-data');
     });
 
     Route::prefix('admin/vendor-exports')->name('admin.vendor-exports.')->group(function () {
