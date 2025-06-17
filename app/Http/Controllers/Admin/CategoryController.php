@@ -29,10 +29,10 @@ class CategoryController extends Controller
             ->addIndexColumn()
             ->editColumn('status', function ($category) {
                 $status = $category->status ? 'active' : 'inactive';
-                $class = $status === 'active' 
-                    ? 'badge border border-success text-success px-2 py-1 fs-13' 
+                $class = $status === 'active'
+                    ? 'badge border border-success text-success px-2 py-1 fs-13'
                     : 'badge border border-danger text-danger px-2 py-1 fs-13';
-                
+
                 return '<span class="'. $class .'">'. ucfirst($status) .'</span>';
             })
             ->addColumn('parent', function ($category) {
@@ -46,7 +46,7 @@ class CategoryController extends Controller
     }
 
     public function getCategories(Request $request)
-    {   
+    {
 
         // Start query
         $categories = Category::with('parent')
@@ -78,7 +78,7 @@ class CategoryController extends Controller
             ->addColumn('action', function ($category) {
                 return '<a href="' . route('admin.categories.edit', $category->id) . '" class="btn btn-soft-primary btn-sm">
                             <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
-                        </a> 
+                        </a>
                         <button class="btn btn-soft-danger btn-sm delete-category" data-id="' . $category->id . '">
                             <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon>
                         </button>';
@@ -96,7 +96,7 @@ class CategoryController extends Controller
             ->where('status', 1)
             ->orderBy('name', 'ASC')
             ->get();
-            
+
         return view('admin.categories.create', compact('mainCategories'));
     }
 
@@ -142,7 +142,7 @@ class CategoryController extends Controller
                 ]);
             }
 
-           
+
 
         } catch (\Exception $e) {
             if ($request->ajax()) {
@@ -151,7 +151,7 @@ class CategoryController extends Controller
                     'message' => 'Failed to add category: ' . $e->getMessage()
                 ]);
             }
-            
+
         }
     }
 
@@ -164,7 +164,7 @@ class CategoryController extends Controller
             ->where('id', '!=', $id) // Exclude current category from parent options
             ->orderBy('name', 'ASC')
             ->get();
-            
+
         return view('admin.categories.edit', compact('category', 'mainCategories'));
     }
 
@@ -216,20 +216,20 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::where('id', $id)->where('vendor_id', Auth::id())->firstOrFail();
-        
+
         try {
             // Check if category has children
             if (Category::where('parent_id', $id)->exists()) {
                 throw new \Exception('Cannot delete category because it has subcategories.');
             }
-            
+
             $category->delete();
-            
+
             return response()->json([
                 'status' => 1,
                 'message' => 'Category deleted successfully!'
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 0,

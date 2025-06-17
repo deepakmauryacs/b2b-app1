@@ -108,7 +108,7 @@ class BuyerController extends Controller
         $buyer = User::where('id', $id)
                     ->where('role', 'buyer')
                     ->firstOrFail();
-                    
+
         return view('admin.buyers.edit', compact('buyer'));
     }
 
@@ -173,7 +173,7 @@ class BuyerController extends Controller
 
         try {
             $buyer->delete();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Buyer deleted successfully!'

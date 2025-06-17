@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
 
 class PendingProductController extends Controller
 {
     public function index()
-    {    
-        
+    {
+
         return view('admin.products.pending');
     }
 
