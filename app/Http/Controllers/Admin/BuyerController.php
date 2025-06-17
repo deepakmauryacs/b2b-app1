@@ -8,6 +8,7 @@ use App\Models\User;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class BuyerController extends Controller
 {
@@ -136,9 +137,24 @@ class BuyerController extends Controller
     // Show edit buyer form
     public function edit($id)
     {
-        $buyer = User::where('id', $id)
-                    ->where('role', 'buyer')
-                    ->firstOrFail();
+        $buyer = User::select([
+                    'users.*',
+                    'buyer_profiles.store_name',
+                    'buyer_profiles.email as profile_email',
+                    'buyer_profiles.phone as profile_phone',
+                    'buyer_profiles.country',
+                    'buyer_profiles.state',
+                    'buyer_profiles.city',
+                    'buyer_profiles.pincode',
+                    'buyer_profiles.address',
+                    'buyer_profiles.gst_no',
+                    'buyer_profiles.gst_doc',
+                    'buyer_profiles.store_logo'
+                ])
+                ->leftJoin('buyer_profiles', 'users.id', '=', 'buyer_profiles.user_id')
+                ->where('users.id', $id)
+                ->where('users.role', 'buyer')
+                ->firstOrFail();
 
         return view('admin.buyers.edit', compact('buyer'));
     }
@@ -146,7 +162,8 @@ class BuyerController extends Controller
     // Update buyer
     public function update(Request $request, $id)
     {
-        $buyer = User::where('id', $id)
+        $buyer = User::with('buyerProfile')
+                    ->where('id', $id)
                     ->where('role', 'buyer')
                     ->firstOrFail();
 
@@ -159,39 +176,135 @@ class BuyerController extends Controller
             ],
             'phone' => 'nullable|string|max:15',
             'password' => 'nullable|string|min:8',
-            'status' => 'required|boolean'
+            'status' => 'required|in:1,2',
+            'store_name' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'state' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'pincode' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'gst_no' => 'nullable|string|max:20',
+            'gst_doc' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:1024',
+            'store_logo' => 'nullable|file|mimes:jpg,jpeg,png|max:1024',
         ]);
 
         if ($validator->fails()) {
-            return redirect()
-                ->back()
-                ->withErrors($validator)
-                ->withInput();
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
         }
 
         try {
-            $data = [
+            DB::beginTransaction();
+
+            $userData = [
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'status' => $request->status
+                'status' => $request->status,
             ];
 
             if ($request->filled('password')) {
-                $data['password'] = bcrypt($request->password);
+                $userData['password'] = bcrypt($request->password);
             }
 
-            $buyer->update($data);
+            $buyer->update($userData);
 
-            return redirect()
-                ->route('admin.buyers.index')
-                ->with('success', 'Buyer updated successfully!');
+            $profileData = [
+                'store_name' => $request->store_name,
+                'country' => $request->country,
+                'state' => $request->state,
+                'city' => $request->city,
+                'pincode' => $request->pincode,
+                'address' => $request->address,
+                'gst_no' => $request->gst_no,
+            ];
+
+            if ($request->hasFile('gst_doc')) {
+                if ($buyer->buyerProfile && $buyer->buyerProfile->gst_doc) {
+                    $oldFilePath = public_path($buyer->buyerProfile->gst_doc);
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+
+                $gstDocFile = $request->file('gst_doc');
+                $gstDocName = uniqid('gst_') . '.' . $gstDocFile->getClientOriginalExtension();
+                $gstDocPath = public_path('uploads/buyer/gst_docs');
+
+                if (!file_exists($gstDocPath)) {
+                    mkdir($gstDocPath, 0777, true);
+                }
+
+                $gstDocFile->move($gstDocPath, $gstDocName);
+                $profileData['gst_doc'] = 'uploads/buyer/gst_docs/' . $gstDocName;
+            } elseif ($request->has('remove_gst_doc')) {
+                if ($buyer->buyerProfile && $buyer->buyerProfile->gst_doc) {
+                    $oldFilePath = public_path($buyer->buyerProfile->gst_doc);
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+                $profileData['gst_doc'] = null;
+            }
+
+            if ($request->hasFile('store_logo')) {
+                if ($buyer->buyerProfile && $buyer->buyerProfile->store_logo) {
+                    $oldFilePath = public_path($buyer->buyerProfile->store_logo);
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+
+                $logoFile = $request->file('store_logo');
+                $logoName = uniqid('logo_') . '.' . $logoFile->getClientOriginalExtension();
+                $logoPath = public_path('uploads/buyer/logos');
+
+                if (!file_exists($logoPath)) {
+                    mkdir($logoPath, 0777, true);
+                }
+
+                $logoFile->move($logoPath, $logoName);
+                $profileData['store_logo'] = 'uploads/buyer/logos/' . $logoName;
+            } elseif ($request->has('remove_store_logo')) {
+                if ($buyer->buyerProfile && $buyer->buyerProfile->store_logo) {
+                    $oldFilePath = public_path($buyer->buyerProfile->store_logo);
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+                $profileData['store_logo'] = null;
+            }
+
+            if ($buyer->buyerProfile) {
+                $buyer->buyerProfile->update($profileData);
+            } else {
+                $buyer->buyerProfile()->create($profileData);
+            }
+
+            DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'Buyer updated successfully!',
+                    'redirect' => route('admin.buyers.index'),
+                ]);
+            }
 
         } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Failed to update buyer: ' . $e->getMessage())
-                ->withInput();
+            DB::rollBack();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Failed to update buyer: ' . $e->getMessage(),
+                ], 500);
+            }
         }
     }
 
