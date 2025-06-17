@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('buyer_profiles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('name', 255)->nullable();
+            $table->unsignedBigInteger('user_id'); // Foreign key to users table
+
+            $table->string('store_name', 22)->nullable();
             $table->string('email', 255)->nullable();
             $table->string('phone', 20)->nullable();
             $table->string('country')->nullable();
@@ -22,6 +23,10 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('pincode', 20)->nullable();
             $table->text('address')->nullable();
+            $table->string('gst_no', 20)->nullable();
+            $table->text('gst_doc')->nullable();
+            $table->text('store_logo')->nullable();
+
             $table->timestamps();
         });
     }

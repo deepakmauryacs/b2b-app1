@@ -12,7 +12,7 @@ class BuyerProfile extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
+        'store_name',
         'email',
         'phone',
         'country',
@@ -20,6 +20,9 @@ class BuyerProfile extends Model
         'city',
         'pincode',
         'address',
+        'gst_no',
+        'gst_doc',
+        'store_logo',
     ];
 
     /**
