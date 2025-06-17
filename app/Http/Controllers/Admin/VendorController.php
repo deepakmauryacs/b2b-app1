@@ -7,13 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon; 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Cache; 
+use Illuminate\Support\Facades\Cache;
 use Log; // Make sure to include Log for error logging
 
 class VendorController extends Controller
@@ -24,7 +24,7 @@ class VendorController extends Controller
         return view('admin.vendors.index');
     }
 
-   
+
     public function renderVendorsTable(Request $request)
     {
         // Define items per page, default to 10 if not provided
@@ -103,7 +103,7 @@ class VendorController extends Controller
     }
 
 
-   
+
     public function edit($id)
     {
         $vendor = User::select([
@@ -205,15 +205,15 @@ class VendorController extends Controller
                         unlink($oldFilePath);
                     }
                 }
-                
+
                 $gstDocFile = $request->file('gst_doc');
                 $gstDocName = uniqid('gst_') . '.' . $gstDocFile->getClientOriginalExtension();
                 $gstDocPath = public_path('uploads/vendor/gst_docs');
-                
+
                 if (!file_exists($gstDocPath)) {
                     mkdir($gstDocPath, 0777, true);
                 }
-                
+
                 $gstDocFile->move($gstDocPath, $gstDocName);
                 $profileData['gst_doc'] = 'uploads/vendor/gst_docs/' . $gstDocName;
             } elseif ($request->has('remove_gst_doc')) {
@@ -235,15 +235,15 @@ class VendorController extends Controller
                         unlink($oldFilePath);
                     }
                 }
-                
+
                 $logoFile = $request->file('store_logo');
                 $logoName = uniqid('logo_') . '.' . $logoFile->getClientOriginalExtension();
                 $logoPath = public_path('uploads/vendor/logos');
-                
+
                 if (!file_exists($logoPath)) {
                     mkdir($logoPath, 0777, true);
                 }
-                
+
                 $logoFile->move($logoPath, $logoName);
                 $profileData['store_logo'] = 'uploads/vendor/logos/' . $logoName;
             } elseif ($request->has('remove_store_logo')) {
@@ -276,7 +276,7 @@ class VendorController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             if ($request->ajax()) {
                 return response()->json([
                     'status' => 0,
@@ -284,7 +284,7 @@ class VendorController extends Controller
                 ], 500);
             }
 
-           
+
         }
     }
 
