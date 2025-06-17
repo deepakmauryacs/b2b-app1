@@ -415,20 +415,25 @@
                         </a>
                     </li>
 
-                    <!-- Roles Menu (single item) -->
+                    <!-- User Management Menu (with sub-menu) -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.roles.index') }}">
-                            <span class="nav-icon"><i class="bi bi-person-gear"></i></span>
-                            <span class="nav-text"> Roles </span>
+                        <a class="nav-link menu-arrow" href="#sidebarUserManagement" data-bs-toggle="collapse"
+                            role="button" aria-expanded="false" aria-controls="sidebarUserManagement">
+                            <span class="nav-icon">
+                                <i class="bi bi-people"></i>
+                            </span>
+                            <span class="nav-text"> User Management </span>
                         </a>
-                    </li>
-
-                    <!-- Users Menu (single item) -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.users.index') }}">
-                            <span class="nav-icon"><i class="bi bi-person"></i></span>
-                            <span class="nav-text"> Users </span>
-                        </a>
+                        <div class="collapse" id="sidebarUserManagement">
+                            <ul class="nav sub-navbar-nav">
+                                <li class="sub-nav-item">
+                                    <a class="sub-nav-link" href="{{ route('admin.roles.index') }}">Admin Role</a>
+                                </li>
+                                <li class="sub-nav-item">
+                                    <a class="sub-nav-link" href="{{ route('admin.users.index') }}">Admin User</a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li class="nav-item">
