@@ -415,6 +415,14 @@
                         </a>
                     </li>
 
+                    <!-- Roles Menu (single item) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.roles.index') }}">
+                            <span class="nav-icon"><i class="bi bi-person-gear"></i></span>
+                            <span class="nav-text"> Roles </span>
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.activity-logs.index') }}">
                             <i class="bi bi-info-circle"></i> Activity Logs

@@ -80,9 +80,12 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('admin/roles')->name('admin.roles.')->group(function () {
-        Route::get('/', [RoleController::class, 'index'])->name('index');
-        Route::post('/', [RoleController::class, 'store'])->name('store');
-        Route::put('{id}', [RoleController::class, 'update'])->name('update');
+        Route::get('list', [RoleController::class, 'index'])->name('index');
+        Route::get('data', [RoleController::class, 'getRoles'])->name('data');
+        Route::get('create', [RoleController::class, 'create'])->name('create');
+        Route::post('store', [RoleController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [RoleController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [RoleController::class, 'update'])->name('update');
     });
 
     Route::prefix('admin/buyers')->name('admin.buyers.')->group(function () {
