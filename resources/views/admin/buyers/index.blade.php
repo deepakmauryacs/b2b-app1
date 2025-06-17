@@ -39,6 +39,13 @@
                                     <input type="text" id="phone" class="form-control" placeholder="Contact Number">
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="gst_no">GST No</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                    <input type="text" id="gst_no" class="form-control" placeholder="GST Number">
+                                </div>
+                            </div>
                             <div class="col-md-2">
                                 <label class="form-label">Status</label>
                                 <div class="input-group">
@@ -118,6 +125,7 @@
                     name: $('#name').val(),
                     email: $('#email').val(),
                     phone: $('#phone').val(),
+                    gst_no: $('#gst_no').val(),
                     status: $('#status').val()
                 };
                 perPage = perPage || $('#perPage').val() || 10;

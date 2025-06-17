@@ -11,6 +11,9 @@
                     @php
                         $profile = $buyer->buyerProfile;
                         $info = [];
+                        if ($profile?->gst_no) {
+                            $info[] = '<b>GST:</b> ' . htmlspecialchars($profile->gst_no);
+                        }
                         if ($profile?->pincode) {
                             $info[] = '<b>Pincode:</b> ' . htmlspecialchars($profile->pincode);
                         }
