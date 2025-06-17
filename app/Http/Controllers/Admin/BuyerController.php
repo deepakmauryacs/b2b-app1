@@ -32,6 +32,11 @@ class BuyerController extends Controller
             ->when($request->phone, function($query, $phone) {
                 $query->where('phone', $phone);
             })
+            ->when($request->gst_no, function($query, $gstNo) {
+                $query->whereHas('buyerProfile', function($q2) use ($gstNo) {
+                    $q2->where('gst_no', $gstNo);
+                });
+            })
             ->when($request->status !== null, function($query) use ($request) {
                 $query->where('status', $request->status);
             })
@@ -77,6 +82,11 @@ class BuyerController extends Controller
             })
             ->when($request->phone, function ($q, $phone) {
                 $q->where('phone', $phone);
+            })
+            ->when($request->gst_no, function ($q, $gstNo) {
+                $q->whereHas('buyerProfile', function ($q2) use ($gstNo) {
+                    $q2->where('gst_no', $gstNo);
+                });
             })
             ->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
                 $q->where('status', (int) $request->status);
