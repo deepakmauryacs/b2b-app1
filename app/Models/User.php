@@ -74,6 +74,9 @@ class User extends Authenticatable
         // in your vendor_profiles table linking back to the users table.
     }
 
+    /**
+     * Get the buyer profile associated with the user.
+     */
     public function buyerProfile(): HasOne
     {
         return $this->hasOne(BuyerProfile::class);
