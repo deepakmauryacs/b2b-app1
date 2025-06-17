@@ -9,7 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Relations\HasOne; // Import HasOne
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\BuyerProfile; // Import BuyerProfile
+use App\Models\Role;
 
 
 class User extends Authenticatable
@@ -87,4 +89,20 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\Product::class, 'vendor_id');
     }
 
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasPermission(string $module, string $action): bool
+    {
+        $action = strtolower($action);
+        if (!in_array($action, ['add','edit','view','export'])) {
+            return false;
+        }
+
+        return $this->roles()->whereHas('permissions', function ($q) use ($module, $action) {
+            $q->where('module', $module)->where("can_${action}", true);
+        })->exists();
+    }
 }

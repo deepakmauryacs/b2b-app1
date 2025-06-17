@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\VendorExportController;
 use App\Http\Controllers\Admin\BuyerController;
 use App\Http\Controllers\Admin\PendingProductController;
 use App\Http\Controllers\Admin\ApprovedProductController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RejectedProductController;
 use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorProductController;
@@ -76,6 +77,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('store', [VendorExportController::class, 'store'])->name('store');
         Route::get('{id}/download', [VendorExportController::class, 'download'])->name('download');
         Route::delete('{id}', [VendorExportController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('admin/roles')->name('admin.roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('index');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::put('{id}', [RoleController::class, 'update'])->name('update');
     });
 
     Route::prefix('admin/buyers')->name('admin.buyers.')->group(function () {
