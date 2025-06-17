@@ -10,6 +10,7 @@ use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
 {
+    private array $actions = ['add', 'edit', 'view', 'export'];
     // Show role list page
     public function index()
     {
@@ -36,15 +37,19 @@ class RoleController extends Controller
     public function create()
     {
         $roles = Role::orderBy('name', 'asc')->get();
-        return view('admin.roles.create', compact('roles'));
+        $modules = config('modules');
+        $actions = $this->actions;
+        return view('admin.roles.create', compact('roles', 'modules', 'actions'));
     }
 
     // Show edit role form
     public function edit($id)
     {
-        $role = Role::findOrFail($id);
+        $role = Role::with('permissions')->findOrFail($id);
         $roles = Role::where('id', '!=', $id)->orderBy('name', 'asc')->get();
-        return view('admin.roles.edit', compact('role', 'roles'));
+        $modules = config('modules');
+        $actions = $this->actions;
+        return view('admin.roles.edit', compact('role', 'roles', 'modules', 'actions'));
     }
 
     public function store(Request $request)
@@ -53,7 +58,10 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:roles,id',
             'permissions' => 'array',
+            'permissions.*' => 'array',
+            'permissions.*.*' => 'in:' . implode(',', $this->actions),
         ]);
+        $modules = config('modules');
 
         $role = Role::create([
             'name' => $data['name'],
@@ -62,6 +70,9 @@ class RoleController extends Controller
 
         if (!empty($data['permissions'])) {
             foreach ($data['permissions'] as $module => $perms) {
+                if (!in_array($module, $modules)) {
+                    continue;
+                }
                 RolePermission::create([
                     'role_id' => $role->id,
                     'module' => $module,
@@ -84,7 +95,10 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:roles,id',
             'permissions' => 'array',
+            'permissions.*' => 'array',
+            'permissions.*.*' => 'in:' . implode(',', $this->actions),
         ]);
+        $modules = config('modules');
 
         $role->update([
             'name' => $data['name'],
@@ -94,6 +108,9 @@ class RoleController extends Controller
         if (isset($data['permissions'])) {
             $role->permissions()->delete();
             foreach ($data['permissions'] as $module => $perms) {
+                if (!in_array($module, $modules)) {
+                    continue;
+                }
                 RolePermission::create([
                     'role_id' => $role->id,
                     'module' => $module,
