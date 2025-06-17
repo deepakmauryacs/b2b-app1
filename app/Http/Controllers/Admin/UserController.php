@@ -11,8 +11,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderBy('name', 'asc')->get();
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index');
     }
 
     public function create()
@@ -22,7 +21,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:15',
@@ -31,9 +30,37 @@ class UserController extends Controller
             'status' => 'required|boolean',
         ]);
 
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 0,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $validator->validated();
         $data['password'] = bcrypt($data['password']);
 
-        User::create($data);
+        try {
+            User::create($data);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'User created successfully!',
+                    'redirect' => route('admin.users.index'),
+                ]);
+            }
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Failed to create user: ' . $e->getMessage(),
+                ], 500);
+            }
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully!');
@@ -49,7 +76,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $data = $request->validate([
+        $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'phone' => 'nullable|string|max:15',
@@ -58,15 +85,69 @@ class UserController extends Controller
             'status' => 'required|boolean',
         ]);
 
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 0,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $validator->validated();
+
         if (!empty($data['password'])) {
             $data['password'] = bcrypt($data['password']);
         } else {
             unset($data['password']);
         }
 
-        $user->update($data);
+        try {
+            $user->update($data);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'User updated successfully!',
+                    'redirect' => route('admin.users.index'),
+                ]);
+            }
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Failed to update user: ' . $e->getMessage(),
+                ], 500);
+            }
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully!');
+    }
+
+    public function renderUsersTable(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
+
+        $query = User::query()
+            ->when($request->name, function ($q, $name) {
+                $q->where('name', 'like', "{$name}%");
+            })
+            ->when($request->email, function ($q, $email) {
+                $q->where('email', $email);
+            })
+            ->when($request->role, function ($q, $role) {
+                $q->where('role', $role);
+            })
+            ->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
+                $q->where('status', (int) $request->status);
+            })
+            ->orderBy('name', 'asc');
+
+        $users = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return view('admin.users._users_table', compact('users'));
     }
 }

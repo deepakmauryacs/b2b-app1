@@ -91,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('admin/users')->name('admin.users.')->group(function () {
         Route::get('list', [UserController::class, 'index'])->name('index');
+        Route::get('render-table', [UserController::class, 'renderUsersTable'])->name('render-table');
         Route::get('create', [UserController::class, 'create'])->name('create');
         Route::post('store', [UserController::class, 'store'])->name('store');
         Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
