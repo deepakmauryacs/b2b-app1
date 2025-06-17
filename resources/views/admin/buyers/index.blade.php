@@ -32,6 +32,13 @@
                                     <input type="text" id="email" class="form-control" placeholder="Buyer Email">
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Phone</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                    <input type="text" id="phone" class="form-control" placeholder="Contact Number">
+                                </div>
+                            </div>
                             <div class="col-md-2">
                                 <label class="form-label">Status</label>
                                 <div class="input-group">
@@ -67,6 +74,7 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Phone</th>
+                                    <th>Store Info</th>
                                     <th>Status</th>
                                     <th>Created At</th>
                                     <th>Action</th>
@@ -75,12 +83,12 @@
                             {{-- Table body and pagination will be loaded via AJAX --}}
                             <tbody id="buyers-table-body-content">
                                 <tr>
-                                    <td colspan="7" class="text-center">Loading Buyers...</td>
+                                    <td colspan="8" class="text-center">Loading Buyers...</td>
                                 </tr>
                             </tbody>
                             <tfoot id="buyers-table-foot-content">
                                 <tr>
-                                    <td colspan="7" class="text-center"></td>
+                                    <td colspan="8" class="text-center"></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -102,12 +110,13 @@
                     currentAjaxRequest.abort();
                 }
 
-                $('#buyers-table-body-content').html('<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+                $('#buyers-table-body-content').html('<tr><td colspan="8" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
                 $('#buyers-table-foot-content').empty();
 
                 const filters = {
                     name: $('#name').val(),
                     email: $('#email').val(),
+                    phone: $('#phone').val(),
                     status: $('#status').val()
                 };
                 perPage = perPage || $('#perPage').val() || 10;
@@ -129,7 +138,7 @@
                         if (xhr.statusText === 'abort') {
                             return;
                         }
-                        $('#buyers-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading buyers. Please try again.</td></tr>');
+                        $('#buyers-table-body-content').html('<tr><td colspan="8" class="text-center text-danger">Error loading buyers. Please try again.</td></tr>');
                     },
                     complete: function() {
                         currentAjaxRequest = null;
