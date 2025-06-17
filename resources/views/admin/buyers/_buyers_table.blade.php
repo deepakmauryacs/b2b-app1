@@ -37,9 +37,6 @@
                     <a href="{{ route('admin.buyers.edit', $buyer->id) }}" class="btn btn-sm btn-soft-primary" title="Edit">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <button class="btn btn-sm btn-soft-danger delete-buyer" data-id="{{ $buyer->id }}">
-                        <i class="bi bi-trash"></i>
-                    </button>
                 </div>
             </td>
         </tr>

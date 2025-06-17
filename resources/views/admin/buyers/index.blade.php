@@ -168,23 +168,6 @@
                 fetchBuyersData(1, $(this).val());
             });
 
-            // Delete buyer event
-            $(document).on('click', '.delete-buyer', function() {
-                if (!confirm('Are you sure you want to delete this buyer?')) {
-                    return;
-                }
-                const id = $(this).data('id');
-                $.ajax({
-                    url: "{{ url('admin/buyers/delete') }}/" + id,
-                    method: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function() {
-                        fetchBuyersData(1);
-                    }
-                });
-            });
         });
     </script>
 @endsection
