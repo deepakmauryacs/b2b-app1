@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\PendingProductController;
 use App\Http\Controllers\Admin\ApprovedProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RejectedProductController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorProductController;
 
@@ -86,6 +87,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('store', [RoleController::class, 'store'])->name('store');
         Route::get('edit/{id}', [RoleController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [RoleController::class, 'update'])->name('update');
+    });
+
+    Route::prefix('admin/users')->name('admin.users.')->group(function () {
+        Route::get('list', [UserController::class, 'index'])->name('index');
+        Route::get('create', [UserController::class, 'create'])->name('create');
+        Route::post('store', [UserController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [UserController::class, 'update'])->name('update');
     });
 
     Route::prefix('admin/buyers')->name('admin.buyers.')->group(function () {
