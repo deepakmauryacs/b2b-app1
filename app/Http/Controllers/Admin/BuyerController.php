@@ -56,6 +56,32 @@ class BuyerController extends Controller
             ->make(true);
     }
 
+    /**
+     * Render buyers table for AJAX pagination similar to vendors list.
+     */
+    public function renderBuyersTable(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
+
+        $buyersQuery = User::query()
+            ->where('role', 'buyer')
+            ->when($request->name, function ($q, $name) {
+                $q->where('name', 'like', "{$name}%");
+            })
+            ->when($request->email, function ($q, $email) {
+                $q->where('email', $email);
+            })
+            ->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
+                $q->where('status', (int) $request->status);
+            })
+            ->orderBy('name', 'asc');
+
+        $buyers = $buyersQuery->paginate($perPage, ['*'], 'page', $page);
+
+        return view('admin.buyers._buyers_table', compact('buyers'));
+    }
+
     // Show create buyer form
     public function create()
     {

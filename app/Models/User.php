@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Relations\HasOne; // Import HasOne
+use App\Models\BuyerProfile; // Import BuyerProfile
 
 
 class User extends Authenticatable
@@ -71,6 +72,11 @@ class User extends Authenticatable
         return $this->hasOne(VendorProfile::class);
         // Assuming you have a VendorProfile model and a foreign key 'user_id'
         // in your vendor_profiles table linking back to the users table.
+    }
+
+    public function buyerProfile(): HasOne
+    {
+        return $this->hasOne(BuyerProfile::class);
     }
 
     public function products()

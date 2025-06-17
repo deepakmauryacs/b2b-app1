@@ -2,54 +2,8 @@
 @section('title', 'Buyers | Deal24hours')
 @section('content')
     <style>
-        .dataTables_wrapper .dataTables_paginate .pagination {
-            justify-content: center;
-            margin-top: 1rem;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .page-item .page-link {
-            color: #6c757d;
-            background: transparent;
-            border: none;
-            padding: 0.375rem 0.75rem;
-            margin: 0 0.125rem;
-            border-radius: 0.25rem;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .page-item .page-link:hover {
-            background-color: #e9ecef;
-            color: #000;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
-            background-color: #ff6c2f !important;
-            color: #fff !important;
-            border: none;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .page-item.disabled .page-link {
-            color: #6c757d;
-            pointer-events: none;
-            background: transparent;
-        }
-
-        .dataTables_wrapper {
-            padding: 0px 20px 20px 20px !important;
-        }
-
-        #buyers-table_processing.card {
-            background: none !important;
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-        }
-
-        div.dataTables_processing>div:last-child>div {
-            background: #ff6c2f !important;
-        }
+        /* Additional styles can go here if needed */
     </style>
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
 
     <div class="row">
         <div class="col-xl-12">
@@ -118,9 +72,17 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Data will be loaded via DataTables -->
+                            {{-- Table body and pagination will be loaded via AJAX --}}
+                            <tbody id="buyers-table-body-content">
+                                <tr>
+                                    <td colspan="7" class="text-center">Loading Buyers...</td>
+                                </tr>
                             </tbody>
+                            <tfoot id="buyers-table-foot-content">
+                                <tr>
+                                    <td colspan="7" class="text-center"></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                     <!-- end table-responsive -->
@@ -129,72 +91,91 @@
         </div>
     </div>
 
-    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
     <script>
-        $(function() {
-            const table = $('#buyers-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('admin.buyers.data') }}",
-                    data: function(d) {
-                        d.name = $('#name').val();
-                        d.email = $('#email').val();
-                        d.status = $('#status').val();
-                    }
-                },
-                searching: false,
-                lengthChange: false,
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'phone',
-                        name: 'phone'
-                    },
-                    {
-                        data: 'status',
-                        name: 'status'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-                order: [
-                    [0, 'desc']
-                ]
-            });
+        $(document).ready(function() {
+            fetchBuyersData(1);
 
-            // Filter button
+            var currentAjaxRequest = null;
+
+            function fetchBuyersData(page = 1, perPage = null) {
+                if (currentAjaxRequest && currentAjaxRequest.readyState !== 4) {
+                    currentAjaxRequest.abort();
+                }
+
+                $('#buyers-table-body-content').html('<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+                $('#buyers-table-foot-content').empty();
+
+                const filters = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    status: $('#status').val()
+                };
+                perPage = perPage || $('#perPage').val() || 10;
+
+                currentAjaxRequest = $.ajax({
+                    url: "{{ route('admin.buyers.render-table') }}",
+                    method: 'GET',
+                    data: {
+                        page: page,
+                        per_page: perPage,
+                        ...filters
+                    },
+                    success: function(response) {
+                        const $responseHtml = $(response);
+                        $('#buyers-table-body-content').html($responseHtml.filter('tbody').html());
+                        $('#buyers-table-foot-content').html($responseHtml.filter('tfoot').html());
+                    },
+                    error: function(xhr) {
+                        if (xhr.statusText === 'abort') {
+                            return;
+                        }
+                        $('#buyers-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading buyers. Please try again.</td></tr>');
+                    },
+                    complete: function() {
+                        currentAjaxRequest = null;
+                    }
+                });
+            }
+
             $('#search').on('click', function() {
-                table.ajax.reload();
+                fetchBuyersData(1);
             });
 
             $('#reset').on('click', function() {
-                $('#filter-form').trigger('reset');
-                $('#name').val('');
-                $('#email').val('');
-                $('#status').val('');
-                table.ajax.reload();
+                $('#filter-form').find('input, select').val('');
+                fetchBuyersData(1);
             });
 
+            $(document).on('click', '#buyers-table-foot-content a.page-link', function(e) {
+                e.preventDefault();
+                const url = $(this).attr('href');
+                const page = new URL(url).searchParams.get('page');
+                if (page) {
+                    fetchBuyersData(page);
+                }
+            });
+
+            $(document).on('change', '#perPage', function() {
+                fetchBuyersData(1, $(this).val());
+            });
+
+            // Delete buyer event
+            $(document).on('click', '.delete-buyer', function() {
+                if (!confirm('Are you sure you want to delete this buyer?')) {
+                    return;
+                }
+                const id = $(this).data('id');
+                $.ajax({
+                    url: "{{ url('admin/buyers/delete') }}/" + id,
+                    method: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function() {
+                        fetchBuyersData(1);
+                    }
+                });
+            });
         });
     </script>
 @endsection

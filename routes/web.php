@@ -81,10 +81,12 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin/buyers')->name('admin.buyers.')->group(function () {
         Route::get('list', [BuyerController::class, 'index'])->name('index');
         Route::get('data', [BuyerController::class, 'getBuyers'])->name('data');
+        Route::get('render-table', [BuyerController::class, 'renderBuyersTable'])->name('render-table');
         Route::get('create', [BuyerController::class, 'create'])->name('create');
         Route::post('store', [BuyerController::class, 'store'])->name('store');
         Route::get('edit/{id}', [BuyerController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [BuyerController::class, 'update'])->name('update');
+        Route::delete('delete/{id}', [BuyerController::class, 'destroy'])->name('delete');
     });
 
     Route::prefix('admin/products')->group(function () {
