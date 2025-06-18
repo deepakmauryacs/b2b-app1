@@ -24,15 +24,20 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Plan Name <span class="text-danger">*</span></label>
-                            <input type="text" name="plan_name" id="plan_name" class="form-control" value="{{ $subscription->plan_name }}" required>
+                            <select name="plan_name" id="plan_name" class="form-select" required>
+                                <option value="">Select Plan</option>
+                                @foreach($plans as $plan)
+                                    <option value="{{ $plan }}" {{ $subscription->plan_name == $plan ? 'selected' : '' }}>{{ $plan }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Start Date <span class="text-danger">*</span></label>
-                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ $subscription->start_date }}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">End Date <span class="text-danger">*</span></label>
-                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ $subscription->end_date }}" required>
+                            <label class="form-label">Duration <span class="text-danger">*</span></label>
+                            <select name="duration" id="duration" class="form-select" required>
+                                @for($i = 1; $i <= 24; $i++)
+                                    <option value="{{ $i }}" {{ $duration == $i ? 'selected' : '' }}>{{ $i }} Month{{ $i > 1 ? 's' : '' }}</option>
+                                @endfor
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Status <span class="text-danger">*</span></label>
