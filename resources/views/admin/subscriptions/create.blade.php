@@ -10,33 +10,37 @@
             <div class="card-body">
                 <form action="{{ route('admin.vendor-subscriptions.store') }}" method="POST" id="subscriptionForm">
                     @csrf
-                    <div class="mb-3">
-                        <label class="form-label">Vendor <span class="text-danger">*</span></label>
-                        <select name="user_id" id="user_id" class="form-select select2" style="width:100%" required>
-                            <option value="">Search Vendor</option>
-                        </select>
+                    <div class="row gy-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Vendor <span class="text-danger">*</span></label>
+                            <select name="user_id" id="user_id" class="form-select select2" style="width:100%" required>
+                                <option value="">Search Vendor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Plan Name <span class="text-danger">*</span></label>
+                            <input type="text" name="plan_name" id="plan_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" name="start_date" id="start_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">End Date <span class="text-danger">*</span></label>
+                            <input type="date" name="end_date" id="end_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="active">Active</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Plan Name <span class="text-danger">*</span></label>
-                        <input type="text" name="plan_name" id="plan_name" class="form-control" required>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a href="{{ route('admin.vendor-subscriptions.index') }}" class="btn btn-outline-secondary">Cancel</a>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Start Date <span class="text-danger">*</span></label>
-                        <input type="date" name="start_date" id="start_date" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">End Date <span class="text-danger">*</span></label>
-                        <input type="date" name="end_date" id="end_date" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status <span class="text-danger">*</span></label>
-                        <select name="status" id="status" class="form-select">
-                            <option value="active">Active</option>
-                            <option value="expired">Expired</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <a href="{{ route('admin.vendor-subscriptions.index') }}" class="btn btn-outline-secondary">Cancel</a>
                 </form>
             </div>
         </div>
