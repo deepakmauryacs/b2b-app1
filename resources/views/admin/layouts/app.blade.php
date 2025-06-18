@@ -415,6 +415,14 @@
                         </a>
                     </li>
 
+                    <!-- Plans Menu (single item) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.plans.index') }}">
+                            <span class="nav-icon"><i class="bi bi-card-list"></i></span>
+                            <span class="nav-text"> Plans </span>
+                        </a>
+                    </li>
+
                     <!-- Buyers Menu (single item) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.buyers.index') }}">
