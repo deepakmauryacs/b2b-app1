@@ -18,8 +18,9 @@ class VendorSubscriptionController extends Controller
 
     public function create()
     {
-        $vendors = User::where('role', 'vendor')->orderBy('name')->get();
-        return view('admin.subscriptions.create', compact('vendors'));
+        // Do not preload all vendors to avoid loading millions of records.
+        // The vendor dropdown will fetch data via AJAX.
+        return view('admin.subscriptions.create');
     }
 
     public function store(Request $request)
@@ -66,9 +67,10 @@ class VendorSubscriptionController extends Controller
 
     public function edit($id)
     {
-        $subscription = VendorSubscription::findOrFail($id);
-        $vendors = User::where('role', 'vendor')->orderBy('name')->get();
-        return view('admin.subscriptions.edit', compact('subscription', 'vendors'));
+        $subscription = VendorSubscription::with('user:id,name')->findOrFail($id);
+        // Pass only the current vendor to the view for the preselected option.
+        $vendor = $subscription->user;
+        return view('admin.subscriptions.edit', compact('subscription', 'vendor'));
     }
 
     public function update(Request $request, $id)
