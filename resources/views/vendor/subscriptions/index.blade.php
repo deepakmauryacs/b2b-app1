@@ -11,17 +11,22 @@
                 <form id="subscriptionForm" action="{{ route('vendor.subscription.store') }}" method="POST">
                     @csrf
                     <div class="row">
-                        <div class="mb-3 col-md-4">
+                        <div class="mb-3 col-md-6 col-lg-4">
                             <label for="plan_name" class="form-label">Plan Name</label>
-                            <input type="text" id="plan_name" name="plan_name" class="form-control" value="{{ old('plan_name', $subscription->plan_name ?? '') }}">
+                            <select id="plan_name" name="plan_name" class="form-select">
+                                <option value="">Select Plan</option>
+                                @foreach($plans as $plan)
+                                    <option value="{{ $plan }}" {{ ($subscription->plan_name ?? '') == $plan ? 'selected' : '' }}>{{ $plan }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" id="start_date" name="start_date" class="form-control" value="{{ old('start_date', $subscription->start_date ?? '') }}">
-                        </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="end_date" class="form-label">End Date</label>
-                            <input type="date" id="end_date" name="end_date" class="form-control" value="{{ old('end_date', $subscription->end_date ?? '') }}">
+                        <div class="mb-3 col-md-6 col-lg-4">
+                            <label for="duration" class="form-label">Duration</label>
+                            <select id="duration" name="duration" class="form-select">
+                                @for($i = 1; $i <= 24; $i++)
+                                    <option value="{{ $i }}" {{ ($duration ?? 1) == $i ? 'selected' : '' }}>{{ $i }} Month{{ $i > 1 ? 's' : '' }}</option>
+                                @endfor
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3 text-end">
@@ -76,11 +81,8 @@ $(function(){
         plan_name: [
             {condition: v => !v, message: 'Plan name is required.'}
         ],
-        start_date: [
-            {condition: v => !v, message: 'Start date is required.'}
-        ],
-        end_date: [
-            {condition: v => !v, message: 'End date is required.'}
+        duration: [
+            {condition: v => !v, message: 'Duration is required.'}
         ]
     };
 
