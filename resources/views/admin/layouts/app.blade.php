@@ -407,6 +407,14 @@
                         </a>
                     </li>
 
+                    <!-- Vendor Subscriptions (single item) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.vendor-subscriptions.index') }}">
+                            <span class="nav-icon"><i class="bi bi-card-checklist"></i></span>
+                            <span class="nav-text"> Vendor Subscriptions </span>
+                        </a>
+                    </li>
+
                     <!-- Buyers Menu (single item) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.buyers.index') }}">

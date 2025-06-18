@@ -81,6 +81,14 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('{id}', [VendorExportController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('admin/vendor-subscriptions')->name('admin.vendor-subscriptions.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'index'])->name('index');
+        Route::get('create', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'create'])->name('create');
+        Route::post('store', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'store'])->name('store');
+        Route::get('{id}/edit', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'edit'])->name('edit');
+        Route::put('{id}', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'update'])->name('update');
+    });
+
     Route::prefix('admin/roles')->name('admin.roles.')->group(function () {
         Route::get('list', [RoleController::class, 'index'])->name('index');
         Route::get('data', [RoleController::class, 'getRoles'])->name('data');
