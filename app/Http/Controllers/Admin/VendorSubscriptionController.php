@@ -49,9 +49,10 @@ class VendorSubscriptionController extends Controller
 
         try {
             $data = $validator->validated();
+            $duration = (int) $data['duration'];
             $start = Carbon::now();
             $data['start_date'] = $start->toDateString();
-            $data['end_date'] = $start->copy()->addMonths($request->duration)->toDateString();
+            $data['end_date'] = $start->copy()->addMonths($duration)->toDateString();
             unset($data['duration']);
             VendorSubscription::create($data);
             if ($request->ajax()) {
@@ -111,9 +112,10 @@ class VendorSubscriptionController extends Controller
 
         try {
             $data = $validator->validated();
+            $duration = (int) $data['duration'];
             $start = Carbon::now();
             $data['start_date'] = $start->toDateString();
-            $data['end_date'] = $start->copy()->addMonths($request->duration)->toDateString();
+            $data['end_date'] = $start->copy()->addMonths($duration)->toDateString();
             unset($data['duration']);
             $subscription->update($data);
             if ($request->ajax()) {

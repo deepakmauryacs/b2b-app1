@@ -40,9 +40,10 @@ class VendorSubscriptionController extends Controller
         }
 
         $data = $validator->validated();
+        $duration = (int) $data['duration'];
         $start = Carbon::now();
         $data['start_date'] = $start->toDateString();
-        $data['end_date'] = $start->copy()->addMonths($request->duration)->toDateString();
+        $data['end_date'] = $start->copy()->addMonths($duration)->toDateString();
         unset($data['duration']);
         $user = Auth::user();
         $subscription = $user->subscription;
