@@ -12,11 +12,8 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Vendor <span class="text-danger">*</span></label>
-                        <select name="user_id" id="user_id" class="form-select" required>
-                            <option value="">Select Vendor</option>
-                            @foreach($vendors as $vendor)
-                                <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
-                            @endforeach
+                        <select name="user_id" id="user_id" class="form-select select2" style="width:100%" required>
+                            <option value="">Search Vendor</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -45,6 +42,8 @@
         </div>
     </div>
 </div>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(function(){
     function validateForm(){
@@ -96,6 +95,30 @@ $(function(){
                 $btn.prop('disabled', false).html('Save');
             }
         });
+    });
+
+    // Initialize Select2 for vendor search
+    $('#user_id').select2({
+        placeholder: 'Search Vendor',
+        allowClear: true,
+        ajax: {
+            url: "{{ route('admin.vendors.search') }}",
+            dataType: 'json',
+            delay: 250,
+            data: function(params){
+                return {
+                    q: params.term
+                };
+            },
+            processResults: function(data){
+                return {
+                    results: data.map(function(item){
+                        return { id: item.id, text: item.name };
+                    })
+                };
+            },
+            cache: true
+        }
     });
 });
 </script>

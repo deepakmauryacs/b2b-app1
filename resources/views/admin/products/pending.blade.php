@@ -212,7 +212,7 @@
             placeholder: 'Search vendor',
             allowClear: true,
             ajax: {
-                url: "{{ route('admin.vendor.search') }}",
+                url: "{{ route('admin.vendors.search') }}",
                 dataType: 'json',
                 delay: 250,
                 data: function(params) {
