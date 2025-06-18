@@ -11,37 +11,41 @@
                 <form action="{{ route('admin.vendor-subscriptions.update', $subscription->id) }}" method="POST" id="subscriptionForm">
                     @csrf
                     @method('PUT')
-                    <div class="mb-3">
-                        <label class="form-label">Vendor <span class="text-danger">*</span></label>
-                        <select name="user_id" id="user_id" class="form-select select2" style="width:100%" required>
-                            @if(isset($vendor))
-                                <option value="{{ $vendor->id }}" selected>{{ $vendor->name }}</option>
-                            @else
-                                <option value="">Search Vendor</option>
-                            @endif
-                        </select>
+                    <div class="row gy-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Vendor <span class="text-danger">*</span></label>
+                            <select name="user_id" id="user_id" class="form-select select2" style="width:100%" required>
+                                @if(isset($vendor))
+                                    <option value="{{ $vendor->id }}" selected>{{ $vendor->name }}</option>
+                                @else
+                                    <option value="">Search Vendor</option>
+                                @endif
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Plan Name <span class="text-danger">*</span></label>
+                            <input type="text" name="plan_name" id="plan_name" class="form-control" value="{{ $subscription->plan_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ $subscription->start_date }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">End Date <span class="text-danger">*</span></label>
+                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ $subscription->end_date }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="active" {{ $subscription->status == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="expired" {{ $subscription->status == 'expired' ? 'selected' : '' }}>Expired</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Plan Name <span class="text-danger">*</span></label>
-                        <input type="text" name="plan_name" id="plan_name" class="form-control" value="{{ $subscription->plan_name }}" required>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <a href="{{ route('admin.vendor-subscriptions.index') }}" class="btn btn-outline-secondary">Cancel</a>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Start Date <span class="text-danger">*</span></label>
-                        <input type="date" name="start_date" id="start_date" class="form-control" value="{{ $subscription->start_date }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">End Date <span class="text-danger">*</span></label>
-                        <input type="date" name="end_date" id="end_date" class="form-control" value="{{ $subscription->end_date }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status <span class="text-danger">*</span></label>
-                        <select name="status" id="status" class="form-select">
-                            <option value="active" {{ $subscription->status == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="expired" {{ $subscription->status == 'expired' ? 'selected' : '' }}>Expired</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.vendor-subscriptions.index') }}" class="btn btn-outline-secondary">Cancel</a>
                 </form>
             </div>
         </div>
