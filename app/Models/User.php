@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne; // Import HasOne
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\BuyerProfile; // Import BuyerProfile
 use App\Models\Role;
+use App\Models\VendorSubscription;
 
 
 class User extends Authenticatable
@@ -82,6 +83,11 @@ class User extends Authenticatable
     public function buyerProfile(): HasOne
     {
         return $this->hasOne(BuyerProfile::class);
+    }
+
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(VendorSubscription::class);
     }
 
     public function products()

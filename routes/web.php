@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\RejectedProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorProductController;
+use App\Http\Controllers\Vendor\VendorSubscriptionController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('optimize:clear');
@@ -134,6 +135,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/vendor/profile', [VendorProfileController::class, 'profile'])->name('vendor.profile.show');
     Route::post('profile/update', [VendorProfileController::class, 'update'])->name('vendor.profile.update');
+
+    Route::get('/vendor/subscription', [VendorSubscriptionController::class, 'index'])->name('vendor.subscription.index');
+    Route::post('/vendor/subscription', [VendorSubscriptionController::class, 'store'])->name('vendor.subscription.store');
 
     Route::prefix('vendor/products')->name('vendor.products.')->group(function () {
         Route::get('list', [VendorProductController::class, 'index'])->name('index');
