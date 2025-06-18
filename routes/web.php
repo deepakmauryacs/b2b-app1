@@ -89,6 +89,14 @@ Route::middleware(['auth'])->group(function () {
         Route::put('{id}', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'update'])->name('update');
     });
 
+    Route::prefix('admin/plans')->name('admin.plans.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\PlanController::class, 'index'])->name('index');
+        Route::get('create', [App\Http\Controllers\Admin\PlanController::class, 'create'])->name('create');
+        Route::post('store', [App\Http\Controllers\Admin\PlanController::class, 'store'])->name('store');
+        Route::get('{plan}/edit', [App\Http\Controllers\Admin\PlanController::class, 'edit'])->name('edit');
+        Route::put('{plan}', [App\Http\Controllers\Admin\PlanController::class, 'update'])->name('update');
+    });
+
     Route::prefix('admin/roles')->name('admin.roles.')->group(function () {
         Route::get('list', [RoleController::class, 'index'])->name('index');
         Route::get('data', [RoleController::class, 'getRoles'])->name('data');
