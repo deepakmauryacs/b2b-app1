@@ -14,8 +14,11 @@ class BuyerSubscriptionController extends Controller
 {
     public function index()
     {
-        $subscriptions = BuyerSubscription::with('user')->latest()->paginate(10);
-        return view('admin.buyer_subscriptions.index', compact('subscriptions'));
+        $plans = Plan::where('status', 'active')
+            ->where('plan_for', 'buyer')
+            ->pluck('name');
+
+        return view('admin.buyer_subscriptions.index', compact('plans'));
     }
 
     public function create()
@@ -133,5 +136,38 @@ class BuyerSubscriptionController extends Controller
 
         return redirect()->route('admin.buyer-subscriptions.index')
             ->with('success', 'Subscription updated successfully!');
+    }
+
+    public function renderSubscriptionsTable(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $page    = $request->input('page', 1);
+
+        $query = BuyerSubscription::with('user')
+            ->when($request->buyer, function ($q, $name) {
+                $q->whereHas('user', function ($sub) use ($name) {
+                    $sub->where('name', 'like', "{$name}%");
+                });
+            })
+            ->when($request->plan, function ($q, $plan) {
+                $q->where('plan_name', $plan);
+            })
+            ->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
+                $q->where('status', $request->status);
+            })
+            ->latest();
+
+        $subscriptions = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return view('admin.buyer_subscriptions._subscriptions_table', compact('subscriptions'));
+    }
+
+    public function show($id)
+    {
+        $subscription = BuyerSubscription::with('user')->findOrFail($id);
+
+        $autoPrint = request()->routeIs('admin.buyer-subscriptions.print');
+
+        return view('admin.buyer_subscriptions.show', compact('subscription', 'autoPrint'));
     }
 }

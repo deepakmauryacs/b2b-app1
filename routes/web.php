@@ -94,10 +94,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('admin/buyer-subscriptions')->name('admin.buyer-subscriptions.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'index'])->name('index');
+        Route::get('render-table', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'renderSubscriptionsTable'])->name('render-table');
         Route::get('create', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'create'])->name('create');
         Route::post('store', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'store'])->name('store');
         Route::get('{id}/edit', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'edit'])->name('edit');
         Route::put('{id}', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'update'])->name('update');
+        Route::get('{id}', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'show'])->name('show');
+        Route::get('{id}/print', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'show'])->name('print');
     });
 
     Route::prefix('admin/plans')->name('admin.plans.')->group(function () {
