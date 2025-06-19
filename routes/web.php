@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\PendingProductController;
 use App\Http\Controllers\Admin\ApprovedProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RejectedProductController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Vendor\VendorDashboardController;
 use App\Http\Controllers\Vendor\VendorProfileController;
@@ -163,6 +164,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('rejected/render-table', [RejectedProductController::class, 'renderRejectedProductsTable'])->name('admin.rejected.products.render-table');
         Route::get('/rejected/{id}', [RejectedProductController::class, 'show'])->name('admin.products.rejected.show');
     Route::post('/rejected/{id}/restore', [RejectedProductController::class, 'restore'])->name('admin.products.rejected.restore');
+
+        // List all products with AJAX pagination similar to vendors
+        Route::get('/all', [ProductController::class, 'index'])->name('admin.products.all');
+        Route::get('/all/render-table', [ProductController::class, 'renderProductsTable'])->name('admin.products.all.render-table');
     });
 
     Route::get('/vendor/dashboard', [VendorDashboardController::class, 'index'])->name('vendor.dashboard');
