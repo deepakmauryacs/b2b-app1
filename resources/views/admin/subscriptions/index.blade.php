@@ -2,7 +2,7 @@
 @section('title', 'Vendor Subscriptions | Deal24hours')
 @section('content')
 <div class="row">
-    <div class="col-xl-12">
+    <div class="col-md-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center gap-1">
                 <h4 class="card-title flex-grow-1 mb-0">Vendor Subscriptions</h4>
@@ -38,13 +38,13 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('admin.vendor-subscriptions.show', $subscription->id) }}" class="btn btn-secondary btn-sm" title="View">
-                                        <i class="bi bi-eye"></i>
+                                        <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
                                     </a>
                                     <a href="{{ route('admin.vendor-subscriptions.print', $subscription->id) }}" class="btn btn-info btn-sm" title="Print" target="_blank">
-                                        <i class="bi bi-printer"></i>
+                                        <iconify-icon icon="solar:printer-broken" class="align-middle fs-18"></iconify-icon>
                                     </a>
                                     <a href="{{ route('admin.vendor-subscriptions.edit', $subscription->id) }}" class="btn btn-soft-primary btn-sm" title="Edit">
-                                        <i class="bi bi-pencil"></i>
+                                        <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
                                     </a>
                                 </td>
                             </tr>
