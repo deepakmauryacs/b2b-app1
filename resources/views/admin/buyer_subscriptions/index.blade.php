@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
-@section('title', 'Vendor Subscriptions | Deal24hours')
+@section('title', 'Buyer Subscriptions | Deal24hours')
 @section('content')
 <div class="row">
     <div class="col-xl-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                <h4 class="card-title flex-grow-1 mb-0">Vendor Subscriptions</h4>
-                <a href="{{ route('admin.vendor-subscriptions.create') }}" class="btn btn-primary btn-sm">
+                <h4 class="card-title flex-grow-1 mb-0">Buyer Subscriptions</h4>
+                <a href="{{ route('admin.buyer-subscriptions.create') }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-plus"></i> Add Subscription
                 </a>
             </div>
@@ -15,7 +15,7 @@
                     <thead class="bg-light-subtle">
                         <tr>
                             <th>#</th>
-                            <th>Vendor</th>
+                            <th>Buyer</th>
                             <th>Plan</th>
                             <th>Start</th>
                             <th>End</th>
@@ -37,7 +37,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.vendor-subscriptions.edit', $subscription->id) }}" class="btn btn-soft-primary btn-sm">
+                                    <a href="{{ route('admin.buyer-subscriptions.edit', $subscription->id) }}" class="btn btn-soft-primary btn-sm">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 </td>

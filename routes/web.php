@@ -89,6 +89,14 @@ Route::middleware(['auth'])->group(function () {
         Route::put('{id}', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'update'])->name('update');
     });
 
+    Route::prefix('admin/buyer-subscriptions')->name('admin.buyer-subscriptions.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'index'])->name('index');
+        Route::get('create', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'create'])->name('create');
+        Route::post('store', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'store'])->name('store');
+        Route::get('{id}/edit', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'edit'])->name('edit');
+        Route::put('{id}', [App\Http\Controllers\Admin\BuyerSubscriptionController::class, 'update'])->name('update');
+    });
+
     Route::prefix('admin/plans')->name('admin.plans.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\PlanController::class, 'index'])->name('index');
         Route::get('create', [App\Http\Controllers\Admin\PlanController::class, 'create'])->name('create');
@@ -120,6 +128,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('list', [BuyerController::class, 'index'])->name('index');
         Route::get('data', [BuyerController::class, 'getBuyers'])->name('data');
         Route::get('render-table', [BuyerController::class, 'renderBuyersTable'])->name('render-table');
+        Route::get('search', [BuyerController::class, 'search'])->name('search');
         Route::get('create', [BuyerController::class, 'create'])->name('create');
         Route::post('store', [BuyerController::class, 'store'])->name('store');
         Route::get('edit/{id}', [BuyerController::class, 'edit'])->name('edit');
