@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\ApprovedProductController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RejectedProductController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Vendor\VendorDashboardController;
 use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorSubscriptionController;
@@ -161,9 +162,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rejected/data', [RejectedProductController::class, 'getRejectedProducts'])->name('admin.products.rejected.data');
         Route::get('rejected/render-table', [RejectedProductController::class, 'renderRejectedProductsTable'])->name('admin.rejected.products.render-table');
         Route::get('/rejected/{id}', [RejectedProductController::class, 'show'])->name('admin.products.rejected.show');
-        Route::post('/rejected/{id}/restore', [RejectedProductController::class, 'restore'])->name('admin.products.rejected.restore');
+    Route::post('/rejected/{id}/restore', [RejectedProductController::class, 'restore'])->name('admin.products.rejected.restore');
     });
 
+    Route::get('/vendor/dashboard', [VendorDashboardController::class, 'index'])->name('vendor.dashboard');
     Route::get('/vendor/profile', [VendorProfileController::class, 'profile'])->name('vendor.profile.show');
     Route::post('profile/update', [VendorProfileController::class, 'update'])->name('vendor.profile.update');
 
