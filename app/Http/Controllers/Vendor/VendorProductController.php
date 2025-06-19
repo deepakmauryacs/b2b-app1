@@ -11,6 +11,7 @@ use Yajra\DataTables\DataTables;
 use Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class VendorProductController extends Controller
 {
@@ -45,6 +46,9 @@ class VendorProductController extends Controller
 
                 // Return the span with the appropriate classes
                 return '<span class="'. $class .'">'. ucfirst($product->status) .'</span>';
+            })
+            ->editColumn('created_at', function ($product) {
+                return Carbon::parse($product->created_at)->format('d-m-Y');
             })
 
             ->addColumn('action', function($product) {

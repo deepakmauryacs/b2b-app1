@@ -52,11 +52,12 @@
                               <thead class="bg-light-subtle">
                                    <tr>
                                         <th>#</th>
-						                <th>Name</th>
-						                <th>Price</th>
-						                <th>Qty</th>
-						                <th>Status</th>
-						                <th>Action</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Status</th>
+                                        <th>Created At</th>
+                                        <th>Action</th>
                                    </tr>
                               </thead>
                               <tbody>
@@ -89,6 +90,7 @@ $(function () {
             { data: 'price', name: 'price' },
             { data: 'stock_quantity', name: 'stock_quantity', orderable: false, searchable: false  },
             { data: 'status', name: 'status', orderable: false, searchable: false  },
+            { data: 'created_at', name: 'created_at' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ]
     });
