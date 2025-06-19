@@ -2,7 +2,7 @@
 @section('title', 'Dashboard | Deal24hours')
 @section('content')
 <div class="row">
-    <div class="col">
+    <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
@@ -29,11 +29,11 @@
                     </thead>
                     <tbody>
                         @foreach([
-                            ['id' => '#RB5625', 'date' => '29 April 2024', 'product' => 'product-1(1).png', 'customer' => 'Anna M. Hines', 'email' => 'anna.hines@mail.com', 'phone' => '(+1)-555-1564-261', 'address' => 'Burr Ridge/Illinois', 'payment' => 'Credit Card', 'status' => 'Completed', 'status_type' => 'success'],
-                            ['id' => '#RB9652', 'date' => '25 April 2024', 'product' => 'product-4.png', 'customer' => 'Judith H. Fritsche', 'email' => 'judith.fritsche.com', 'phone' => '(+57)-305-5579-759', 'address' => 'SULLIVAN/Kentucky', 'payment' => 'Credit Card', 'status' => 'Completed', 'status_type' => 'success'],
-                            ['id' => '#RB5984', 'date' => '25 April 2024', 'product' => 'product-5.png', 'customer' => 'Peter T. Smith', 'email' => 'peter.smith@mail.com', 'phone' => '(+33)-655-5187-93', 'address' => 'Yreka/California', 'payment' => 'Pay Pal', 'status' => 'Completed', 'status_type' => 'success'],
-                            ['id' => '#RB3625', 'date' => '21 April 2024', 'product' => 'product-6.png', 'customer' => 'Emmanuel J. Delcid', 'email' => 'emmanuel.delicid@mail.com', 'phone' => '(+30)-693-5553-637', 'address' => 'Atlanta/Georgia', 'payment' => 'Pay Pal', 'status' => 'Processing', 'status_type' => 'primary'],
-                            ['id' => '#RB8652', 'date' => '18 April 2024', 'product' => 'product-1(2).png', 'customer' => 'William J. Cook', 'email' => 'william.cook@mail.com', 'phone' => '(+91)-855-5446-150', 'address' => 'Rosenberg/Texas', 'payment' => 'Credit Card', 'status' => 'Processing', 'status_type' => 'primary']
+                            ['id' => '#RB5625', 'date' => '29-04-2024', 'product' => 'product-1(1).png', 'customer' => 'Anna M. Hines', 'email' => 'anna.hines@mail.com', 'phone' => '(+1)-555-1564-261', 'address' => 'Burr Ridge/Illinois', 'payment' => 'Credit Card', 'status' => 'Completed', 'status_type' => 'success'],
+                            ['id' => '#RB9652', 'date' => '25-04-2024', 'product' => 'product-4.png', 'customer' => 'Judith H. Fritsche', 'email' => 'judith.fritsche.com', 'phone' => '(+57)-305-5579-759', 'address' => 'SULLIVAN/Kentucky', 'payment' => 'Credit Card', 'status' => 'Completed', 'status_type' => 'success'],
+                            ['id' => '#RB5984', 'date' => '25-04-2024', 'product' => 'product-5.png', 'customer' => 'Peter T. Smith', 'email' => 'peter.smith@mail.com', 'phone' => '(+33)-655-5187-93', 'address' => 'Yreka/California', 'payment' => 'Pay Pal', 'status' => 'Completed', 'status_type' => 'success'],
+                            ['id' => '#RB3625', 'date' => '21-04-2024', 'product' => 'product-6.png', 'customer' => 'Emmanuel J. Delcid', 'email' => 'emmanuel.delicid@mail.com', 'phone' => '(+30)-693-5553-637', 'address' => 'Atlanta/Georgia', 'payment' => 'Pay Pal', 'status' => 'Processing', 'status_type' => 'primary'],
+                            ['id' => '#RB8652', 'date' => '18-04-2024', 'product' => 'product-1(2).png', 'customer' => 'William J. Cook', 'email' => 'william.cook@mail.com', 'phone' => '(+91)-855-5446-150', 'address' => 'Rosenberg/Texas', 'payment' => 'Credit Card', 'status' => 'Processing', 'status_type' => 'primary']
                         ] as $order)
                             <tr>
                                 <td class="ps-3"><a href="#">{{ $order['id'] }}</a></td>
