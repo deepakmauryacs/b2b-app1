@@ -61,4 +61,14 @@ class VendorSubscriptionController extends Controller
             'reload' => true,
         ]);
     }
+
+    public function invoice()
+    {
+        $subscription = auth()->user()->subscription;
+        if (!$subscription) {
+            abort(404);
+        }
+
+        return view('vendor.subscriptions.invoice', compact('subscription'));
+    }
 }

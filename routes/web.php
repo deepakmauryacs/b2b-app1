@@ -163,6 +163,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/vendor/subscription', [VendorSubscriptionController::class, 'index'])->name('vendor.subscription.index');
     Route::post('/vendor/subscription', [VendorSubscriptionController::class, 'store'])->name('vendor.subscription.store');
+    Route::get('/vendor/subscription/invoice', [VendorSubscriptionController::class, 'invoice'])->name('vendor.subscription.invoice');
 
     Route::prefix('vendor/products')->name('vendor.products.')->group(function () {
         Route::get('list', [VendorProductController::class, 'index'])->name('index');

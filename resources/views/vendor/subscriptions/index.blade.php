@@ -4,8 +4,13 @@
 <div class="row">
     <div class="col">
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Subscription</h4>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Subscription</h4>
+                @if(isset($subscription))
+                    <a href="{{ route('vendor.subscription.invoice') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-printer"></i> View Invoice
+                    </a>
+                @endif
             </div>
             <div class="card-body">
                 <form id="subscriptionForm" action="{{ route('vendor.subscription.store') }}" method="POST">
