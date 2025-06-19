@@ -36,7 +36,7 @@
 <!-- DataTables Bootstrap 5 integration CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
 <div class="row">
-     <div class="col-xl-12">
+     <div class="col-md-12">
           <div class="card">
                <div class="card-header d-flex justify-content-between align-items-center gap-1">
                     <h4 class="card-title flex-grow-1">All Product List</h4>
@@ -46,7 +46,36 @@
                     </a>
 
                </div>
-               <div>
+               <div class="card-body">
+                    <form id="filter-form" class="row g-2 align-items-end mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Product Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                <input type="text" id="product_name" class="form-control" placeholder="Product Name">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-check2-circle"></i></span>
+                                <select id="status" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <button type="button" id="search" class="btn btn-primary">
+                                <i class="bi bi-search"></i> SEARCH
+                            </button>
+                            <button type="button" id="reset" class="btn btn-outline-danger">
+                                <i class="bi bi-arrow-clockwise"></i> RESET
+                            </button>
+                        </div>
+                    </form>
                     <div class="table-responsive">
                          <table class="table align-middle mb-0 table-hover table-centered" id="data-table" style="width: 100%;">
                               <thead class="bg-light-subtle">
@@ -78,21 +107,58 @@
 <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
 $(function () {
-    $('#data-table').DataTable({
+    const table = $('#data-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ route('vendor.products.data') }}", // use double quotes here
-        searching: false,       // disable the search box
-        lengthChange: false,    // disable the page-length dropdown
+        ajax: {
+            url: "{{ route('vendor.products.data') }}",
+            data: function (d) {
+                d.product_name = $('#product_name').val();
+                d.status = $('#status').val();
+            }
+        },
+        searching: false,
+        lengthChange: false,
         columns: [
             { data: 'id', name: 'id' },
-            { data: 'product_name', name: 'product_name', orderable: false, searchable: false  },
+            { data: 'product_name', name: 'product_name', orderable: false, searchable: false },
             { data: 'price', name: 'price' },
-            { data: 'stock_quantity', name: 'stock_quantity', orderable: false, searchable: false  },
-            { data: 'status', name: 'status', orderable: false, searchable: false  },
+            { data: 'stock_quantity', name: 'stock_quantity', orderable: false, searchable: false },
+            { data: 'status', name: 'status', orderable: false, searchable: false },
             { data: 'created_at', name: 'created_at' },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ]
+    });
+
+    $('#search').on('click', function () {
+        table.ajax.reload();
+    });
+
+    $('#reset').on('click', function () {
+        $('#filter-form').trigger('reset');
+        table.ajax.reload();
+    });
+
+    $(document).on('click', '.delete-product', function () {
+        const id = $(this).data('id');
+        if (confirm('Are you sure you want to delete this product?')) {
+            $.ajax({
+                url: '{{ url('vendor/products/delete') }}/' + id,
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function (res) {
+                    if (res.status == 1) {
+                        toastr.success(res.message);
+                        table.ajax.reload();
+                    } else {
+                        toastr.error(res.message);
+                    }
+                },
+                error: function () {
+                    toastr.error('Failed to delete product.');
+                }
+            });
+        }
     });
 });
 </script>

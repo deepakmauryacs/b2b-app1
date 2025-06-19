@@ -181,6 +181,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('save', [VendorProductController::class, 'store'])->name('store');
         Route::get('{id}/edit', [VendorProductController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [VendorProductController::class, 'update'])->name('update');
+        Route::get('{id}', [VendorProductController::class, 'show'])->name('show');
+        Route::delete('delete/{id}', [VendorProductController::class, 'destroy'])->name('destroy');
     });
 });
 
