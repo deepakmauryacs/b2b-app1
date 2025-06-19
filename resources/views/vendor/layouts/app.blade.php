@@ -309,8 +309,12 @@
                         ['name' => 'Approved Products', 'route' => 'vendor.products.approved'],
                         ['name' => 'Pending Products', 'route' => 'vendor.products.pending'],
                         ['name' => 'Rejected Products', 'route' => 'vendor.products.rejected'],
+                    ]],
+                    ['title' => 'Help & Support', 'icon' => 'bi-question-circle', 'id' => 'sidebarHelpSupport', 'items' => [
+                        ['name' => 'Add Request', 'route' => 'vendor.help-support.create'],
+                        ['name' => 'Request List', 'route' => 'vendor.help-support.index'],
                     ]]
-                  
+
                 ] as $menu)
                     <li class="nav-item">
                         <a class="nav-link menu-arrow" href="#{{ $menu['id'] }}" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="{{ $menu['id'] }}">
