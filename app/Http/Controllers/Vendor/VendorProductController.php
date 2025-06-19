@@ -25,7 +25,17 @@ class VendorProductController extends Controller
     // Fetch products for DataTable
     public function getProducts(Request $request)
     {
-        $products = Product::where('vendor_id', Auth::id())->latest();
+        $query = Product::where('vendor_id', Auth::id());
+
+        if ($request->filled('product_name')) {
+            $query->where('product_name', 'like', '%' . $request->product_name . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $products = $query->latest();
 
         return DataTables::of($products)
             ->addIndexColumn()
@@ -51,16 +61,16 @@ class VendorProductController extends Controller
                 return Carbon::parse($product->created_at)->format('d-m-Y');
             })
 
-            ->addColumn('action', function($product) {
+            ->addColumn('action', function ($product) {
                 return '
-                    <a href="'.route('admin.products.pending.show', $product->id).'" class="btn btn-sm btn-soft-info">
-                        <i class="bi bi-eye"></i> View
+                    <a href="' . route('vendor.products.show', $product->id) . '" class="btn btn-sm btn-soft-info me-1 view-product">
+                        <i class="bi bi-eye"></i>
                     </a>
-                    <button class="btn btn-sm btn-soft-success approve-product" data-id="'.$product->id.'">
-                        <i class="bi bi-check-circle"></i> Approve
-                    </button>
-                    <button class="btn btn-sm btn-soft-danger reject-product" data-id="'.$product->id.'">
-                        <i class="bi bi-x-circle"></i> Reject
+                    <a href="' . route('vendor.products.edit', $product->id) . '" class="btn btn-sm btn-soft-warning me-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <button class="btn btn-sm btn-soft-danger delete-product" data-id="' . $product->id . '">
+                        <i class="bi bi-trash"></i>
                     </button>
                 ';
             })
@@ -271,4 +281,35 @@ class VendorProductController extends Controller
         }
     }
 
+    // Show product details
+    public function show($id)
+    {
+        $product = Product::where('id', $id)
+            ->where('vendor_id', Auth::id())
+            ->firstOrFail();
+
+        return view('vendor.products.show', compact('product'));
+    }
+
+    // Delete product
+    public function destroy($id)
+    {
+        $product = Product::where('id', $id)
+            ->where('vendor_id', Auth::id())
+            ->firstOrFail();
+
+        try {
+            $product->delete();
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Product deleted successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Failed to delete product: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
