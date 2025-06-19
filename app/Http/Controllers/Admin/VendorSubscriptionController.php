@@ -14,8 +14,35 @@ class VendorSubscriptionController extends Controller
 {
     public function index()
     {
-        $subscriptions = VendorSubscription::with('user')->latest()->paginate(10);
-        return view('admin.subscriptions.index', compact('subscriptions'));
+        $plans = Plan::where('status', 'active')
+            ->where('plan_for', 'vendor')
+            ->pluck('name');
+
+        return view('admin.subscriptions.index', compact('plans'));
+    }
+
+    public function renderSubscriptionsTable(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $page    = $request->input('page', 1);
+
+        $query = VendorSubscription::with('user')
+            ->when($request->vendor, function ($q, $name) {
+                $q->whereHas('user', function ($sub) use ($name) {
+                    $sub->where('name', 'like', "{$name}%");
+                });
+            })
+            ->when($request->plan, function ($q, $plan) {
+                $q->where('plan_name', $plan);
+            })
+            ->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
+                $q->where('status', $request->status);
+            })
+            ->latest();
+
+        $subscriptions = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return view('admin.subscriptions._subscriptions_table', compact('subscriptions'));
     }
 
     public function create()
