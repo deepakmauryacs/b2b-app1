@@ -188,6 +188,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{id}', [VendorProductController::class, 'show'])->name('show');
         Route::delete('delete/{id}', [VendorProductController::class, 'destroy'])->name('destroy');
     });
+
+    Route::prefix('vendor/help-support')->name('vendor.help-support.')->group(function () {
+        Route::get('list', [App\Http\Controllers\Vendor\VendorHelpSupportController::class, 'index'])->name('index');
+        Route::get('render-table', [App\Http\Controllers\Vendor\VendorHelpSupportController::class, 'renderHelpsTable'])->name('render-table');
+        Route::get('create', [App\Http\Controllers\Vendor\VendorHelpSupportController::class, 'create'])->name('create');
+        Route::post('store', [App\Http\Controllers\Vendor\VendorHelpSupportController::class, 'store'])->name('store');
+        Route::get('{id}', [App\Http\Controllers\Vendor\VendorHelpSupportController::class, 'show'])->name('show');
+    });
 });
 
 Route::get('/buyer/dashboard', function () {
