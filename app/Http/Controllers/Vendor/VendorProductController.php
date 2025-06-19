@@ -78,6 +78,26 @@ class VendorProductController extends Controller
             ->make(true);
     }
 
+    // Render paginated products table for AJAX requests
+    public function renderProductsTable(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+
+        $productsQuery = Product::where('vendor_id', Auth::id());
+
+        if ($request->filled('product_name')) {
+            $productsQuery->where('product_name', 'like', '%' . $request->product_name . '%');
+        }
+
+        if ($request->filled('status')) {
+            $productsQuery->where('status', $request->status);
+        }
+
+        $products = $productsQuery->orderBy('created_at', 'desc')->paginate($perPage);
+
+        return view('vendor.products._products_table', compact('products'));
+    }
+
     // Show create product form
     public function create()
     {

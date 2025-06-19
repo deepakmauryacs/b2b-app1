@@ -176,6 +176,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('vendor/products')->name('vendor.products.')->group(function () {
         Route::get('list', [VendorProductController::class, 'index'])->name('index');
         Route::get('data', [VendorProductController::class, 'getProducts'])->name('data');
+        Route::get('render-table', [VendorProductController::class, 'renderProductsTable'])->name('render-table');
         Route::get('create', [VendorProductController::class, 'create'])->name('create');
         Route::get('get-subcategories/{parentId}', [VendorProductController::class, 'getSubcategories'])->name('get-subcategories');
         Route::post('save', [VendorProductController::class, 'store'])->name('store');
