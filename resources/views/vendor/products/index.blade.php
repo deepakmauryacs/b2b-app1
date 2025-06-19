@@ -1,40 +1,14 @@
 @extends('vendor.layouts.app')
 @section('title', 'Vendor Profile | Deal24hours')
 @section('content')
-{{-- Your custom pagination CSS --}}
-    <style>
-    .dataTables_wrapper .dataTables_paginate .pagination {
-        justify-content: center;
-        margin-top: 1rem;
+@push('styles')
+<style>
+    /* Minimal table styles */
+    #products-table tfoot ul.pagination {
+        justify-content: flex-end;
     }
-    .dataTables_wrapper .dataTables_paginate .page-item .page-link {
-        color: #6c757d;
-        background: transparent;
-        border: none;
-        padding: 0.375rem 0.75rem;
-        margin: 0 0.125rem;
-        border-radius: 0.25rem;
-    }
-    .dataTables_wrapper .dataTables_paginate .page-item .page-link:hover {
-        background-color: #e9ecef;
-        color: #000;
-    }
-    .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
-        background-color: #ff6c2f !important;
-        color: #fff !important;
-        border: none;
-    }
-    .dataTables_wrapper .dataTables_paginate .page-item.disabled .page-link {
-        color: #6c757d;
-        pointer-events: none;
-        background: transparent;
-    }
-    .dataTables_wrapper {
-    	padding: 20px !important;
-    }
-    </style>
-<!-- DataTables Bootstrap 5 integration CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+</style>
+@endpush
 <div class="row">
      <div class="col-md-12">
           <div class="card">
@@ -77,7 +51,7 @@
                         </div>
                     </form>
                     <div class="table-responsive">
-                         <table class="table align-middle mb-0 table-hover table-centered" id="data-table" style="width: 100%;">
+                         <table class="table align-middle mb-0 table-hover table-centered" id="products-table" style="width: 100%;">
                               <thead class="bg-light-subtle">
                                    <tr>
                                         <th>#</th>
@@ -89,11 +63,17 @@
                                         <th>Action</th>
                                    </tr>
                               </thead>
-                              <tbody>
-                                  
-
-
+                              {{-- Table body and pagination will be loaded via AJAX --}}
+                              <tbody id="products-table-body-content">
+                                  <tr>
+                                      <td colspan="7" class="text-center">Loading Products...</td>
+                                  </tr>
                               </tbody>
+                              <tfoot id="products-table-foot-content">
+                                  <tr>
+                                      <td colspan="7" class="text-center"></td>
+                                  </tr>
+                              </tfoot>
                          </table>
                     </div>
                     <!-- end table-responsive -->
@@ -103,58 +83,91 @@
      </div>
 </div>
 
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
-$(function () {
-    const table = $('#data-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "{{ route('vendor.products.data') }}",
-            data: function (d) {
-                d.product_name = $('#product_name').val();
-                d.status = $('#status').val();
+$(document).ready(function() {
+    fetchProductsData(1);
+
+    var currentAjaxRequest = null;
+
+    function fetchProductsData(page = 1, perPage = null) {
+        if (currentAjaxRequest && currentAjaxRequest.readyState !== 4) {
+            currentAjaxRequest.abort();
+        }
+
+        $('#products-table-body-content').html(
+            '<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>'
+        );
+        $('#products-table-foot-content').empty();
+
+        const filters = {
+            product_name: $('#product_name').val(),
+            status: $('#status').val(),
+        };
+        perPage = perPage || $('#perPage').val() || 10;
+
+        currentAjaxRequest = $.ajax({
+            url: "{{ route('vendor.products.render-table') }}",
+            method: 'GET',
+            data: {
+                page: page,
+                per_page: perPage,
+                ...filters
+            },
+            success: function(response) {
+                const $responseHtml = $(response);
+                $('#products-table-body-content').html($responseHtml.filter('tbody').html());
+                $('#products-table-foot-content').html($responseHtml.filter('tfoot').html());
+            },
+            error: function(xhr) {
+                if (xhr.statusText === 'abort') {
+                    return;
+                }
+                $('#products-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading products.</td></tr>');
+            },
+            complete: function() {
+                currentAjaxRequest = null;
             }
-        },
-        searching: false,
-        lengthChange: false,
-        columns: [
-            { data: 'id', name: 'id' },
-            { data: 'product_name', name: 'product_name', orderable: false, searchable: false },
-            { data: 'price', name: 'price' },
-            { data: 'stock_quantity', name: 'stock_quantity', orderable: false, searchable: false },
-            { data: 'status', name: 'status', orderable: false, searchable: false },
-            { data: 'created_at', name: 'created_at' },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
-        ]
+        });
+    }
+
+    $('#search').on('click', function() {
+        fetchProductsData(1);
     });
 
-    $('#search').on('click', function () {
-        table.ajax.reload();
-    });
-
-    $('#reset').on('click', function () {
+    $('#reset').on('click', function() {
         $('#filter-form').trigger('reset');
-        table.ajax.reload();
+        fetchProductsData(1);
     });
 
-    $(document).on('click', '.delete-product', function () {
+    $(document).on('click', '#products-table-foot-content a.page-link', function(e) {
+        e.preventDefault();
+        const url = $(this).attr('href');
+        const page = new URL(url).searchParams.get('page');
+        if (page) {
+            fetchProductsData(page);
+        }
+    });
+
+    $(document).on('change', '#perPage', function() {
+        fetchProductsData(1, $(this).val());
+    });
+
+    $(document).on('click', '.delete-product', function() {
         const id = $(this).data('id');
         if (confirm('Are you sure you want to delete this product?')) {
             $.ajax({
                 url: '{{ url('vendor/products/delete') }}/' + id,
                 type: 'DELETE',
                 data: { _token: '{{ csrf_token() }}' },
-                success: function (res) {
+                success: function(res) {
                     if (res.status == 1) {
                         toastr.success(res.message);
-                        table.ajax.reload();
+                        fetchProductsData(1);
                     } else {
                         toastr.error(res.message);
                     }
                 },
-                error: function () {
+                error: function() {
                     toastr.error('Failed to delete product.');
                 }
             });
