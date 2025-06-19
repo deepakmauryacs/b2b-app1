@@ -36,7 +36,7 @@
                         </tr>
                         <tr>
                             <th style="width:30%;">Date/Time</th>
-                            <td>{{ $activity->created_at->format('d M Y H:i:s') }}</td>
+                            <td>{{ $activity->created_at->format('d-m-Y H:i:s') }}</td>
                         </tr>
                     </table>
                 </div>

@@ -89,9 +89,9 @@
                         <div class="col-md-4">
                             <label class="form-label">Date Range</label>
                             <div class="input-group">
-                                <input type="date" id="date_from" class="form-control">
+                                <input type="text" id="date_from" class="form-control" placeholder="dd-mm-yyyy">
                                 <span class="input-group-text">to</span>
-                                <input type="date" id="date_to" class="form-control">
+                                <input type="text" id="date_to" class="form-control" placeholder="dd-mm-yyyy">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -132,6 +132,8 @@
 <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
 $(function () {
+    flatpickr('#date_from', {dateFormat: 'd-m-Y'});
+    flatpickr('#date_to', {dateFormat: 'd-m-Y'});
     const table = $('#activities-table').DataTable({
         processing: true,
         serverSide: true,

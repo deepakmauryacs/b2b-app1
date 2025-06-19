@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Carbon\Carbon;
 
 class ActivityLogController extends Controller
 {
@@ -18,10 +19,12 @@ class ActivityLogController extends Controller
                 return $query->where('subject_type', $type);
             })
             ->when($request->date_from, function($query, $date) {
-                return $query->whereDate('created_at', '>=', $date);
+                $from = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+                return $query->whereDate('created_at', '>=', $from);
             })
             ->when($request->date_to, function($query, $date) {
-                return $query->whereDate('created_at', '<=', $date);
+                $to = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+                return $query->whereDate('created_at', '<=', $to);
             })
             ->latest()
             ->paginate(20);
@@ -46,10 +49,12 @@ class ActivityLogController extends Controller
                 return $query->where('subject_type', $type);
             })
             ->when($request->date_from, function($query, $date) {
-                return $query->whereDate('created_at', '>=', $date);
+                $from = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+                return $query->whereDate('created_at', '>=', $from);
             })
             ->when($request->date_to, function($query, $date) {
-                return $query->whereDate('created_at', '<=', $date);
+                $to = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+                return $query->whereDate('created_at', '<=', $to);
             })
             ->orderBy('created_at', 'desc');
 
@@ -65,7 +70,7 @@ class ActivityLogController extends Controller
                 return $log->subject ? class_basename($log->subject).' #'.$log->subject->id : '';
             })
             ->editColumn('created_at', function($log) {
-                return $log->created_at->format('d M Y h:i A');
+                return $log->created_at->format('d-m-Y h:i A');
             })
             ->addColumn('action', function($log) {
                 return '<a href="'.route('admin.activity-logs.show', $log->id).'" class="btn btn-soft-primary btn-sm">
