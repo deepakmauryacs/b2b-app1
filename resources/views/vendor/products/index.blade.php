@@ -86,8 +86,8 @@
 <script>
 $(document).ready(function() {
     var defaultStatus = "{{ $statusDefault ?? '' }}";
-    if(defaultStatus){
-        $('#status').val(defaultStatus);
+    if (defaultStatus) {
+        $('#status').val(defaultStatus).prop('disabled', true);
     }
 
     fetchProductsData(1);
@@ -141,6 +141,9 @@ $(document).ready(function() {
 
     $('#reset').on('click', function() {
         $('#filter-form').trigger('reset');
+        if (defaultStatus) {
+            $('#status').val(defaultStatus).prop('disabled', true);
+        }
         fetchProductsData(1);
     });
 
