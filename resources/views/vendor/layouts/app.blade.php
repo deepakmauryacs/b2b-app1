@@ -296,6 +296,12 @@
         <div class="scrollbar" data-simplebar>
             <ul class="navbar-nav" id="navbar-nav">
                 <li class="menu-title">General</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('vendor.dashboard') }}">
+                        <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+                        <span class="nav-text"> Dashboard </span>
+                    </a>
+                </li>
                 @foreach([
                     ['title' => 'Products', 'icon' => 'bi-box-seam', 'id' => 'sidebarProducts', 'items' => [
                         
