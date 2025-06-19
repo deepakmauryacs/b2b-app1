@@ -407,20 +407,23 @@
                         </a>
                     </li>
 
-                    <!-- Vendor Subscriptions (single item) -->
+                    <!-- Subscriptions Menu (with sub-menu) -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.vendor-subscriptions.index') }}">
+                        <a class="nav-link menu-arrow" href="#sidebarSubscriptions" data-bs-toggle="collapse"
+                            role="button" aria-expanded="false" aria-controls="sidebarSubscriptions">
                             <span class="nav-icon"><i class="bi bi-card-checklist"></i></span>
-                            <span class="nav-text"> Vendor Subscriptions </span>
+                            <span class="nav-text"> Subscriptions </span>
                         </a>
-                    </li>
-
-                    <!-- Buyer Subscriptions (single item) -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.buyer-subscriptions.index') }}">
-                            <span class="nav-icon"><i class="bi bi-card-checklist"></i></span>
-                            <span class="nav-text"> Buyer Subscriptions </span>
-                        </a>
+                        <div class="collapse" id="sidebarSubscriptions">
+                            <ul class="nav sub-navbar-nav">
+                                <li class="sub-nav-item">
+                                    <a class="sub-nav-link" href="{{ route('admin.vendor-subscriptions.index') }}">Vendor Subscriptions</a>
+                                </li>
+                                <li class="sub-nav-item">
+                                    <a class="sub-nav-link" href="{{ route('admin.buyer-subscriptions.index') }}">Buyer Subscriptions</a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <!-- Plans Menu (single item) -->
