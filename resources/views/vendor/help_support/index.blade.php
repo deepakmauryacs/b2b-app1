@@ -67,8 +67,8 @@
 </div>
 <script>
 $(function(){
-    fetchHelps(1);
     let currentAjax = null;
+    fetchHelps(1);
 
     function fetchHelps(page = 1, perPage = null){
         if(currentAjax && currentAjax.readyState !== 4){
