@@ -296,12 +296,6 @@
         <div class="scrollbar" data-simplebar>
             <ul class="navbar-nav" id="navbar-nav">
                 <li class="menu-title">General</li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <span class="nav-icon"><i class="bi bi-grid"></i></span>
-                        <span class="nav-text"> Dashboard </span>
-                    </a>
-                </li>
                 @foreach([
                     ['title' => 'Products', 'icon' => 'bi-box-seam', 'id' => 'sidebarProducts', 'items' => [
                         
@@ -309,27 +303,7 @@
                         ['name' => ' Product List', 'route' => 'vendor.products.index']
                     
                         
-                    ]],
-                    ['title' => 'Category', 'icon' => 'bi-clipboard-check', 'id' => 'sidebarCategory', 'items' => [
-                        ['name' => 'List', 'route' => 'vendor.products.index'],
-                        ['name' => 'Edit', 'route' => 'vendor.products.index'],
-                        ['name' => 'Create', 'route' => 'vendor.products.index']
-                    ]],
-                    ['title' => 'Inventory', 'icon' => 'bi-box-seam', 'id' => 'sidebarInventory', 'items' => [
-                        ['name' => 'Warehouse', 'route' => 'vendor.products.index'],
-                        ['name' => 'Received Orders', 'route' => 'vendor.products.index']
-                    ]],
-                    ['title' => 'Orders', 'icon' => 'bi-bag-check', 'id' => 'sidebarOrders', 'items' => [
-                        ['name' => 'List', 'route' => 'vendor.products.index'],
-                        ['name' => 'Details', 'route' => 'vendor.products.index'],
-                        ['name' => 'Cart', 'route' => 'vendor.products.index'],
-                        ['name' => 'Check Out', 'route' => 'vendor.products.index']
-                    ]],
-                    ['title' => 'Purchases', 'icon' => 'bi-credit-card', 'id' => 'sidebarPurchases', 'items' => [
-                        ['name' => 'List', 'route' => 'vendor.products.index'],
-                        ['name' => 'Order', 'route' => 'vendor.products.index'],
-                        ['name' => 'Return', 'route' => 'vendor.products.index']
-                    ]],
+                    ]]
                   
                 ] as $menu)
                     <li class="nav-item">
@@ -352,12 +326,6 @@
                         </div>
                     </li>
                 @endforeach
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <span class="nav-icon"><i class="bi bi-gear"></i></span>
-                        <span class="nav-text"> Settings </span>
-                    </a>
-                </li>
                 
                 <!-- Additional sidebar items can be added similarly -->
             </ul>
