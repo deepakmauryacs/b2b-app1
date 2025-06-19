@@ -87,6 +87,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('store', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'store'])->name('store');
         Route::get('{id}/edit', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'edit'])->name('edit');
         Route::put('{id}', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'update'])->name('update');
+        Route::get('{id}', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'show'])->name('show');
+        Route::get('{id}/print', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'show'])->name('print');
     });
 
     Route::prefix('admin/buyer-subscriptions')->name('admin.buyer-subscriptions.')->group(function () {

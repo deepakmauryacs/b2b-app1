@@ -137,4 +137,13 @@ class VendorSubscriptionController extends Controller
         return redirect()->route('admin.vendor-subscriptions.index')
             ->with('success', 'Subscription updated successfully!');
     }
+
+    public function show($id)
+    {
+        $subscription = VendorSubscription::with('user')->findOrFail($id);
+
+        $autoPrint = request()->routeIs('admin.vendor-subscriptions.print');
+
+        return view('admin.subscriptions.show', compact('subscription', 'autoPrint'));
+    }
 }

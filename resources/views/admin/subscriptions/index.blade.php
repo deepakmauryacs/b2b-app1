@@ -37,7 +37,13 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.vendor-subscriptions.edit', $subscription->id) }}" class="btn btn-soft-primary btn-sm">
+                                    <a href="{{ route('admin.vendor-subscriptions.show', $subscription->id) }}" class="btn btn-secondary btn-sm" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.vendor-subscriptions.print', $subscription->id) }}" class="btn btn-info btn-sm" title="Print" target="_blank">
+                                        <i class="bi bi-printer"></i>
+                                    </a>
+                                    <a href="{{ route('admin.vendor-subscriptions.edit', $subscription->id) }}" class="btn btn-soft-primary btn-sm" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 </td>
