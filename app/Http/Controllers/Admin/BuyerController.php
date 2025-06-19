@@ -98,6 +98,20 @@ class BuyerController extends Controller
         return view('admin.buyers._buyers_table', compact('buyers'));
     }
 
+    /**
+     * Search buyers for select2 dropdown.
+     */
+    public function search(Request $request)
+    {
+        $search = $request->get('q');
+        $buyers = User::where('role', 'buyer')
+            ->where('name', 'like', '%' . $search . '%')
+            ->limit(20)
+            ->get(['id', 'name']);
+
+        return response()->json($buyers);
+    }
+
     // Show create buyer form
     public function create()
     {
