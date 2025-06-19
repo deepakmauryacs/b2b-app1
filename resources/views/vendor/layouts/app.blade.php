@@ -304,11 +304,11 @@
                 </li>
                 @foreach([
                     ['title' => 'Products', 'icon' => 'bi-box-seam', 'id' => 'sidebarProducts', 'items' => [
-                        
                         ['name' => 'Add Product ', 'route' => 'vendor.products.create'],
-                        ['name' => ' Product List', 'route' => 'vendor.products.index']
-                    
-                        
+                        ['name' => 'Product List', 'route' => 'vendor.products.index'],
+                        ['name' => 'Approved Products', 'route' => 'vendor.products.approved'],
+                        ['name' => 'Pending Products', 'route' => 'vendor.products.pending'],
+                        ['name' => 'Rejected Products', 'route' => 'vendor.products.rejected'],
                     ]]
                   
                 ] as $menu)

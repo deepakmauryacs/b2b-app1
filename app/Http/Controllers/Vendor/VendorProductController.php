@@ -19,7 +19,36 @@ class VendorProductController extends Controller
     // Show vendor's all products
     public function index()
     {
-        return view('vendor.products.index');
+        return view('vendor.products.index', [
+            'pageTitle' => 'All Product List'
+        ]);
+    }
+
+    // Show approved products list
+    public function approved()
+    {
+        return view('vendor.products.index', [
+            'statusDefault' => 'approved',
+            'pageTitle' => 'Approved Products'
+        ]);
+    }
+
+    // Show pending products list
+    public function pending()
+    {
+        return view('vendor.products.index', [
+            'statusDefault' => 'pending',
+            'pageTitle' => 'Pending Products'
+        ]);
+    }
+
+    // Show rejected products list
+    public function rejected()
+    {
+        return view('vendor.products.index', [
+            'statusDefault' => 'rejected',
+            'pageTitle' => 'Rejected Products'
+        ]);
     }
 
     // Fetch products for DataTable

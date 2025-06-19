@@ -1,5 +1,5 @@
 @extends('vendor.layouts.app')
-@section('title', 'Vendor Profile | Deal24hours')
+@section('title', ($pageTitle ?? 'Product List') . ' | Deal24hours')
 @section('content')
 @push('styles')
 <style>
@@ -13,7 +13,7 @@
      <div class="col-md-12">
           <div class="card">
                <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                    <h4 class="card-title flex-grow-1">All Product List</h4>
+                    <h4 class="card-title flex-grow-1">{{ $pageTitle ?? 'All Product List' }}</h4>
 
                     <a href="{{ route('vendor.products.create') }}" class="btn btn-sm btn-primary">
                          <i class="bi bi-plus-lg" style="font-size: 16px;"></i> Add Product
@@ -85,6 +85,11 @@
 
 <script>
 $(document).ready(function() {
+    var defaultStatus = "{{ $statusDefault ?? '' }}";
+    if(defaultStatus){
+        $('#status').val(defaultStatus);
+    }
+
     fetchProductsData(1);
 
     var currentAjaxRequest = null;

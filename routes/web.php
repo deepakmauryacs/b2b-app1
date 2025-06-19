@@ -175,6 +175,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('vendor/products')->name('vendor.products.')->group(function () {
         Route::get('list', [VendorProductController::class, 'index'])->name('index');
+        Route::get('approved', [VendorProductController::class, 'approved'])->name('approved');
+        Route::get('pending', [VendorProductController::class, 'pending'])->name('pending');
+        Route::get('rejected', [VendorProductController::class, 'rejected'])->name('rejected');
         Route::get('data', [VendorProductController::class, 'getProducts'])->name('data');
         Route::get('render-table', [VendorProductController::class, 'renderProductsTable'])->name('render-table');
         Route::get('create', [VendorProductController::class, 'create'])->name('create');
