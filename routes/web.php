@@ -83,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('admin/vendor-subscriptions')->name('admin.vendor-subscriptions.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'index'])->name('index');
+        Route::get('render-table', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'renderSubscriptionsTable'])->name('render-table');
         Route::get('create', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'create'])->name('create');
         Route::post('store', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'store'])->name('store');
         Route::get('{id}/edit', [App\Http\Controllers\Admin\VendorSubscriptionController::class, 'edit'])->name('edit');
