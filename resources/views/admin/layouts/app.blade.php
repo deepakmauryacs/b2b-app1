@@ -407,6 +407,14 @@
                         </a>
                     </li>
 
+                    <!-- Buyers Menu (single item) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.buyers.index') }}">
+                            <span class="nav-icon"><i class="bi bi-people"></i></span>
+                            <span class="nav-text"> Buyers </span>
+                        </a>
+                    </li>
+
                     <!-- Subscriptions Menu (with sub-menu) -->
                     <li class="nav-item">
                         <a class="nav-link menu-arrow" href="#sidebarSubscriptions" data-bs-toggle="collapse"
@@ -431,14 +439,6 @@
                         <a class="nav-link" href="{{ route('admin.plans.index') }}">
                             <span class="nav-icon"><i class="bi bi-card-list"></i></span>
                             <span class="nav-text"> Plans </span>
-                        </a>
-                    </li>
-
-                    <!-- Buyers Menu (single item) -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.buyers.index') }}">
-                            <span class="nav-icon"><i class="bi bi-people"></i></span>
-                            <span class="nav-text"> Buyers </span>
                         </a>
                     </li>
 

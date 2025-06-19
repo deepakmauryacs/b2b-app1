@@ -48,7 +48,7 @@
                         {{ $vendor->is_profile_verified == 1 ? 'checked' : '' }}>
                 </div>
             </td>
-            <td>{{ \Carbon\Carbon::parse($vendor->created_at)->format('d M Y') }}</td>
+            <td>{{ \Carbon\Carbon::parse($vendor->created_at)->format('d-m-Y') }}</td>
             <td>
                 <div class="d-flex gap-2">
                     <a href="{{ route('admin.vendors.show', $vendor->id) }}" class="btn btn-sm btn-soft-info"

@@ -36,7 +36,7 @@
                     <input type="checkbox" class="form-check-input profile-verified-toggle" data-id="{{ $buyer->id }}" {{ $buyer->is_profile_verified == 1 ? 'checked' : '' }}>
                 </div>
             </td>
-            <td>{{ \Carbon\Carbon::parse($buyer->created_at)->format('d M Y') }}</td>
+            <td>{{ \Carbon\Carbon::parse($buyer->created_at)->format('d-m-Y') }}</td>
             <td>
                 <div class="d-flex gap-2">
                     <a href="{{ route('admin.buyers.show', $buyer->id) }}" class="btn btn-sm btn-soft-info" title="View">
