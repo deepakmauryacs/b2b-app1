@@ -375,6 +375,13 @@
                             <ul class="nav sub-navbar-nav">
 
                                 <li class="sub-nav-item">
+                                    <a class="sub-nav-link" href="{{ route('admin.products.all') }}">
+                                        <span class="nav-text"> Products</span>&nbsp;&nbsp;
+                                        <span class="badge bg-secondary-subtle text-secondary py-1 px-2">All</span>
+                                    </a>
+                                </li>
+
+                                <li class="sub-nav-item">
                                     <a class="sub-nav-link" href="{{ route('admin.products.approved') }}">
                                         <span class="nav-text"> Products</span>&nbsp;&nbsp;
                                         <span class="badge bg-success-subtle text-success py-1 px-2">Approved</span>
