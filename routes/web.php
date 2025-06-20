@@ -196,6 +196,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('store', [App\Http\Controllers\Vendor\VendorHelpSupportController::class, 'store'])->name('store');
         Route::get('{id}', [App\Http\Controllers\Vendor\VendorHelpSupportController::class, 'show'])->name('show');
     });
+
+    Route::prefix('vendor/inventory')->name('vendor.inventory.')->group(function () {
+        Route::get('list', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'index'])->name('index');
+        Route::get('render-table', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'renderInventoryTable'])->name('render-table');
+        Route::post('update/{id}', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'updateStock'])->name('update');
+    });
 });
 
 Route::get('/buyer/dashboard', function () {
