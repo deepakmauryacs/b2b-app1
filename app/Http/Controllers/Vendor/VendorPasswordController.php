@@ -18,8 +18,8 @@ class VendorPasswordController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed',
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         if ($validator->fails()) {
@@ -30,13 +30,6 @@ class VendorPasswordController extends Controller
         }
 
         $user = Auth::user();
-        if (!Hash::check($request->current_password, $user->password)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Current password does not match.',
-            ], 422);
-        }
-
         $user->password = Hash::make($request->password);
         $user->save();
 
