@@ -26,9 +26,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5" class="text-center">
-                    <x-custom-pagination :paginator="$logs" />
-                </td>
+                <x-custom-pagination :paginator="$logs" />
             </tr>
         </tfoot>
     </table>
