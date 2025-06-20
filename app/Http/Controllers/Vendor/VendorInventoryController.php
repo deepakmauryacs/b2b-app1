@@ -48,7 +48,8 @@ class VendorInventoryController extends Controller
         $product = Product::where('id', $id)->where('vendor_id', Auth::id())->firstOrFail();
 
         $validator = Validator::make($request->all(), [
-            'stock_quantity' => 'required|integer|min:0'
+            'in_stock'  => 'nullable|integer|min:0',
+            'out_stock' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -58,8 +59,27 @@ class VendorInventoryController extends Controller
             ], 422);
         }
 
+        $in  = (int) $request->input('in_stock', 0);
+        $out = (int) $request->input('out_stock', 0);
+
+        if($in === 0 && $out === 0){
+            return response()->json([
+                'status' => 0,
+                'message' => 'Please provide quantity to add or remove.'
+            ], 422);
+        }
+
         $oldQty = $product->stock_quantity;
-        $product->stock_quantity = $request->stock_quantity;
+        $newQty = $oldQty + $in - $out;
+
+        if($newQty < 0){
+            return response()->json([
+                'status' => 0,
+                'message' => 'Resulting stock cannot be negative.'
+            ], 422);
+        }
+
+        $product->stock_quantity = $newQty;
         $product->save();
 
         StockLog::create([

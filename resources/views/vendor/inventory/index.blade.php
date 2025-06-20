@@ -127,18 +127,43 @@ $(document).ready(function(){
     });
 
     $(document).on('click','.update-stock',function(){
-        const id=$(this).data('id');
-        const qty=$(this).closest('tr').find('.stock-input').val();
-        if(!/^\d+$/.test(qty)){
-            toastr.error('Please enter a valid stock quantity.');
+        const id = $(this).data('id');
+        const $row = $(this).closest('tr');
+        const inQty = $row.find('.stock-input-in').val();
+        const outQty = $row.find('.stock-input-out').val();
+
+        if(!/^\d*$/.test(inQty) || !/^\d*$/.test(outQty)){
+            toastr.error('Please enter valid quantities.');
             return;
         }
+
+        const inVal = parseInt(inQty) || 0;
+        const outVal = parseInt(outQty) || 0;
+
+        if(inVal === 0 && outVal === 0){
+            toastr.error('Please enter a quantity to add or remove.');
+            return;
+        }
+
         $.ajax({
             url: '{{ url('vendor/inventory/update') }}/'+id,
             type:'POST',
-            data:{ _token:'{{ csrf_token() }}', stock_quantity: qty },
-            success:function(res){ if(res.status==1){ toastr.success(res.message); fetchInventoryData(1); } else { toastr.error(res.message); } },
-            error:function(xhr){ if(xhr.responseJSON && xhr.responseJSON.message){ toastr.error(xhr.responseJSON.message); } else { toastr.error('Error updating stock.'); } }
+            data:{ _token:'{{ csrf_token() }}', in_stock: inVal, out_stock: outVal },
+            success:function(res){
+                if(res.status==1){
+                    toastr.success(res.message);
+                    fetchInventoryData(1);
+                } else {
+                    toastr.error(res.message);
+                }
+            },
+            error:function(xhr){
+                if(xhr.responseJSON && xhr.responseJSON.message){
+                    toastr.error(xhr.responseJSON.message);
+                } else {
+                    toastr.error('Error updating stock.');
+                }
+            }
         });
     });
 

@@ -1,14 +1,11 @@
 <tbody>
 @forelse($products as $product)
-@php
-    $diff = $product->latestStockLog ? $product->latestStockLog->new_quantity - $product->latestStockLog->old_quantity : 0;
-@endphp
 <tr>
     <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}</td>
     <td>{{ $product->product_name }}</td>
-    <td><input type="number" class="form-control form-control-sm stock-input" value="{{ $product->stock_quantity }}" min="0"></td>
-    <td>{{ $diff > 0 ? $diff : '-' }}</td>
-    <td>{{ $diff < 0 ? abs($diff) : '-' }}</td>
+    <td>{{ $product->stock_quantity }}</td>
+    <td><input type="number" class="form-control form-control-sm stock-input-in" value="0" min="0"></td>
+    <td><input type="number" class="form-control form-control-sm stock-input-out" value="0" min="0"></td>
     <td>{{ \Carbon\Carbon::parse($product->updated_at)->format('d-m-Y') }}</td>
     <td>
         <button class="btn btn-sm btn-primary update-stock" data-id="{{ $product->id }}"><i class="bi bi-save"></i> Update</button>
