@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\StockLog;
 use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -56,12 +57,33 @@ class VendorInventoryController extends Controller
             ], 422);
         }
 
+        $oldQty = $product->stock_quantity;
         $product->stock_quantity = $request->stock_quantity;
         $product->save();
+
+        StockLog::create([
+            'product_id'   => $product->id,
+            'user_id'      => Auth::id(),
+            'old_quantity' => $oldQty,
+            'new_quantity' => $product->stock_quantity,
+        ]);
 
         return response()->json([
             'status' => 1,
             'message' => 'Stock updated successfully.'
         ]);
+    }
+
+    /**
+     * Fetch stock logs for a product via AJAX
+     */
+    public function stockLogs(Request $request, $id)
+    {
+        $logs = StockLog::with('user')
+            ->where('product_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('vendor.inventory._stock_logs', compact('logs'));
     }
 }
