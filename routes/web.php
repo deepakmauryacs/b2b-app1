@@ -20,6 +20,7 @@ use App\Http\Controllers\Vendor\VendorDashboardController;
 use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorSubscriptionController;
+use App\Http\Controllers\Vendor\VendorPasswordController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('optimize:clear');
@@ -168,6 +169,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/vendor/dashboard', [VendorDashboardController::class, 'index'])->name('vendor.dashboard');
     Route::get('/vendor/profile', [VendorProfileController::class, 'profile'])->name('vendor.profile.show');
     Route::post('profile/update', [VendorProfileController::class, 'update'])->name('vendor.profile.update');
+    Route::get('/vendor/change-password', [\App\Http\Controllers\Vendor\VendorPasswordController::class, 'edit'])->name('vendor.password.edit');
+    Route::post('/vendor/change-password', [\App\Http\Controllers\Vendor\VendorPasswordController::class, 'update'])->name('vendor.password.update');
 
     Route::get('/vendor/subscription', [VendorSubscriptionController::class, 'index'])->name('vendor.subscription.index');
     Route::post('/vendor/subscription', [VendorSubscriptionController::class, 'store'])->name('vendor.subscription.store');

@@ -313,6 +313,10 @@
                     ['title' => 'Help & Support', 'icon' => 'bi-question-circle', 'id' => 'sidebarHelpSupport', 'items' => [
                         ['name' => 'Add Request', 'route' => 'vendor.help-support.create'],
                         ['name' => 'Request List', 'route' => 'vendor.help-support.index'],
+                    ]],
+                    ['title' => 'Settings', 'icon' => 'bi-gear', 'id' => 'sidebarSettings', 'items' => [
+                        ['name' => 'Profile', 'route' => 'vendor.profile.show'],
+                        ['name' => 'Change Password', 'route' => 'vendor.password.edit'],
                     ]]
 
                 ] as $menu)
