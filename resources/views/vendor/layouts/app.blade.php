@@ -310,6 +310,9 @@
                         ['name' => 'Pending Products', 'route' => 'vendor.products.pending'],
                         ['name' => 'Rejected Products', 'route' => 'vendor.products.rejected'],
                     ]],
+                    ['title' => 'Inventory Management', 'icon' => 'bi-stack', 'id' => 'sidebarInventory', 'items' => [
+                        ['name' => 'Inventory List', 'route' => 'vendor.inventory.index'],
+                    ]],
                     ['title' => 'Help & Support', 'icon' => 'bi-question-circle', 'id' => 'sidebarHelpSupport', 'items' => [
                         ['name' => 'Add Request', 'route' => 'vendor.help-support.create'],
                         ['name' => 'Request List', 'route' => 'vendor.help-support.index'],
