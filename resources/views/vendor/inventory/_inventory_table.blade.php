@@ -16,9 +16,7 @@
 @endforelse
 </tbody>
 <tfoot>
-<tr>
-    <td colspan="5" class="text-end">
+    <tr>
         <x-custom-pagination :paginator="$products" />
-    </td>
-</tr>
+    </tr>
 </tfoot>

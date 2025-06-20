@@ -1,5 +1,12 @@
 @extends('vendor.layouts.app')
 @section('title', 'Inventory Management | Deal24hours')
+@push('styles')
+<style>
+    #inventory-table tfoot ul.pagination {
+        justify-content: flex-end;
+    }
+</style>
+@endpush
 @section('content')
 <div class="row">
     <div class="col-md-12">
@@ -9,14 +16,14 @@
             </div>
             <div class="card-body">
                 <form id="filter-form" class="row g-2 align-items-end mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">Product Name</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                             <input type="text" id="product_name" class="form-control" placeholder="Product Name">
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <button type="button" id="search" class="btn btn-primary">
                             <i class="bi bi-search"></i> SEARCH
                         </button>
@@ -91,9 +98,17 @@ $(document).ready(function(){
         if(page){ fetchInventoryData(page); }
     });
 
+    $(document).on('change', '#perPage', function(){
+        fetchInventoryData(1, $(this).val());
+    });
+
     $(document).on('click','.update-stock',function(){
         const id=$(this).data('id');
         const qty=$(this).closest('tr').find('.stock-input').val();
+        if(!/^\d+$/.test(qty)){
+            toastr.error('Please enter a valid stock quantity.');
+            return;
+        }
         $.ajax({
             url: '{{ url('vendor/inventory/update') }}/'+id,
             type:'POST',
