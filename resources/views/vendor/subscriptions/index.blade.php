@@ -2,7 +2,7 @@
 @section('title', 'Subscription | Deal24hours')
 @section('content')
 <div class="row">
-    <div class="col">
+    <div class="col-md-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0">Subscription</h4>
