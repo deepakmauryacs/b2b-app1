@@ -1,0 +1,35 @@
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="bg-light-subtle">
+            <tr>
+                <th>#</th>
+                <th>Old Qty</th>
+                <th>New Qty</th>
+                <th>User</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($logs as $log)
+                <tr>
+                    <td>{{ ($logs->currentPage() - 1) * $logs->perPage() + $loop->iteration }}</td>
+                    <td>{{ $log->old_quantity }}</td>
+                    <td>{{ $log->new_quantity }}</td>
+                    <td>{{ $log->user->name }}</td>
+                    <td>{{ \Carbon\Carbon::parse($log->created_at)->format('d-m-Y') }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center">No records found.</td>
+                </tr>
+            @endforelse
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" class="text-center">
+                    <x-custom-pagination :paginator="$logs" />
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

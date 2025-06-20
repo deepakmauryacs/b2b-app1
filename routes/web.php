@@ -204,6 +204,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('list', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'index'])->name('index');
         Route::get('render-table', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'renderInventoryTable'])->name('render-table');
         Route::post('update/{id}', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'updateStock'])->name('update');
+        Route::get('{id}/logs', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'stockLogs'])->name('logs');
     });
 });
 

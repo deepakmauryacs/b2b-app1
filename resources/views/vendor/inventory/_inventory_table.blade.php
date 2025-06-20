@@ -7,6 +7,7 @@
     <td>{{ \Carbon\Carbon::parse($product->updated_at)->format('d-m-Y') }}</td>
     <td>
         <button class="btn btn-sm btn-primary update-stock" data-id="{{ $product->id }}"><i class="bi bi-save"></i> Update</button>
+        <button class="btn btn-sm btn-info view-stock-log" data-id="{{ $product->id }}"><i class="bi bi-clock-history"></i> Stock Log</button>
     </td>
 </tr>
 @empty
