@@ -57,4 +57,12 @@ class Product extends Model
         return $this->hasMany(StockLog::class);
     }
 
+    /**
+     * Get the latest stock log entry for the product.
+     */
+    public function latestStockLog()
+    {
+        return $this->hasOne(StockLog::class)->latestOfMany();
+    }
+
 }

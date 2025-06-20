@@ -28,7 +28,8 @@ class VendorInventoryController extends Controller
     {
         $perPage = $request->input('per_page', 10);
 
-        $productsQuery = Product::where('vendor_id', Auth::id());
+        $productsQuery = Product::with('latestStockLog')
+            ->where('vendor_id', Auth::id());
 
         if ($request->filled('product_name')) {
             $productsQuery->where('product_name', 'like', '%' . $request->product_name . '%');

@@ -38,19 +38,21 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Stock</th>
+                                <th>Current Stock</th>
+                                <th>In Stock</th>
+                                <th>Out Stock</th>
                                 <th>Updated At</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="inventory-table-body-content">
                             <tr>
-                                <td colspan="5" class="text-center">Loading Inventory...</td>
+                                <td colspan="7" class="text-center">Loading Inventory...</td>
                             </tr>
                         </tbody>
                         <tfoot id="inventory-table-foot-content">
                             <tr>
-                                <td colspan="5" class="text-center"></td>
+                                <td colspan="7" class="text-center"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -90,7 +92,7 @@ $(document).ready(function(){
         if(currentAjaxRequest && currentAjaxRequest.readyState !== 4){
             currentAjaxRequest.abort();
         }
-        $('#inventory-table-body-content').html('<tr><td colspan="5" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+        $('#inventory-table-body-content').html('<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
         $('#inventory-table-foot-content').empty();
         const filters = { product_name: $('#product_name').val() };
         perPage = perPage || $('#perPage').val() || 10;
@@ -105,7 +107,7 @@ $(document).ready(function(){
             },
             error: function(xhr){
                 if(xhr.statusText === 'abort'){ return; }
-                $('#inventory-table-body-content').html('<tr><td colspan="5" class="text-center text-danger">Error loading inventory.</td></tr>');
+                $('#inventory-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading inventory.</td></tr>');
             },
             complete: function(){ currentAjaxRequest = null; }
         });
