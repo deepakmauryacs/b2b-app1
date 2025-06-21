@@ -36,15 +36,16 @@
                                 <th>Name</th>
                                 <th>City</th>
                                 <th>State</th>
+                                <th>Products</th>
                                 <th>Created At</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="warehouse-table-body-content">
-                            <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                            <tr><td colspan="7" class="text-center">Loading...</td></tr>
                         </tbody>
                         <tfoot id="warehouse-table-foot-content">
-                            <tr><td colspan="6" class="text-center"></td></tr>
+                            <tr><td colspan="7" class="text-center"></td></tr>
                         </tfoot>
                     </table>
                 </div>
@@ -100,6 +101,9 @@ $(function(){
     const rules = {
         w_name: [
             {condition: v => !v.trim(), message: 'Name is required.'}
+        ],
+        w_pincode: [
+            {condition: v => v && !/^\d+$/.test(v), message: 'Pincode must be numeric.'}
         ]
     };
 
@@ -133,7 +137,7 @@ $(function(){
 
     function fetchWarehouses(page=1, perPage=null){
         if(currentAjax && currentAjax.readyState !== 4){ currentAjax.abort(); }
-        $('#warehouse-table-body-content').html('<tr><td colspan="6" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+        $('#warehouse-table-body-content').html('<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
         $('#warehouse-table-foot-content').empty();
         const data = { name: $('#name').val(), page: page, per_page: perPage || $('#perPage').val() || 10 };
         currentAjax = $.ajax({
@@ -141,7 +145,7 @@ $(function(){
             method: 'GET',
             data: data,
             success: function(res){ const $html = $(res); $('#warehouse-table-body-content').html($html.filter('tbody').html()); $('#warehouse-table-foot-content').html($html.filter('tfoot').html()); },
-            error: function(xhr){ if(xhr.statusText==='abort') return; $('#warehouse-table-body-content').html('<tr><td colspan="6" class="text-center text-danger">Error loading data.</td></tr>'); },
+            error: function(xhr){ if(xhr.statusText==='abort') return; $('#warehouse-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading data.</td></tr>'); },
             complete: function(){ currentAjax = null; }
         });
     }

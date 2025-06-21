@@ -5,6 +5,7 @@
     <td>{{ $warehouse->name }}</td>
     <td>{{ $warehouse->city }}</td>
     <td>{{ $warehouse->state }}</td>
+    <td>{{ $warehouse->products_count }}</td>
     <td>{{ $warehouse->created_at->format('d-m-Y') }}</td>
     <td>
         <button class="btn btn-sm btn-warning edit-warehouse" data-id="{{ $warehouse->id }}" data-info='@json($warehouse->only(["name","address","city","state","pincode"]))'>
@@ -17,7 +18,7 @@
 </tr>
 @empty
 <tr>
-    <td colspan="6" class="text-center">No records found.</td>
+    <td colspan="7" class="text-center">No records found.</td>
 </tr>
 @endforelse
 </tbody>

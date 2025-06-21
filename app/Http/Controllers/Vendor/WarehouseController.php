@@ -23,7 +23,7 @@ class WarehouseController extends Controller
      */
     public function renderTable(Request $request)
     {
-        $query = Warehouse::where('vendor_id', Auth::id());
+        $query = Warehouse::withCount('products')->where('vendor_id', Auth::id());
 
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
@@ -45,7 +45,7 @@ class WarehouseController extends Controller
             'address' => 'nullable|string|max:255',
             'city'    => 'nullable|string|max:100',
             'state'   => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:20',
+            'pincode' => 'nullable|regex:/^\d+$/|max:20',
         ]);
 
         if ($validator->fails()) {
@@ -80,7 +80,7 @@ class WarehouseController extends Controller
             'address' => 'nullable|string|max:255',
             'city'    => 'nullable|string|max:100',
             'state'   => 'nullable|string|max:100',
-            'pincode' => 'nullable|string|max:20',
+            'pincode' => 'nullable|regex:/^\d+$/|max:20',
         ]);
 
         if ($validator->fails()) {
