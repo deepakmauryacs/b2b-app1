@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\StockLog;
 use App\Models\Product;
+use App\Models\Warehouse;
+use App\Models\WarehouseProduct;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +20,8 @@ class VendorInventoryController extends Controller
      */
     public function index()
     {
-        return view('vendor.inventory.index');
+        $warehouses = Auth::user()->warehouses()->orderBy('name')->get();
+        return view('vendor.inventory.index', compact('warehouses'));
     }
 
     /**
@@ -27,17 +30,28 @@ class VendorInventoryController extends Controller
     public function renderInventoryTable(Request $request)
     {
         $perPage = $request->input('per_page', 10);
+        $warehouseId = $request->input('warehouse_id');
 
-        $productsQuery = Product::with('latestStockLog')
+        $productsQuery = Product::with(['latestStockLog', 'warehouseStocks' => function($q) use ($warehouseId) {
+                if ($warehouseId) {
+                    $q->where('warehouse_id', $warehouseId);
+                }
+            }])
             ->where('vendor_id', Auth::id());
 
         if ($request->filled('product_name')) {
             $productsQuery->where('product_name', 'like', '%' . $request->product_name . '%');
         }
 
+        if ($warehouseId) {
+            $productsQuery->whereHas('warehouses', function($q) use ($warehouseId) {
+                $q->where('warehouses.id', $warehouseId);
+            });
+        }
+
         $products = $productsQuery->orderBy('created_at', 'desc')->paginate($perPage);
 
-        return view('vendor.inventory._inventory_table', compact('products'));
+        return view('vendor.inventory._inventory_table', compact('products', 'warehouseId'));
     }
 
     /**
@@ -48,6 +62,7 @@ class VendorInventoryController extends Controller
         $product = Product::where('id', $id)->where('vendor_id', Auth::id())->firstOrFail();
 
         $validator = Validator::make($request->all(), [
+            'warehouse_id' => 'required|exists:warehouses,id',
             'in_stock'  => 'nullable|integer|min:0',
             'out_stock' => 'nullable|integer|min:0',
         ]);
@@ -58,6 +73,10 @@ class VendorInventoryController extends Controller
                 'message' => $validator->errors()->first()
             ], 422);
         }
+
+        $warehouse = Warehouse::where('id', $request->warehouse_id)
+            ->where('vendor_id', Auth::id())
+            ->firstOrFail();
 
         $in  = (int) $request->input('in_stock', 0);
         $out = (int) $request->input('out_stock', 0);
@@ -72,6 +91,19 @@ class VendorInventoryController extends Controller
         $oldQty = $product->stock_quantity;
         $newQty = $oldQty + $in - $out;
 
+        $wp = WarehouseProduct::firstOrNew([
+            'warehouse_id' => $warehouse->id,
+            'product_id'   => $product->id,
+        ]);
+        $whOldQty = $wp->exists ? $wp->quantity : 0;
+        $whNewQty = $whOldQty + $in - $out;
+        if($whNewQty < 0){
+            return response()->json([
+                'status' => 0,
+                'message' => 'Resulting stock cannot be negative.'
+            ], 422);
+        }
+
         if($newQty < 0){
             return response()->json([
                 'status' => 0,
@@ -81,6 +113,8 @@ class VendorInventoryController extends Controller
 
         $product->stock_quantity = $newQty;
         $product->save();
+        $wp->quantity = $whNewQty;
+        $wp->save();
 
         StockLog::create([
             'product_id'   => $product->id,

@@ -23,7 +23,19 @@
                             <input type="text" id="product_name" class="form-control" placeholder="Product Name">
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-4">
+                        <label class="form-label">Warehouse</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-shop"></i></span>
+                            <select id="warehouse_filter" class="form-select">
+                                <option value="">All Warehouses</option>
+                                @foreach($warehouses as $w)
+                                    <option value="{{ $w->id }}">{{ $w->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <button type="button" id="search" class="btn btn-primary">
                             <i class="bi bi-search"></i> SEARCH
                         </button>
@@ -38,7 +50,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Current Stock</th>
+                                <th>Warehouse Stock</th>
                                 <th>In Stock</th>
                                 <th>Out Stock</th>
                                 <th>Updated At</th>
@@ -94,7 +106,7 @@ $(document).ready(function(){
         }
         $('#inventory-table-body-content').html('<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
         $('#inventory-table-foot-content').empty();
-        const filters = { product_name: $('#product_name').val() };
+        const filters = { product_name: $('#product_name').val(), warehouse_id: $('#warehouse_filter').val() };
         perPage = perPage || $('#perPage').val() || 10;
         currentAjaxRequest = $.ajax({
             url: "{{ route('vendor.inventory.render-table') }}",
@@ -126,11 +138,21 @@ $(document).ready(function(){
         fetchInventoryData(1, $(this).val());
     });
 
+    $('#warehouse_filter').on('change', function(){
+        fetchInventoryData(1);
+    });
+
     $(document).on('click','.update-stock',function(){
         const id = $(this).data('id');
         const $row = $(this).closest('tr');
         const inQty = $row.find('.stock-input-in').val();
         const outQty = $row.find('.stock-input-out').val();
+        const warehouseId = $('#warehouse_filter').val();
+
+        if(!warehouseId){
+            toastr.error('Please select a warehouse.');
+            return;
+        }
 
         if(!/^\d*$/.test(inQty) || !/^\d*$/.test(outQty)){
             toastr.error('Please enter valid quantities.');
@@ -148,7 +170,7 @@ $(document).ready(function(){
         $.ajax({
             url: '{{ url('vendor/inventory/update') }}/'+id,
             type:'POST',
-            data:{ _token:'{{ csrf_token() }}', in_stock: inVal, out_stock: outVal },
+            data:{ _token:'{{ csrf_token() }}', in_stock: inVal, out_stock: outVal, warehouse_id: warehouseId },
             success:function(res){
                 if(res.status==1){
                     toastr.success(res.message);
