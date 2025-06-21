@@ -362,41 +362,28 @@
                         </div>
                     </li>
 
-                    <!-- Products Menu -->
+                    <!-- Approved Products Menu -->
                     <li class="nav-item">
-                        <a class="nav-link menu-arrow" href="#sidebarProduct" data-bs-toggle="collapse"
-                            role="button" aria-expanded="false" aria-controls="sidebarProduct">
-                            <span class="nav-icon">
-                                <i class="bi bi-box-seam"></i>
-                            </span>
-                            <span class="nav-text"> Products </span>
+                        <a class="nav-link" href="{{ route('admin.products.approved') }}">
+                            <span class="nav-icon"><i class="bi bi-check-circle"></i></span>
+                            <span class="nav-text">Approved Products</span>
                         </a>
-                        <div class="collapse" id="sidebarProduct">
-                            <ul class="nav sub-navbar-nav">
+                    </li>
 
-                                <li class="sub-nav-item">
-                                    <a class="sub-nav-link" href="{{ route('admin.products.approved') }}">
-                                        <span class="nav-text"> Products</span>&nbsp;&nbsp;
-                                        <span class="badge bg-success-subtle text-success py-1 px-2">Approved</span>
-                                    </a>
-                                </li>
+                    <!-- Pending Products Menu -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.products.pending') }}">
+                            <span class="nav-icon"><i class="bi bi-hourglass-split"></i></span>
+                            <span class="nav-text">Pending Products</span>
+                        </a>
+                    </li>
 
-                                <li class="sub-nav-item">
-                                    <a class="sub-nav-link" href="{{ route('admin.products.pending') }}">
-                                        <span class="nav-text"> Product </span>&nbsp;&nbsp; <span
-                                            class="badge bg-primary-subtle text-primary py-1 px-2">Pending</span>
-                                    </a>
-                                </li>
-
-                                <li class="sub-nav-item">
-                                    <a class="sub-nav-link" href="{{ route('admin.products.rejected') }}">
-                                        <span class="nav-text"> Products</span>&nbsp;&nbsp;
-                                        <span class="badge bg-danger-subtle text-danger px-2 py-1">Rejected</span>
-                                    </a>
-                                </li>
-                                <!-- You can add more product-related links here if needed -->
-                            </ul>
-                        </div>
+                    <!-- Rejected Products Menu -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.products.rejected') }}">
+                            <span class="nav-icon"><i class="bi bi-x-circle"></i></span>
+                            <span class="nav-text">Rejected Products</span>
+                        </a>
                     </li>
 
                     <!-- Vendors Menu (single item) -->
