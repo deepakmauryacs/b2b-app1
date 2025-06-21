@@ -3,16 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Warehouse;
+use App\Models\WarehouseProduct;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
 class Product extends Model
-{   
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+{
     protected $fillable = [
         'vendor_id',
         'category_id',
@@ -27,21 +26,10 @@ class Product extends Model
         'stock_quantity',
         'hsn_code',
         'gst_rate',
-        'status', // Add this line
-        // ... any other fields you need to mass assign
+        'status',
     ];
 
-    // use LogsActivity;
-
-    // public function getActivitylogOptions(): LogOptions
-    // {
-    //     return LogOptions::defaults()
-    //         ->logFillable() 
-    //         ->logOnlyDirty()
-    //         ->dontSubmitEmptyLogs();
-    // }
-
-
+    // Relationships
     public function vendor()
     {
         return $this->belongsTo(User::class, 'vendor_id');
@@ -52,17 +40,31 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function stockLogs()
+    public function stockLogs(): HasMany
     {
         return $this->hasMany(StockLog::class);
     }
 
-    /**
-     * Get the latest stock log entry for the product.
-     */
     public function latestStockLog()
     {
         return $this->hasOne(StockLog::class)->latestOfMany();
     }
 
+    public function warehouseStocks(): HasMany
+    {
+        return $this->hasMany(WarehouseProduct::class);
+    }
+
+    public function warehouses(): BelongsToMany
+    {
+        return $this->belongsToMany(Warehouse::class, 'warehouse_product')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
+
+    public function stockInWarehouse(int $warehouseId): int
+    {
+        $stock = $this->warehouseStocks()->where('warehouse_id', $warehouseId)->first();
+        return $stock ? $stock->quantity : 0;
+    }
 }

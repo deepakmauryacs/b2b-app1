@@ -3,7 +3,13 @@
 <tr>
     <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}</td>
     <td>{{ $product->product_name }}</td>
-    <td>{{ $product->stock_quantity }}</td>
+    <td>
+        @if(isset($warehouseId) && $warehouseId)
+            {{ $product->warehouseStocks->first()->quantity ?? 0 }}
+        @else
+            {{ $product->stock_quantity }}
+        @endif
+    </td>
     <td><input type="number" class="form-control form-control-sm stock-input-in" value="0" min="0"></td>
     <td><input type="number" class="form-control form-control-sm stock-input-out" value="0" min="0"></td>
     <td>{{ \Carbon\Carbon::parse($product->updated_at)->format('d-m-Y') }}</td>
