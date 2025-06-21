@@ -206,6 +206,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('update/{id}', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'updateStock'])->name('update');
         Route::get('{id}/logs', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'stockLogs'])->name('logs');
     });
+
+    Route::prefix('vendor/warehouses')->name('vendor.warehouses.')->group(function () {
+        Route::get('list', [App\Http\Controllers\Vendor\WarehouseController::class, 'index'])->name('index');
+        Route::get('render-table', [App\Http\Controllers\Vendor\WarehouseController::class, 'renderTable'])->name('render-table');
+        Route::post('store', [App\Http\Controllers\Vendor\WarehouseController::class, 'store'])->name('store');
+        Route::put('update/{id}', [App\Http\Controllers\Vendor\WarehouseController::class, 'update'])->name('update');
+        Route::delete('delete/{id}', [App\Http\Controllers\Vendor\WarehouseController::class, 'destroy'])->name('delete');
+    });
 });
 
 Route::get('/buyer/dashboard', function () {

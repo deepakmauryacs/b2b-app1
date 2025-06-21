@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\BuyerProfile; // Import BuyerProfile
 use App\Models\Role;
 use App\Models\VendorSubscription;
+use App\Models\Warehouse;
 
 
 class User extends Authenticatable
@@ -93,6 +94,11 @@ class User extends Authenticatable
     public function products()
     {
         return $this->hasMany(\App\Models\Product::class, 'vendor_id');
+    }
+
+    public function warehouses()
+    {
+        return $this->hasMany(Warehouse::class, 'vendor_id');
     }
 
     public function roles(): BelongsToMany
