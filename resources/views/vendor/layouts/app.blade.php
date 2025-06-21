@@ -313,6 +313,9 @@
                     ['title' => 'Inventory Management', 'icon' => 'bi-stack', 'id' => 'sidebarInventory', 'items' => [
                         ['name' => 'Inventory List', 'route' => 'vendor.inventory.index'],
                     ]],
+                    ['title' => 'Warehouses', 'icon' => 'bi-building', 'id' => 'sidebarWarehouses', 'items' => [
+                        ['name' => 'Warehouse List', 'route' => 'vendor.warehouses.index'],
+                    ]],
                     ['title' => 'Help & Support', 'icon' => 'bi-question-circle', 'id' => 'sidebarHelpSupport', 'items' => [
                         ['name' => 'Add Request', 'route' => 'vendor.help-support.create'],
                         ['name' => 'Request List', 'route' => 'vendor.help-support.index'],
