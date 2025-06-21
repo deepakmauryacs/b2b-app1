@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Warehouse;
+use App\Models\WarehouseProduct;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use Auth;
@@ -135,7 +137,8 @@ class VendorProductController extends Controller
             ->where('status', 1)->where('parent_id', 0)
             ->orderBy('name', 'ASC')
             ->get();
-        return view('vendor.products.create', compact('categories'));
+        $warehouses = Auth::user()->warehouses()->orderBy('name')->get();
+        return view('vendor.products.create', compact('categories', 'warehouses'));
     }
 
     public function getSubcategories($parentId)
@@ -167,6 +170,7 @@ class VendorProductController extends Controller
             'stock_quantity' => 'nullable|integer|min:0',
             'hsn_code' => 'nullable|string|max:50',
             'gst_rate' => 'nullable|numeric|min:0|max:100',
+            'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
         // Check if validation fails
@@ -209,6 +213,19 @@ class VendorProductController extends Controller
 
             $product->save();
 
+            $warehouse = Warehouse::where('id', $request->warehouse_id)
+                ->where('vendor_id', Auth::id())
+                ->first();
+
+            if ($warehouse) {
+                WarehouseProduct::updateOrCreate([
+                    'warehouse_id' => $warehouse->id,
+                    'product_id' => $product->id,
+                ], [
+                    'quantity' => $product->stock_quantity,
+                ]);
+            }
+
             if ($request->ajax()) {
                 return response()->json([
                     'status' => 1,
@@ -238,7 +255,8 @@ class VendorProductController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
         $subCategories = array();
-        return view('vendor.products.edit', compact('product', 'categories','subCategories'));
+        $warehouses = Auth::user()->warehouses()->orderBy('name')->get();
+        return view('vendor.products.edit', compact('product', 'categories','subCategories', 'warehouses'));
     }
 
     // Update product
@@ -285,7 +303,7 @@ class VendorProductController extends Controller
                 'price' => 'required|numeric|min:0',
                 'slug' => 'nullable|string|unique:products,slug,' . $product->id,
                 'product_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                // Add other validation rules as needed
+                'warehouse_id' => 'required|exists:warehouses,id',
             ]);
 
             // Update product with validated data
@@ -307,6 +325,19 @@ class VendorProductController extends Controller
             }
 
             $product->save();
+
+            $warehouse = Warehouse::where('id', $request->warehouse_id)
+                ->where('vendor_id', Auth::id())
+                ->first();
+
+            if ($warehouse) {
+                WarehouseProduct::updateOrCreate([
+                    'warehouse_id' => $warehouse->id,
+                    'product_id' => $product->id,
+                ], [
+                    'quantity' => $product->stock_quantity,
+                ]);
+            }
 
             if ($request->ajax()) {
                 return response()->json([
