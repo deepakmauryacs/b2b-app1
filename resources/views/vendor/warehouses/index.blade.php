@@ -97,6 +97,37 @@
 $(function(){
     const modal = new bootstrap.Modal(document.getElementById('warehouseModal'));
     let currentAjax = null;
+    const rules = {
+        w_name: [
+            {condition: v => !v.trim(), message: 'Name is required.'}
+        ]
+    };
+
+    function showError($input, msg){
+        $input.addClass('is-invalid');
+        $input.next('.invalid-feedback').remove();
+        $input.after(`<div class="invalid-feedback d-block">${msg}</div>`);
+        toastr.error(msg);
+    }
+
+    function clearError($input){
+        $input.removeClass('is-invalid');
+        $input.next('.invalid-feedback').remove();
+    }
+
+    function validateField($input, rls){
+        let ok = true;
+        const val = $input.val();
+        for(const r of rls){
+            if(r.condition(val)){
+                showError($input, r.message);
+                ok = false;
+                break;
+            }
+        }
+        if(ok) clearError($input);
+        return ok;
+    }
 
     fetchWarehouses(1);
 
@@ -124,14 +155,36 @@ $(function(){
     $(document).on('click', '.edit-warehouse', function(){ const info = $(this).data('info'); $('#warehouse_id').val($(this).data('id')); $('#w_name').val(info.name); $('#w_address').val(info.address); $('#w_city').val(info.city); $('#w_state').val(info.state); $('#w_pincode').val(info.pincode); modal.show(); });
 
     $('#saveWarehouse').on('click', function(){
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+
+        let valid = true;
+        $.each(rules, function(field, r){
+            const $inp = $('#' + field);
+            if(!validateField($inp, r)) valid = false;
+        });
+        if(!valid) return;
+
         const id = $('#warehouse_id').val();
         const url = id ? '{{ url('vendor/warehouses/update') }}/'+id : '{{ route('vendor.warehouses.store') }}';
         $.ajax({
             url: url,
             method: id ? 'PUT' : 'POST',
             data: $('#warehouseForm').serialize(),
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
             success: function(res){ if(res.status){ toastr.success(res.message); modal.hide(); fetchWarehouses(1); } },
-            error: function(xhr){ if(xhr.responseJSON && xhr.responseJSON.message){ toastr.error(xhr.responseJSON.message); } else { toastr.error('Error'); } }
+            error: function(xhr){
+                if(xhr.status === 422 && xhr.responseJSON.errors){
+                    $.each(xhr.responseJSON.errors, function(k, v){
+                        const $in = $('#w_' + k);
+                        if($in.length) showError($in, v[0]);
+                    });
+                } else if(xhr.responseJSON && xhr.responseJSON.message){
+                    toastr.error(xhr.responseJSON.message);
+                } else {
+                    toastr.error('Error');
+                }
+            }
         });
     });
 

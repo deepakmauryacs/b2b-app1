@@ -7,7 +7,7 @@
     <td>{{ $warehouse->state }}</td>
     <td>{{ $warehouse->created_at->format('d-m-Y') }}</td>
     <td>
-        <button class="btn btn-sm btn-warning edit-warehouse" data-id="{{ $warehouse->id }}" data-info='@json($warehouse->only(['name','address','city','state','pincode']))'>
+        <button class="btn btn-sm btn-warning edit-warehouse" data-id="{{ $warehouse->id }}" data-info='@json($warehouse->only(["name","address","city","state","pincode"]))'>
             <i class="bi bi-pencil"></i>
         </button>
         <button class="btn btn-sm btn-danger delete-warehouse" data-id="{{ $warehouse->id }}">
