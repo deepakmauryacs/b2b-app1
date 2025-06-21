@@ -4,6 +4,14 @@
     <td>{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}</td>
     <td>{{ $product->product_name }}</td>
     <td>
+        <select class="form-select form-select-sm warehouse-select" data-product-id="{{ $product->id }}">
+            <option value="">Select</option>
+            @foreach($warehouses as $w)
+                <option value="{{ $w->id }}" @selected(isset($warehouseId) && $warehouseId == $w->id)>{{ $w->name }}</option>
+            @endforeach
+        </select>
+    </td>
+    <td class="current-stock" data-default="{{ $product->stock_quantity }}">
         @if(isset($warehouseId) && $warehouseId)
             {{ $product->warehouseStocks->first()->quantity ?? 0 }}
         @else
@@ -20,7 +28,7 @@
 </tr>
 @empty
 <tr>
-    <td colspan="7" class="text-center">No records found.</td>
+    <td colspan="8" class="text-center">No records found.</td>
 </tr>
 @endforelse
 </tbody>

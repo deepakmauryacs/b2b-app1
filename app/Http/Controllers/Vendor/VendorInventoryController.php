@@ -32,6 +32,8 @@ class VendorInventoryController extends Controller
         $perPage = $request->input('per_page', 10);
         $warehouseId = $request->input('warehouse_id');
 
+        $warehouses = Auth::user()->warehouses()->orderBy('name')->get();
+
         $productsQuery = Product::with(['latestStockLog', 'warehouseStocks' => function($q) use ($warehouseId) {
                 if ($warehouseId) {
                     $q->where('warehouse_id', $warehouseId);
@@ -51,7 +53,32 @@ class VendorInventoryController extends Controller
 
         $products = $productsQuery->orderBy('created_at', 'desc')->paginate($perPage);
 
-        return view('vendor.inventory._inventory_table', compact('products', 'warehouseId'));
+        return view('vendor.inventory._inventory_table', compact('products', 'warehouseId', 'warehouses'));
+    }
+
+    /**
+     * Get product quantity for specific warehouse via AJAX
+     */
+    public function getWarehouseStock(Request $request, $id)
+    {
+        $warehouseId = $request->input('warehouse_id');
+
+        if(!$warehouseId){
+            return response()->json([
+                'status' => 0,
+                'message' => 'Warehouse is required.'
+            ], 422);
+        }
+
+        $product = Product::where('id', $id)->where('vendor_id', Auth::id())->firstOrFail();
+        $warehouse = Warehouse::where('id', $warehouseId)->where('vendor_id', Auth::id())->firstOrFail();
+
+        $qty = $product->stockInWarehouse($warehouse->id);
+
+        return response()->json([
+            'status' => 1,
+            'quantity' => $qty,
+        ]);
     }
 
     /**

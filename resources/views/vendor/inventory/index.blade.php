@@ -50,7 +50,8 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Warehouse Stock</th>
+                                <th>Warehouse</th>
+                                <th>Current Stock</th>
                                 <th>In Stock</th>
                                 <th>Out Stock</th>
                                 <th>Updated At</th>
@@ -59,12 +60,12 @@
                         </thead>
                         <tbody id="inventory-table-body-content">
                             <tr>
-                                <td colspan="7" class="text-center">Loading Inventory...</td>
+                                <td colspan="8" class="text-center">Loading Inventory...</td>
                             </tr>
                         </tbody>
                         <tfoot id="inventory-table-foot-content">
                             <tr>
-                                <td colspan="7" class="text-center"></td>
+                                <td colspan="8" class="text-center"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -104,7 +105,7 @@ $(document).ready(function(){
         if(currentAjaxRequest && currentAjaxRequest.readyState !== 4){
             currentAjaxRequest.abort();
         }
-        $('#inventory-table-body-content').html('<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+        $('#inventory-table-body-content').html('<tr><td colspan="8" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
         $('#inventory-table-foot-content').empty();
         const filters = { product_name: $('#product_name').val(), warehouse_id: $('#warehouse_filter').val() };
         perPage = perPage || $('#perPage').val() || 10;
@@ -119,7 +120,7 @@ $(document).ready(function(){
             },
             error: function(xhr){
                 if(xhr.statusText === 'abort'){ return; }
-                $('#inventory-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading inventory.</td></tr>');
+                $('#inventory-table-body-content').html('<tr><td colspan="8" class="text-center text-danger">Error loading inventory.</td></tr>');
             },
             complete: function(){ currentAjaxRequest = null; }
         });
@@ -142,12 +143,39 @@ $(document).ready(function(){
         fetchInventoryData(1);
     });
 
+    $(document).on('change', '.warehouse-select', function(){
+        const warehouseId = $(this).val();
+        const productId = $(this).data('product-id');
+        const $row = $(this).closest('tr');
+
+        if(!warehouseId){
+            $row.find('.current-stock').text($row.find('.current-stock').data('default'));
+            return;
+        }
+
+        $.ajax({
+            url: '{{ url('vendor/inventory/stock') }}/'+productId,
+            method: 'GET',
+            data: { warehouse_id: warehouseId },
+            success: function(res){
+                if(res.status){
+                    $row.find('.current-stock').text(res.quantity);
+                } else {
+                    toastr.error(res.message);
+                }
+            },
+            error: function(){
+                toastr.error('Error fetching stock.');
+            }
+        });
+    });
+
     $(document).on('click','.update-stock',function(){
         const id = $(this).data('id');
         const $row = $(this).closest('tr');
         const inQty = $row.find('.stock-input-in').val();
         const outQty = $row.find('.stock-input-out').val();
-        const warehouseId = $('#warehouse_filter').val();
+        const warehouseId = $row.find('.warehouse-select').val();
 
         if(!warehouseId){
             toastr.error('Please select a warehouse.');
