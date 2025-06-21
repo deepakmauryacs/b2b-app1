@@ -171,7 +171,6 @@ $(function(){
             url: url,
             method: id ? 'PUT' : 'POST',
             data: $('#warehouseForm').serialize(),
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
             success: function(res){ if(res.status){ toastr.success(res.message); modal.hide(); fetchWarehouses(1); } },
             error: function(xhr){
                 if(xhr.status === 422 && xhr.responseJSON.errors){
@@ -188,7 +187,7 @@ $(function(){
         });
     });
 
-    $(document).on('click', '.delete-warehouse', function(){ if(!confirm('Delete this warehouse?')) return; const id=$(this).data('id'); $.ajax({ url:'{{ url('vendor/warehouses/delete') }}/'+id, method:'DELETE', data:{_token:'{{ csrf_token() }}'}, success:function(res){ if(res.status){ toastr.success(res.message); fetchWarehouses(1); } }, error:function(){ toastr.error('Error'); } }); });
+    $(document).on('click', '.delete-warehouse', function(){ if(!confirm('Delete this warehouse?')) return; const id=$(this).data('id'); $.ajax({ url:'{{ url('vendor/warehouses/delete') }}/'+id, method:'DELETE', success:function(res){ if(res.status){ toastr.success(res.message); fetchWarehouses(1); } }, error:function(){ toastr.error('Error'); } }); });
 });
 </script>
 @endsection
