@@ -122,23 +122,7 @@
                             
                         </div>
 
-                        {{-- Stock Quantity --}}
-                        <div class="col-md-4">
-                            <label for="stock_quantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
-                            <input type="number" name="stock_quantity" id="stock_quantity" class="form-control" placeholder="0" min="0" value="{{ old('stock_quantity', $product->stock_quantity) }}" required />
-
-                        </div>
-
-                        {{-- Warehouse --}}
-                        <div class="col-md-4">
-                            <label for="warehouse_id" class="form-label">Warehouse <span class="text-danger">*</span></label>
-                            <select name="warehouse_id" id="warehouse_id" class="form-select">
-                                <option value="">-- Select Warehouse --</option>
-                                @foreach($warehouses as $warehouse)
-                                    <option value="{{ $warehouse->id }}" {{ old('warehouse_id', $product->warehouses->first()->id ?? '') == $warehouse->id ? 'selected' : '' }}>{{ $warehouse->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- Stock Quantity and Warehouse fields removed as per requirements --}}
 
                         {{-- HSN Code --}}
                         <div class="col-md-4">
@@ -305,27 +289,7 @@ $(document).ready(function () {
             isValid = false;
         }
         
-        // Validate stock quantity
-        const stockQty = parseInt($('#stock_quantity').val());
-        if (!$('#stock_quantity').val() || isNaN(stockQty)) {
-            $('#stock_quantity').addClass('is-invalid');
-            $('#stock_quantity').after('<span class="error error-message">Please enter a valid stock quantity</span>');
-            toastr.error('Please enter a valid stock quantity');
-            isValid = false;
-        } else if (stockQty < 0) {
-            $('#stock_quantity').addClass('is-invalid');
-            $('#stock_quantity').after('<span class="error error-message">Stock quantity cannot be negative</span>');
-            toastr.error('Stock quantity cannot be negative');
-            isValid = false;
-        }
-
-        // Validate warehouse
-        if (!$('#warehouse_id').val()) {
-            $('#warehouse_id').addClass('is-invalid');
-            $('#warehouse_id').after('<span class="error error-message">Please select a warehouse</span>');
-            toastr.error('Please select a warehouse');
-            isValid = false;
-        }
+        // Stock quantity and warehouse validation removed
         
         // Validate GST rate
         const gstRate = parseFloat($('#gst_rate').val());
