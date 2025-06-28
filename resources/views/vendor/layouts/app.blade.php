@@ -35,6 +35,12 @@
     .bi {
         font-size: 20px;
     }
+    .scrollbar .nav-icon i,
+    #navbar-nav .nav-icon i {
+        font-size: 20px !important;
+        line-height: 1;
+        vertical-align: middle;
+    }
     /* Preloader styles */
     #preloader {
         position: fixed;
