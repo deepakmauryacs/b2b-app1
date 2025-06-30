@@ -5,6 +5,10 @@
     #inventory-table tfoot ul.pagination {
         justify-content: flex-end;
     }
+    td.action-buttons > div {
+        display: inline-flex;
+        gap: .25rem;
+    }
 </style>
 @endpush
 @section('content')
@@ -126,8 +130,13 @@ $(document).ready(function(){
         });
     }
 
-    $('#search').on('click', function(){ fetchInventoryData(1); });
-    $('#reset').on('click', function(){ $('#filter-form').trigger('reset'); fetchInventoryData(1); });
+    $('#search').on('click', function(){
+        fetchInventoryData(1);
+    });
+    $('#reset').on('click', function(){
+        $('#filter-form').find('input, select').val('');
+        fetchInventoryData(1);
+    });
     $(document).on('click', '#inventory-table-foot-content a.page-link', function(e){
         e.preventDefault();
         const url = $(this).attr('href');
