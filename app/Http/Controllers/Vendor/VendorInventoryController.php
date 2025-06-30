@@ -157,15 +157,19 @@ class VendorInventoryController extends Controller
     }
 
     /**
-     * Fetch stock logs for a product via AJAX
+     * Display stock logs for a product
      */
     public function stockLogs(Request $request, $id)
     {
         $logs = StockLog::with('user')
             ->where('product_id', $id)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate($request->input('per_page', 10));
 
-        return view('vendor.inventory._stock_logs', compact('logs'));
+        if ($request->ajax()) {
+            return view('vendor.inventory._stock_logs', compact('logs'));
+        }
+
+        return view('vendor.inventory.logs', compact('logs'));
     }
 }

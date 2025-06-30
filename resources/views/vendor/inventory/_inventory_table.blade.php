@@ -24,7 +24,9 @@
     <td class="action-buttons">
         <div class="d-inline-flex gap-1">
             <button class="btn btn-sm btn-primary update-stock" data-id="{{ $product->id }}"><i class="bi bi-save"></i> Update</button>
-            <button class="btn btn-sm btn-info view-stock-log" data-id="{{ $product->id }}"><i class="bi bi-clock-history"></i> Stock Log</button>
+            <a href="{{ route('vendor.inventory.logs', $product->id) }}" class="btn btn-sm btn-info">
+                <i class="bi bi-clock-history"></i> Stock Log
+            </a>
         </div>
     </td>
 </tr>
