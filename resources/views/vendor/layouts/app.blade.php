@@ -7,6 +7,7 @@
 <meta name="description" content="A fully responsive premium admin dashboard template" />
 <meta name="author" content="Techzaa" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 
 <!-- App favicon -->
 <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
@@ -33,6 +34,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <style>
     .bi {
+        font-size: 20px;
+    }
+    .bi-bell,
+    .bi-gear {
         font-size: 20px;
     }
     .scrollbar .nav-icon i,
@@ -402,6 +407,18 @@
             }, 500);
         }, 300); // Delay for better UX
     });
+</script>
+<script>
+$(function(){
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    if (typeof flatpickr !== 'undefined') {
+        $('.date-picker').flatpickr({ dateFormat: 'd-m-Y' });
+    }
+});
 </script>
 <script>
 // Toastr global options
