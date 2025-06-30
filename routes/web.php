@@ -21,6 +21,7 @@ use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorSubscriptionController;
 use App\Http\Controllers\Vendor\VendorPasswordController;
+use App\Http\Controllers\Buyer\HomeController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('optimize:clear');
@@ -220,3 +221,8 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/buyer/dashboard', function () {
     // buyer dashboard view or controller
 })->name('buyer.dashboard');
+
+
+Route::get('/buyer', [HomeController::class, 'index'])->name('buyer.index');
+
+Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'store'])->name('newsletter.subscribe');
