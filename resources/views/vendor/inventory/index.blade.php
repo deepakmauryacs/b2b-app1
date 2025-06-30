@@ -78,28 +78,6 @@
         </div>
 </div>
 </div>
-<!-- Stock Log Modal -->
-<div class="modal fade" id="stockLogModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Stock Logs</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="stockLogModalBody">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body" id="stock-log-content">
-                                <!-- Logs will load here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <script>
 $(document).ready(function(){
     fetchInventoryData(1);
@@ -226,28 +204,6 @@ $(document).ready(function(){
         });
     });
 
-    $(document).on('click','.view-stock-log',function(){
-        const id=$(this).data('id');
-        $('#stockLogModal').data('product-id', id).modal('show');
-        fetchStockLogs(id,1);
-    });
-
-    $(document).on('click','#stock-log-content a.page-link',function(e){
-        e.preventDefault();
-        const page=new URL($(this).attr('href')).searchParams.get('page');
-        const id=$('#stockLogModal').data('product-id');
-        fetchStockLogs(id,page);
-    });
-
-    function fetchStockLogs(id,page){
-        $('#stock-log-content').html('<div class="text-center p-3"><div class="spinner-border" role="status"></div></div>');
-        $.ajax({
-            url:'{{ url('vendor/inventory') }}/'+id+'/logs',
-            data:{ page: page },
-            success:function(res){ $('#stock-log-content').html(res); },
-            error:function(){ $('#stock-log-content').html('<p class="text-danger text-center">Error loading logs.</p>'); }
-        });
-    }
 });
 </script>
 @endsection
