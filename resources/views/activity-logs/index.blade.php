@@ -159,9 +159,50 @@ $(function () {
         order: [[0, 'desc']]
     });
 
-    // Filter button
+    const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+
+    function showError($el, msg) {
+        $el.addClass('is-invalid');
+        if (!$el.next('.invalid-feedback').length) {
+            $el.after('<div class="invalid-feedback">' + msg + '</div>');
+        }
+    }
+
+    function clearErrors() {
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').remove();
+    }
+
+    // Filter button with client-side validation
     $('#search').on('click', function () {
-        table.ajax.reload();
+        clearErrors();
+        const fromVal = $('#date_from').val();
+        const toVal = $('#date_to').val();
+        let valid = true;
+
+        if (fromVal && !dateRegex.test(fromVal)) {
+            showError($('#date_from'), 'Invalid date format');
+            valid = false;
+        }
+        if (toVal && !dateRegex.test(toVal)) {
+            showError($('#date_to'), 'Invalid date format');
+            valid = false;
+        }
+
+        if (valid && fromVal && toVal) {
+            const [d1,m1,y1] = fromVal.split('-');
+            const [d2,m2,y2] = toVal.split('-');
+            const start = new Date(y1, m1-1, d1);
+            const end = new Date(y2, m2-1, d2);
+            if (start > end) {
+                showError($('#date_to'), 'End date must be after start date');
+                valid = false;
+            }
+        }
+
+        if (valid) {
+            table.ajax.reload();
+        }
     });
 
     $('#reset').on('click', function () {
@@ -170,6 +211,7 @@ $(function () {
         $('#subject_type').val('');
         $('#date_from').val('');
         $('#date_to').val('');
+        clearErrors();
         table.ajax.reload();
     });
 });
