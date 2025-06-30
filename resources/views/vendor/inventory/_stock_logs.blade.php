@@ -3,6 +3,7 @@
         <thead class="bg-light-subtle">
             <tr>
                 <th>#</th>
+                <th>Product</th>
                 <th>Old Qty</th>
                 <th>New Qty</th>
                 <th>User</th>
@@ -13,6 +14,7 @@
             @forelse($logs as $log)
                 <tr>
                     <td>{{ ($logs->currentPage() - 1) * $logs->perPage() + $loop->iteration }}</td>
+                    <td>{{ $log->product->product_name }}</td>
                     <td>{{ $log->old_quantity }}</td>
                     <td>{{ $log->new_quantity }}</td>
                     <td>{{ $log->user->name }}</td>
@@ -20,7 +22,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center">No records found.</td>
+                    <td colspan="6" class="text-center">No records found.</td>
                 </tr>
             @endforelse
         </tbody>

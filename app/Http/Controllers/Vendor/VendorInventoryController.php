@@ -161,7 +161,26 @@ class VendorInventoryController extends Controller
      */
     public function stockLogs(Request $request, $id)
     {
-        $logs = StockLog::with('user')
+        $validator = Validator::make($request->all(), [
+            'per_page' => 'sometimes|integer|in:10,25,50,100',
+            'page'     => 'sometimes|integer|min:1'
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status'  => 0,
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+            return back()->withErrors($validator);
+        }
+
+        $product = Product::where('id', $id)
+            ->where('vendor_id', Auth::id())
+            ->firstOrFail();
+
+        $logs = StockLog::with(['user', 'product'])
             ->where('product_id', $id)
             ->orderBy('created_at', 'desc')
             ->paginate($request->input('per_page', 10));
@@ -170,6 +189,6 @@ class VendorInventoryController extends Controller
             return view('vendor.inventory._stock_logs', compact('logs'));
         }
 
-        return view('vendor.inventory.logs', compact('logs'));
+        return view('vendor.inventory.logs', compact('logs', 'product'));
     }
 }
