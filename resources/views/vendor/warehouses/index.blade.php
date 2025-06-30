@@ -155,7 +155,7 @@ $(function(){
     $(document).on('click', '#warehouse-table-foot-content a.page-link', function(e){ e.preventDefault(); const page = new URL($(this).attr('href')).searchParams.get('page'); if(page){ fetchWarehouses(page); } });
     $(document).on('change', '#perPage', function(){ fetchWarehouses(1, $(this).val()); });
 
-    $('#addWarehouseBtn').on('click', function(){ $('#warehouseForm')[0].reset(); $('#warehouse_id').val(''); modal.show(); });
+    $('#addWarehouseBtn').on('click', function(){ $('#warehouseForm').trigger('reset'); $('#warehouse_id').val(''); modal.show(); });
     $(document).on('click', '.edit-warehouse', function(){ const info = $(this).data('info'); $('#warehouse_id').val($(this).data('id')); $('#w_name').val(info.name); $('#w_address').val(info.address); $('#w_city').val(info.city); $('#w_state').val(info.state); $('#w_pincode').val(info.pincode); modal.show(); });
 
     $('#saveWarehouse').on('click', function(){

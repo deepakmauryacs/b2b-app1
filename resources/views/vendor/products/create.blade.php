@@ -365,7 +365,7 @@ $(document).ready(function () {
                 if (response.status == 1) {
                     toastr.success(response.message);
                     // Reset form
-                    $('#productForm')[0].reset();
+                    $('#productForm').trigger('reset');
                     if (typeof $('#description').summernote === 'function') {
                         $('#description').summernote('reset');
                     }

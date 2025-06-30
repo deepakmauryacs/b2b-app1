@@ -195,7 +195,7 @@
                         if (response.status == 1) {
                             toastr.success(response.message);
                             // Reset form
-                            $('#categoryForm')[0].reset();
+                            $('#categoryForm').trigger('reset');
                             // Redirect using the URL from response or fallback
                             setTimeout(function() {
                                 window.location.href = response.redirect ||

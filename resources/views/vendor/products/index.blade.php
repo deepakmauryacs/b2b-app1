@@ -162,7 +162,7 @@ $(document).ready(function() {
     });
 
     $('#reset').on('click', function() {
-        $('#filter-form')[0].reset();
+        $('#filter-form').trigger('reset');
         $('#product_name').val('');
         if (defaultStatus) {
             $('#status').val(defaultStatus).prop('disabled', true);
