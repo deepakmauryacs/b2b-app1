@@ -20,6 +20,7 @@
 
 <!-- App css -->
 <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" type="text/css" />
 
 <!-- Gridjs Plugin css -->
 <link href="{{ asset('assets/vendor/gridjs/theme/mermaid.min.css') }}" rel="stylesheet" type="text/css" />
