@@ -21,9 +21,11 @@
     <td><input type="number" class="form-control form-control-sm stock-input-in" value="0" min="0"></td>
     <td><input type="number" class="form-control form-control-sm stock-input-out" value="0" min="0"></td>
     <td>{{ \Carbon\Carbon::parse($product->updated_at)->format('d-m-Y') }}</td>
-    <td>
-        <button class="btn btn-sm btn-primary update-stock" data-id="{{ $product->id }}"><i class="bi bi-save"></i> Update</button>
-        <button class="btn btn-sm btn-info view-stock-log" data-id="{{ $product->id }}"><i class="bi bi-clock-history"></i> Stock Log</button>
+    <td class="action-buttons">
+        <div class="d-inline-flex gap-1">
+            <button class="btn btn-sm btn-primary update-stock" data-id="{{ $product->id }}"><i class="bi bi-save"></i> Update</button>
+            <button class="btn btn-sm btn-info view-stock-log" data-id="{{ $product->id }}"><i class="bi bi-clock-history"></i> Stock Log</button>
+        </div>
     </td>
 </tr>
 @empty
