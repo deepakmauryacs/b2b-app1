@@ -11,6 +11,13 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate([
+            'description'  => 'sometimes|string',
+            'subject_type' => 'sometimes|string',
+            'date_from'    => 'nullable|date_format:d-m-Y',
+            'date_to'      => 'nullable|date_format:d-m-Y|after_or_equal:date_from',
+        ]);
+
         $activities = Activity::with(['causer', 'subject'])
             ->when($request->description, function($query, $description) {
                 return $query->where('description', 'like', "%{$description}%");
@@ -41,6 +48,13 @@ class ActivityLogController extends Controller
 
     public function getActivityLogs(Request $request)
     {
+        $request->validate([
+            'description'  => 'sometimes|string',
+            'subject_type' => 'sometimes|string',
+            'date_from'    => 'nullable|date_format:d-m-Y',
+            'date_to'      => 'nullable|date_format:d-m-Y|after_or_equal:date_from',
+        ]);
+
         $logs = Activity::with(['causer'])
             ->when($request->description, function($query, $description) {
                 return $query->where('description', 'like', '%'.$description.'%');
