@@ -26,14 +26,14 @@
                             <label class="form-label">Product Name</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-card-list"></i></span>
-                                <input type="text" id="product_name" class="form-control" placeholder="Product Name">
+                                <input type="text" id="product_name" name="product_name" class="form-control" placeholder="Product Name">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Status</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-check2-circle"></i></span>
-                                <select id="status" class="form-select">
+                                <select id="status" name="status" class="form-select">
                                     <option value="">Select</option>
                                     <option value="approved">Approved</option>
                                     <option value="pending">Pending</option>
@@ -90,11 +90,28 @@ $(document).ready(function() {
         $('#status').val(defaultStatus).prop('disabled', true);
     }
 
+    function validateFilters() {
+        const name = $('#product_name').val().trim();
+        if (name.length > 200) {
+            toastr.error('Product name must be under 200 characters.');
+            return false;
+        }
+        const status = $('#status').val();
+        if (status && !['approved', 'pending', 'rejected'].includes(status)) {
+            toastr.error('Invalid status selected.');
+            return false;
+        }
+        return true;
+    }
+
     fetchProductsData(1);
 
     var currentAjaxRequest = null;
 
     function fetchProductsData(page = 1, perPage = null) {
+        if (!validateFilters()) {
+            return;
+        }
         if (currentAjaxRequest && currentAjaxRequest.readyState !== 4) {
             currentAjaxRequest.abort();
         }
@@ -127,6 +144,9 @@ $(document).ready(function() {
                 if (xhr.statusText === 'abort') {
                     return;
                 }
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) {
+                    toastr.error(xhr.responseJSON.message);
+                }
                 $('#products-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading products.</td></tr>');
             },
             complete: function() {
@@ -136,13 +156,18 @@ $(document).ready(function() {
     }
 
     $('#search').on('click', function() {
-        fetchProductsData(1);
+        if (validateFilters()) {
+            fetchProductsData(1);
+        }
     });
 
     $('#reset').on('click', function() {
-        $('#filter-form').trigger('reset');
+        $('#filter-form')[0].reset();
+        $('#product_name').val('');
         if (defaultStatus) {
             $('#status').val(defaultStatus).prop('disabled', true);
+        } else {
+            $('#status').val('').prop('disabled', false);
         }
         fetchProductsData(1);
     });
