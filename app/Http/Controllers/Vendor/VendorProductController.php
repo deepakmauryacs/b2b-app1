@@ -112,6 +112,20 @@ class VendorProductController extends Controller
     // Render paginated products table for AJAX requests
     public function renderProductsTable(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'product_name' => 'nullable|string|max:200',
+            'status' => 'nullable|in:approved,pending,rejected',
+            'per_page' => 'nullable|integer|min:1|max:100',
+            'page' => 'nullable|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
         $perPage = $request->input('per_page', 10);
 
         $productsQuery = Product::where('vendor_id', Auth::id());
