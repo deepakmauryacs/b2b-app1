@@ -7,6 +7,7 @@ use App\Models\VendorExport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class VendorExportController extends Controller
 {
@@ -23,10 +24,17 @@ class VendorExportController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'range_start' => 'required|integer|min:0',
             'range_end'   => 'required|integer|gt:range_start',
         ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['status' => 0, 'errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         $export = VendorExport::create([
             'range_start' => $request->range_start,
@@ -37,6 +45,14 @@ class VendorExportController extends Controller
         // Run the export command in the background
         $cmd = sprintf('php artisan vendor:export %d > /dev/null 2>&1 &', $export->id);
         exec($cmd);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 1,
+                'message' => 'Export started.',
+                'redirect' => route('admin.vendor-exports.index'),
+            ]);
+        }
 
         return redirect()->route('admin.vendor-exports.index')
             ->with('success', 'Export started.');
