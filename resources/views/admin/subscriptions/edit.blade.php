@@ -40,6 +40,14 @@
                             </select>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="text" name="start_date" id="start_date" class="form-control date-picker" value="{{ old('start_date', optional($subscription->start_date)->format('d-m-Y')) }}" placeholder="dd-mm-yyyy">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">End Date <span class="text-danger">*</span></label>
+                            <input type="text" name="end_date" id="end_date" class="form-control date-picker" value="{{ old('end_date', optional($subscription->end_date)->format('d-m-Y')) }}" placeholder="dd-mm-yyyy">
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Status <span class="text-danger">*</span></label>
                             <select name="status" id="status" class="form-select">
                                 <option value="active" {{ $subscription->status == 'active' ? 'selected' : '' }}>Active</option>
@@ -60,8 +68,12 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(function(){
+    flatpickr('#start_date', {dateFormat: 'd-m-Y'});
+    flatpickr('#end_date', {dateFormat: 'd-m-Y'});
+
     function validateForm(){
         let ok = true;
+        const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
         $('#subscriptionForm').find('select, input').each(function(){
             if(!$(this).val()){
                 $(this).addClass('is-invalid');
@@ -70,6 +82,27 @@ $(function(){
                 $(this).removeClass('is-invalid');
             }
         });
+
+        if(!dateRegex.test($('#start_date').val())){
+            $('#start_date').addClass('is-invalid');
+            ok = false;
+        }
+        if(!dateRegex.test($('#end_date').val())){
+            $('#end_date').addClass('is-invalid');
+            ok = false;
+        }
+
+        if(ok){
+            const ps = $('#start_date').val().split('-');
+            const pe = $('#end_date').val().split('-');
+            const start = new Date(ps[2], ps[1]-1, ps[0]);
+            const end = new Date(pe[2], pe[1]-1, pe[0]);
+            if(start > end){
+                $('#end_date').addClass('is-invalid');
+                toastr.error('End Date must be after Start Date');
+                ok = false;
+            }
+        }
         return ok;
     }
     $('#subscriptionForm').on('submit', function(e){
