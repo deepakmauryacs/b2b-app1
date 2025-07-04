@@ -4,7 +4,7 @@
             <td>{{ $loop->iteration + ($banners->currentPage() - 1) * $banners->perPage() }}</td>
             <td>
                 @if($banner->banner_img)
-                    <img src="{{ asset($banner->banner_img) }}" alt="Banner" style="max-height:50px;">
+                    <img src="{{ asset('storage/'.$banner->banner_img) }}" alt="Banner" style="max-height:50px;">
                 @else
                     N/A
                 @endif
