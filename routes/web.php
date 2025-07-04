@@ -61,6 +61,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('get-subcategories/{parentId}', [CategoryController::class, 'getSubcategories'])->name('get-subcategories');
     });
 
+    Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
+        Route::get('list', [App\Http\Controllers\Admin\BannerController::class, 'index'])->name('index');
+        Route::get('data', [App\Http\Controllers\Admin\BannerController::class, 'getBanners'])->name('data');
+        Route::get('create', [App\Http\Controllers\Admin\BannerController::class, 'create'])->name('create');
+        Route::post('store', [App\Http\Controllers\Admin\BannerController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [App\Http\Controllers\Admin\BannerController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [App\Http\Controllers\Admin\BannerController::class, 'update'])->name('update');
+    });
+
     Route::prefix('admin/vendors')->name('admin.vendors.')->group(function () {
         Route::get('list', [VendorController::class, 'index'])->name('index');
         Route::get('data', [VendorController::class, 'getVendors'])->name('data');
