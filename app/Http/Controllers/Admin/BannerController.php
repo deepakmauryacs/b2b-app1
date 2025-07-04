@@ -34,6 +34,25 @@ class BannerController extends Controller
             ->make(true);
     }
 
+    /**
+     * Render banners table for AJAX pagination similar to other lists.
+     */
+    public function renderBannersTable(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $page    = $request->input('page', 1);
+
+        $query = Banner::query()
+            ->when($request->status !== null && $request->status !== '', function ($q) use ($request) {
+                $q->where('status', (int) $request->status);
+            })
+            ->orderBy('created_at', 'desc');
+
+        $banners = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return view('admin.banners._banners_table', compact('banners'));
+    }
+
     public function create()
     {
         return view('admin.banners.create');

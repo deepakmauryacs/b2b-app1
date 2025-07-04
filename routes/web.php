@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
         Route::get('list', [App\Http\Controllers\Admin\BannerController::class, 'index'])->name('index');
         Route::get('data', [App\Http\Controllers\Admin\BannerController::class, 'getBanners'])->name('data');
+        Route::get('render-table', [App\Http\Controllers\Admin\BannerController::class, 'renderBannersTable'])->name('render-table');
         Route::get('create', [App\Http\Controllers\Admin\BannerController::class, 'create'])->name('create');
         Route::post('store', [App\Http\Controllers\Admin\BannerController::class, 'store'])->name('store');
         Route::get('edit/{id}', [App\Http\Controllers\Admin\BannerController::class, 'edit'])->name('edit');
