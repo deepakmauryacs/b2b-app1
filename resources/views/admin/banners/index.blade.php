@@ -10,8 +10,31 @@
                     <i class="bi bi-plus-lg"></i> Add Banner
                 </a>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
+            <div>
+                <div class="card-body">
+                    <form id="filter-form" class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label" for="status">Status</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-check2-circle"></i></span>
+                                <select id="status" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="1">Active</option>
+                                    <option value="2">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" id="search" class="btn btn-primary">
+                                <i class="bi bi-search"></i> SEARCH
+                            </button>
+                            <button type="button" id="reset" class="btn btn-outline-danger">
+                                <i class="bi bi-arrow-clockwise"></i> RESET
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="table-responsive px-4 mb-3">
                     <table class="table align-middle mb-0 table-striped table-centered" id="banners-table" style="width:100%">
                         <thead class="bg-light-subtle">
                             <tr>
@@ -24,31 +47,72 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="banners-table-body-content">
+                            <tr>
+                                <td colspan="7" class="text-center">Loading Banners...</td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="banners-table-foot-content">
+                            <tr>
+                                <td colspan="7" class="text-center"></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
-$(function(){
-    const table = $('#banners-table').DataTable({
-        processing:true,
-        serverSide:true,
-        ajax:'{{ route('admin.banners.data') }}',
-        columns:[
-            {data:'id', name:'id'},
-            {data:'banner_img', name:'banner_img', orderable:false, searchable:false},
-            {data:'banner_link', name:'banner_link', orderable:false, searchable:false},
-            {data:'banner_start_date', name:'banner_start_date', orderable:false, searchable:false},
-            {data:'banner_end_date', name:'banner_end_date', orderable:false, searchable:false},
-            {data:'status', name:'status', orderable:false, searchable:false},
-            {data:'action', name:'action', orderable:false, searchable:false}
-        ]
+    $(document).ready(function() {
+        fetchBannersData(1);
+        var currentAjaxRequest = null;
+
+        function fetchBannersData(page = 1, perPage = null) {
+            if (currentAjaxRequest && currentAjaxRequest.readyState !== 4) {
+                currentAjaxRequest.abort();
+            }
+
+            $('#banners-table-body-content').html('<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+            $('#banners-table-foot-content').empty();
+
+            const filters = {
+                status: $('#status').val()
+            };
+            perPage = perPage || $('#perPage').val() || 10;
+
+            currentAjaxRequest = $.ajax({
+                url: "{{ route('admin.banners.render-table') }}",
+                method: 'GET',
+                data: {
+                    page: page,
+                    per_page: perPage,
+                    ...filters
+                },
+                success: function(response) {
+                    const $responseHtml = $(response);
+                    $('#banners-table-body-content').html($responseHtml.filter('tbody').html());
+                    $('#banners-table-foot-content').html($responseHtml.filter('tfoot').html());
+                },
+                error: function(xhr) {
+                    if (xhr.statusText === 'abort') { return; }
+                    $('#banners-table-body-content').html('<tr><td colspan="7" class="text-center text-danger">Error loading banners. Please try again.</td></tr>');
+                },
+                complete: function() {
+                    currentAjaxRequest = null;
+                }
+            });
+        }
+
+        $('#search').on('click', function() { fetchBannersData(1); });
+        $('#reset').on('click', function() { $('#filter-form').find('input, select').val(''); fetchBannersData(1); });
+        $(document).on('click', '#banners-table-foot-content a.page-link', function(e) {
+            e.preventDefault();
+            const url = $(this).attr('href');
+            const page = new URL(url).searchParams.get('page');
+            if (page) { fetchBannersData(page); }
+        });
+        $(document).on('change', '#perPage', function() { fetchBannersData(1, $(this).val()); });
     });
-});
 </script>
 @endsection
