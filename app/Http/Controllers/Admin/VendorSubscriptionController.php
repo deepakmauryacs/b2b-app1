@@ -58,10 +58,12 @@ class VendorSubscriptionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id'   => 'required|exists:users,id',
-            'plan_name' => 'required|exists:plans,name',
-            'duration'  => 'required|integer|min:1|max:24',
-            'status'    => 'required|in:active,expired',
+            'user_id'    => 'required|exists:users,id',
+            'plan_name'  => 'required|exists:plans,name',
+            'duration'   => 'required|integer|min:1|max:24',
+            'start_date' => 'required|date_format:d-m-Y',
+            'end_date'   => 'required|date_format:d-m-Y|after_or_equal:start_date',
+            'status'     => 'required|in:active,expired',
         ]);
 
         if ($validator->fails()) {
@@ -76,10 +78,8 @@ class VendorSubscriptionController extends Controller
 
         try {
             $data = $validator->validated();
-            $duration = (int) $data['duration'];
-            $start = Carbon::now();
-            $data['start_date'] = $start->toDateString();
-            $data['end_date'] = $start->copy()->addMonths($duration)->toDateString();
+            $data['start_date'] = Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');
+            $data['end_date'] = Carbon::createFromFormat('d-m-Y', $data['end_date'])->format('Y-m-d');
             unset($data['duration']);
             VendorSubscription::create($data);
             if ($request->ajax()) {
@@ -121,10 +121,12 @@ class VendorSubscriptionController extends Controller
         $subscription = VendorSubscription::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'user_id'   => 'required|exists:users,id',
-            'plan_name' => 'required|exists:plans,name',
-            'duration'  => 'required|integer|min:1|max:24',
-            'status'    => 'required|in:active,expired',
+            'user_id'    => 'required|exists:users,id',
+            'plan_name'  => 'required|exists:plans,name',
+            'duration'   => 'required|integer|min:1|max:24',
+            'start_date' => 'required|date_format:d-m-Y',
+            'end_date'   => 'required|date_format:d-m-Y|after_or_equal:start_date',
+            'status'     => 'required|in:active,expired',
         ]);
 
         if ($validator->fails()) {
@@ -139,10 +141,8 @@ class VendorSubscriptionController extends Controller
 
         try {
             $data = $validator->validated();
-            $duration = (int) $data['duration'];
-            $start = Carbon::now();
-            $data['start_date'] = $start->toDateString();
-            $data['end_date'] = $start->copy()->addMonths($duration)->toDateString();
+            $data['start_date'] = Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');
+            $data['end_date'] = Carbon::createFromFormat('d-m-Y', $data['end_date'])->format('Y-m-d');
             unset($data['duration']);
             $subscription->update($data);
             if ($request->ajax()) {
