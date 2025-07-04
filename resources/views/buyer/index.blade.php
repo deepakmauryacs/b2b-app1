@@ -30,6 +30,9 @@
 @push('scripts')
 <script>
     $(function () {
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('#subscribe_date', {dateFormat: 'd-m-Y'});
+        }
         $('#newsletter-form').on('submit', function (e) {
             e.preventDefault();
             const formErrors = $('#form-errors').addClass('d-none').empty();
