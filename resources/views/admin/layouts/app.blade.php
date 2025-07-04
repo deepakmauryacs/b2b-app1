@@ -362,6 +362,14 @@
                         </div>
                     </li>
 
+                    <!-- Banners Menu (single item) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.banners.index') }}">
+                            <span class="nav-icon"><i class="bi bi-images"></i></span>
+                            <span class="nav-text"> Banners </span>
+                        </a>
+                    </li>
+
                     <!-- Products Menu -->
                     <li class="nav-item">
                         <a class="nav-link menu-arrow" href="#sidebarProduct" data-bs-toggle="collapse"
@@ -404,6 +412,14 @@
                         <a class="nav-link" href="{{ route('admin.vendors.index') }}">
                             <span class="nav-icon"><i class="bi bi-shop"></i></span>
                             <span class="nav-text"> Vendors </span>
+                        </a>
+                    </li>
+
+                    <!-- Vendor Exports Menu (single item) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.vendor-exports.index') }}">
+                            <span class="nav-icon"><i class="bi bi-file-earmark-arrow-down"></i></span>
+                            <span class="nav-text"> Vendor Exports </span>
                         </a>
                     </li>
 
