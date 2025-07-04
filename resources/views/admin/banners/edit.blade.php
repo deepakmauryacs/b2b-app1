@@ -9,13 +9,19 @@
                 <a href="{{ route('admin.banners.index') }}" class="badge border border-secondary text-secondary px-2 py-1 fs-13">&larr; Back to List</a>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.banners.update', $banner->id) }}" method="POST" id="bannerForm">
+                <form action="{{ route('admin.banners.update', $banner->id) }}" method="POST" id="bannerForm" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="row gy-3">
                         <div class="col-md-12">
-                            <label class="form-label">Image Path <span class="text-danger">*</span></label>
-                            <input type="text" name="banner_img" id="banner_img" class="form-control" value="{{ old('banner_img', $banner->banner_img) }}">
+                            <label class="form-label">Banner Image <span class="text-danger">*</span></label>
+                            <input type="file" name="banner_img" id="banner_img" class="form-control" accept="image/*">
+                            <small class="text-muted">Max file size: 2MB</small>
+                            @if($banner->banner_img)
+                                <div class="mt-2">
+                                    <img src="{{ asset('storage/'.$banner->banner_img) }}" alt="Banner" style="max-height:60px;">
+                                </div>
+                            @endif
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Link</label>
@@ -57,9 +63,18 @@ $(function(){
         let ok = true;
         $('.is-invalid').removeClass('is-invalid');
         const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-        if(!$('#banner_img').val()){
+        const fileInput = $('#banner_img')[0];
+        if(fileInput.files.length === 0){
             $('#banner_img').addClass('is-invalid');
             ok = false;
+        }else{
+            const file = fileInput.files[0];
+            const validTypes = ['image/jpeg','image/png','image/jpg','image/gif'];
+            const maxSize = 2 * 1024 * 1024;
+            if(!validTypes.includes(file.type) || file.size > maxSize){
+                $('#banner_img').addClass('is-invalid');
+                ok = false;
+            }
         }
         if($('#banner_start_date').val() && !dateRegex.test($('#banner_start_date').val())){
             $('#banner_start_date').addClass('is-invalid');
@@ -78,10 +93,13 @@ $(function(){
             return;
         }
         var form = $(this);
+        var formData = new FormData(this);
         $.ajax({
             url: form.attr('action'),
             type: 'POST',
-            data: form.serialize(),
+            data: formData,
+            processData:false,
+            contentType:false,
             beforeSend:function(){
                 form.find('button[type="submit"]').prop('disabled',true).html('<span class="spinner-border spinner-border-sm"></span> Updating...');
             },

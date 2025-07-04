@@ -61,7 +61,7 @@ class BannerController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'banner_img' => 'required|string|max:255',
+            'banner_img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'banner_link' => 'nullable|url',
             'banner_start_date' => 'nullable|date_format:d-m-Y',
             'banner_end_date' => 'nullable|date_format:d-m-Y|after_or_equal:banner_start_date',
@@ -77,6 +77,9 @@ class BannerController extends Controller
         }
 
         $data = $validator->validated();
+        if ($request->hasFile('banner_img')) {
+            $data['banner_img'] = $request->file('banner_img')->store('uploads/banners', 'public');
+        }
         if (!empty($data['banner_start_date'])) {
             $data['banner_start_date'] = Carbon::createFromFormat('d-m-Y', $data['banner_start_date'])->format('Y-m-d');
         }
@@ -106,7 +109,7 @@ class BannerController extends Controller
         $banner = Banner::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'banner_img' => 'required|string|max:255',
+            'banner_img' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'banner_link' => 'nullable|url',
             'banner_start_date' => 'nullable|date_format:d-m-Y',
             'banner_end_date' => 'nullable|date_format:d-m-Y|after_or_equal:banner_start_date',
@@ -122,6 +125,9 @@ class BannerController extends Controller
         }
 
         $data = $validator->validated();
+        if ($request->hasFile('banner_img')) {
+            $data['banner_img'] = $request->file('banner_img')->store('uploads/banners', 'public');
+        }
         if (!empty($data['banner_start_date'])) {
             $data['banner_start_date'] = Carbon::createFromFormat('d-m-Y', $data['banner_start_date'])->format('Y-m-d');
         }
