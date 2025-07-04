@@ -29,11 +29,11 @@
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Start Date</label>
-                            <input type="text" name="banner_start_date" id="banner_start_date" class="form-control" value="{{ old('banner_start_date', optional($banner->banner_start_date)->format('d-m-Y')) }}" placeholder="dd-mm-yyyy">
+                            <input type="text" name="banner_start_date" id="banner_start_date" class="form-control date-picker" value="{{ old('banner_start_date', optional($banner->banner_start_date)->format('d-m-Y')) }}" placeholder="dd-mm-yyyy">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">End Date</label>
-                            <input type="text" name="banner_end_date" id="banner_end_date" class="form-control" value="{{ old('banner_end_date', optional($banner->banner_end_date)->format('d-m-Y')) }}" placeholder="dd-mm-yyyy">
+                            <input type="text" name="banner_end_date" id="banner_end_date" class="form-control date-picker" value="{{ old('banner_end_date', optional($banner->banner_end_date)->format('d-m-Y')) }}" placeholder="dd-mm-yyyy">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Status</label>
