@@ -14,6 +14,20 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="card-title">Export Inventory</h4>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-2" id="export-progress-container" style="height:20px; display:none;">
+                    <div id="export-progress" class="progress-bar" role="progressbar" style="width:0%">0%</div>
+                </div>
+                <div id="export-status" class="mb-2"></div>
+                <button type="button" id="start-export" class="btn btn-primary">Export Inventory</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center gap-1">
                 <h4 class="card-title flex-grow-1">Inventory Management</h4>
@@ -204,6 +218,75 @@ $(document).ready(function(){
         });
     });
 
+    let exporting = false;
+    $('#start-export').on('click', function(){
+        if(exporting) return;
+        exporting = true;
+        $('#export-progress').css('width','0%').text('0%');
+        $('#export-progress-container').show();
+        $('#export-status').text('Preparing export...');
+
+        $.ajax({
+            url: '{{ route('vendor.inventory.export.init') }}',
+            method: 'GET',
+            success: function(init){
+                const total = init.total;
+                const limit = init.chunk_size;
+                let offset = 0;
+                const workbook = new ExcelJS.Workbook();
+                const sheet = workbook.addWorksheet('Inventory');
+                sheet.addRow(['Product','Warehouse','Quantity','Updated At']);
+
+                const fetchChunk = () => {
+                    if(offset >= total){
+                        workbook.xlsx.writeBuffer().then(buffer => {
+                            const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'inventory_'+Date.now()+'.xlsx';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            $('#export-status').text('Export complete');
+                            exporting = false;
+                        });
+                        return;
+                    }
+                    $('#export-status').text('Exporting '+(offset+1)+'-'+Math.min(offset+limit,total)+' of '+total);
+                    $.ajax({
+                        url: '{{ route('vendor.inventory.export.chunk') }}',
+                        method: 'GET',
+                        data: {offset: offset, limit: limit},
+                        success: function(res){
+                            res.rows.forEach(r => {
+                                sheet.addRow([r.product_name, r.warehouse_name, r.quantity, r.updated_at]);
+                            });
+                            offset += limit;
+                            const percent = Math.round(Math.min(offset,total)/total*100);
+                            $('#export-progress').css('width', percent+'%').text(percent+'%');
+                            fetchChunk();
+                        },
+                        error: function(xhr){
+                            $('#export-status').text(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error fetching data');
+                            exporting = false;
+                        }
+                    });
+                };
+                fetchChunk();
+            },
+            error: function(xhr){
+                $('#export-status').text(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error initializing export');
+                exporting = false;
+            }
+        });
+    });
+
 });
 </script>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('assets/js/exceljs.min.js') }}"></script>
+@endpush
