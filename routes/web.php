@@ -218,6 +218,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('stock/{id}', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'getWarehouseStock'])->name('stock');
         Route::post('update/{id}', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'updateStock'])->name('update');
         Route::get('{id}/logs', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'stockLogs'])->name('logs');
+        Route::get('export/init', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'exportInit'])->name('export.init');
+        Route::get('export/chunk', [App\Http\Controllers\Vendor\VendorInventoryController::class, 'exportChunk'])->name('export.chunk');
     });
 
     Route::prefix('vendor/warehouses')->name('vendor.warehouses.')->group(function () {

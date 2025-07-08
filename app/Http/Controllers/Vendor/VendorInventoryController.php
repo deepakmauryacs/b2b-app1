@@ -191,4 +191,67 @@ class VendorInventoryController extends Controller
 
         return view('vendor.inventory.logs', compact('logs', 'product'));
     }
+
+    /**
+     * Initialize export by returning total records and chunk size
+     */
+    public function exportInit()
+    {
+        $total = Product::where('vendor_id', Auth::id())->count();
+        return response()->json([
+            'total' => $total,
+            'chunk_size' => 500,
+        ]);
+    }
+
+    /**
+     * Provide a chunk of inventory data for export via AJAX
+     */
+    public function exportChunk(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'offset' => 'required|integer|min:0',
+            'limit'  => 'required|integer|min:1|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 0,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $offset = (int) $request->input('offset');
+        $limit  = (int) $request->input('limit');
+
+        $products = Product::where('vendor_id', Auth::id())
+            ->with('warehouses')
+            ->orderBy('id')
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        $rows = [];
+        foreach ($products as $product) {
+            if ($product->warehouses->count()) {
+                foreach ($product->warehouses as $wh) {
+                    $rows[] = [
+                        'product_name'   => $product->product_name,
+                        'warehouse_name' => $wh->name,
+                        'quantity'       => $wh->pivot->quantity,
+                        'updated_at'     => $product->updated_at->format('d-m-Y'),
+                    ];
+                }
+            } else {
+                $rows[] = [
+                    'product_name'   => $product->product_name,
+                    'warehouse_name' => '',
+                    'quantity'       => $product->stock_quantity,
+                    'updated_at'     => $product->updated_at->format('d-m-Y'),
+                ];
+            }
+        }
+
+        return response()->json(['rows' => $rows]);
+    }
 }
