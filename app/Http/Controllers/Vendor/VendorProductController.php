@@ -389,4 +389,41 @@ class VendorProductController extends Controller
             ], 500);
         }
     }
+
+    // Provide product data as JSON in chunks for export via AJAX
+    public function exportData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'offset' => 'nullable|integer|min:0',
+            'limit' => 'nullable|integer|min:1|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $offset = (int) $request->input('offset', 0);
+        $limit = (int) $request->input('limit', 500);
+
+        $products = Product::where('vendor_id', Auth::id())
+            ->orderBy('id')
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        $data = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'product_name' => $product->product_name,
+                'price' => $product->price,
+                'quantity' => $product->stock_quantity,
+                'status' => $product->status,
+                'created_at' => $product->created_at->format('d-m-Y'),
+            ];
+        });
+
+        return response()->json($data);
+    }
 }
