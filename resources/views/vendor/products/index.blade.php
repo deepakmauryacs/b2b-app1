@@ -219,6 +219,10 @@ $(document).ready(function() {
 
     async function exportProducts() {
         let offset = 0;
+        const filters = {
+            status: $('#status').val(),
+            product_name: $('#product_name').val()
+        };
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Products');
         worksheet.addRow(['ID','Name','Price','Qty','Status','Created At']);
@@ -228,7 +232,7 @@ $(document).ready(function() {
                 const chunk = await $.ajax({
                     url: "{{ route('vendor.products.export-data') }}",
                     method: 'GET',
-                    data: { offset: offset, limit: 500 }
+                    data: { offset: offset, limit: 500, ...filters }
                 });
 
                 if (chunk.length === 0) {

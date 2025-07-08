@@ -396,6 +396,8 @@ class VendorProductController extends Controller
         $validator = Validator::make($request->all(), [
             'offset' => 'nullable|integer|min:0',
             'limit' => 'nullable|integer|min:1|max:500',
+            'status' => 'nullable|in:approved,pending,rejected',
+            'product_name' => 'nullable|string|max:200',
         ]);
 
         if ($validator->fails()) {
@@ -407,8 +409,17 @@ class VendorProductController extends Controller
         $offset = (int) $request->input('offset', 0);
         $limit = (int) $request->input('limit', 500);
 
-        $products = Product::where('vendor_id', Auth::id())
-            ->orderBy('id')
+        $productsQuery = Product::where('vendor_id', Auth::id());
+
+        if ($request->filled('status')) {
+            $productsQuery->where('status', $request->status);
+        }
+
+        if ($request->filled('product_name')) {
+            $productsQuery->where('product_name', 'like', '%' . $request->product_name . '%');
+        }
+
+        $products = $productsQuery->orderBy('id')
             ->skip($offset)
             ->take($limit)
             ->get();
