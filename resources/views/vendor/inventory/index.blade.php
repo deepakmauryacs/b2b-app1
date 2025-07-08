@@ -235,7 +235,7 @@ $(document).ready(function(){
                 let offset = 0;
                 const workbook = new ExcelJS.Workbook();
                 const sheet = workbook.addWorksheet('Inventory');
-                sheet.addRow(['Product','Warehouse','Quantity','Updated At']);
+                sheet.addRow(['Product','Warehouse','Quantity','Total Quantity','Updated At']);
 
                 const fetchChunk = () => {
                     if(offset >= total){
@@ -261,7 +261,7 @@ $(document).ready(function(){
                         data: {offset: offset, limit: limit},
                         success: function(res){
                             res.rows.forEach(r => {
-                                sheet.addRow([r.product_name, r.warehouse_name, r.quantity, r.updated_at]);
+                                sheet.addRow([r.product_name, r.warehouse_name, r.quantity, r.total_quantity, r.updated_at]);
                             });
                             offset += limit;
                             const percent = Math.round(Math.min(offset,total)/total*100);

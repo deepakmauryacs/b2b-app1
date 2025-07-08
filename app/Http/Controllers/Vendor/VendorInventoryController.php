@@ -233,12 +233,14 @@ class VendorInventoryController extends Controller
 
         $rows = [];
         foreach ($products as $product) {
+            $totalQty = $product->stock_quantity;
             if ($product->warehouses->count()) {
                 foreach ($product->warehouses as $wh) {
                     $rows[] = [
                         'product_name'   => $product->product_name,
                         'warehouse_name' => $wh->name,
                         'quantity'       => $wh->pivot->quantity,
+                        'total_quantity' => $totalQty,
                         'updated_at'     => $product->updated_at->format('d-m-Y'),
                     ];
                 }
@@ -247,6 +249,7 @@ class VendorInventoryController extends Controller
                     'product_name'   => $product->product_name,
                     'warehouse_name' => '',
                     'quantity'       => $product->stock_quantity,
+                    'total_quantity' => $totalQty,
                     'updated_at'     => $product->updated_at->format('d-m-Y'),
                 ];
             }
