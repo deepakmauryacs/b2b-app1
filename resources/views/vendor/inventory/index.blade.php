@@ -229,6 +229,7 @@ $(document).ready(function(){
         $.ajax({
             url: '{{ route('vendor.inventory.export.init') }}',
             method: 'GET',
+            dataType: 'json',
             success: function(init){
                 const total = init.total;
                 const limit = init.chunk_size;
@@ -258,11 +259,18 @@ $(document).ready(function(){
                     $.ajax({
                         url: '{{ route('vendor.inventory.export.chunk') }}',
                         method: 'GET',
+                        dataType: 'json',
                         data: {offset: offset, limit: limit},
                         success: function(res){
-                            res.rows.forEach(r => {
-                                sheet.addRow([r.product_name, r.warehouse_name, r.quantity, r.total_quantity, r.updated_at]);
-                            });
+                            if(res && Array.isArray(res.rows)){
+                                res.rows.forEach(r => {
+                                    sheet.addRow([r.product_name, r.warehouse_name, r.quantity, r.total_quantity, r.updated_at]);
+                                });
+                            } else {
+                                $('#export-status').text('Invalid data format');
+                                exporting = false;
+                                return;
+                            }
                             offset += limit;
                             const percent = Math.round(Math.min(offset,total)/total*100);
                             $('#export-progress').css('width', percent+'%').text(percent+'%');
