@@ -15,9 +15,14 @@
                <div class="card-header d-flex justify-content-between align-items-center gap-1">
                     <h4 class="card-title flex-grow-1">{{ $pageTitle ?? 'All Product List' }}</h4>
 
-                    <a href="{{ route('vendor.products.create') }}" class="btn btn-sm btn-primary">
-                         <i class="bi bi-plus-lg" style="font-size: 16px;"></i> Add Product
-                    </a>
+                    <div class="d-flex gap-1">
+                        <button type="button" id="export-products" class="btn btn-sm btn-success">
+                            <i class="bi bi-download"></i> Export
+                        </button>
+                        <a href="{{ route('vendor.products.create') }}" class="btn btn-sm btn-primary">
+                             <i class="bi bi-plus-lg" style="font-size: 16px;"></i> Add Product
+                        </a>
+                    </div>
 
                </div>
                <div class="card-body">
@@ -83,6 +88,7 @@
      </div>
 </div>
 
+<script src="{{ asset('assets/js/exceljs.min.js') }}"></script>
 <script>
 $(document).ready(function() {
     var defaultStatus = "{{ $statusDefault ?? '' }}";
@@ -206,6 +212,56 @@ $(document).ready(function() {
             });
         }
     });
+
+    $('#export-products').on('click', function() {
+        exportProducts();
+    });
+
+    async function exportProducts() {
+        let offset = 0;
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Products');
+        worksheet.addRow(['ID','Name','Price','Qty','Status','Created At']);
+
+        while (true) {
+            try {
+                const chunk = await $.ajax({
+                    url: "{{ route('vendor.products.export-data') }}",
+                    method: 'GET',
+                    data: { offset: offset, limit: 500 }
+                });
+
+                if (chunk.length === 0) {
+                    break;
+                }
+
+                chunk.forEach(row => {
+                    worksheet.addRow([
+                        row.id,
+                        row.product_name,
+                        row.price,
+                        row.quantity,
+                        row.status,
+                        row.created_at
+                    ]);
+                });
+                offset += chunk.length;
+            } catch (e) {
+                toastr.error('Export failed');
+                return;
+            }
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'products_'+Date.now()+'.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 });
-</script>
-@endsection
+</script>@endsection
