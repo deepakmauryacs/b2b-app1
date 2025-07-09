@@ -390,6 +390,39 @@ class VendorProductController extends Controller
         }
     }
 
+    // Initialize export by returning total count and chunk size
+    public function exportInit(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'nullable|in:approved,pending,rejected',
+            'product_name' => 'nullable|string|max:200',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $query = Product::where('vendor_id', Auth::id());
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('product_name')) {
+            $query->where('product_name', 'like', '%' . $request->product_name . '%');
+        }
+
+        $total = $query->count();
+
+        return response()->json([
+            'total' => $total,
+            'chunk_size' => 500,
+        ]);
+    }
+
     // Provide product data as JSON in chunks for export via AJAX
     public function exportData(Request $request)
     {
