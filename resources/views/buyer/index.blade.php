@@ -71,8 +71,33 @@
          </div>
       </div>
       <div class="row" id="topProductCards">
-         <div class="col-12">
-            <p class="text-center mb-0">Loading...</p>
+         <div class="col-md-3 col-sm-6 mb-4" aria-hidden="true">
+            <div class="card placeholder-glow">
+               <div class="card-body py-5">
+                  <span class="placeholder col-12" style="height: 180px;"></span>
+               </div>
+            </div>
+         </div>
+         <div class="col-md-3 col-sm-6 mb-4" aria-hidden="true">
+            <div class="card placeholder-glow">
+               <div class="card-body py-5">
+                  <span class="placeholder col-12" style="height: 180px;"></span>
+               </div>
+            </div>
+         </div>
+         <div class="col-md-3 col-sm-6 mb-4" aria-hidden="true">
+            <div class="card placeholder-glow">
+               <div class="card-body py-5">
+                  <span class="placeholder col-12" style="height: 180px;"></span>
+               </div>
+            </div>
+         </div>
+         <div class="col-md-3 col-sm-6 mb-4" aria-hidden="true">
+            <div class="card placeholder-glow">
+               <div class="card-body py-5">
+                  <span class="placeholder col-12" style="height: 180px;"></span>
+               </div>
+            </div>
          </div>
       </div>
       </div>
@@ -88,7 +113,7 @@
                      </div>
                      <div class="mb-3">
                         <label for="subscribeDate" class="form-label">Subscribe Date</label>
-                        <input type="text" class="form-control date-picker" id="subscribeDate" name="subscribe_date" required>
+                        <input type="text" class="form-control date-picker" id="subscribeDate" name="subscribe_date" placeholder="dd-mm-yyyy" required>
                      </div>
                      <button type="submit" class="btn btn-primary">Subscribe</button>
                   </form>
