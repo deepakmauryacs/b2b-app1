@@ -33,8 +33,33 @@
       </div>
       <!-- Categories Row -->
       <div class="row mb-5" id="categoryCards">
-          <div class="col-12 text-center">
-              <span class="text-muted">Loading categories...</span>
+          <div class="col-md-3 col-sm-6 mb-3" aria-hidden="true">
+              <div class="card placeholder-glow">
+                  <div class="card-body py-3">
+                      <span class="placeholder col-6"></span>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3" aria-hidden="true">
+              <div class="card placeholder-glow">
+                  <div class="card-body py-3">
+                      <span class="placeholder col-6"></span>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3" aria-hidden="true">
+              <div class="card placeholder-glow">
+                  <div class="card-body py-3">
+                      <span class="placeholder col-6"></span>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3" aria-hidden="true">
+              <div class="card placeholder-glow">
+                  <div class="card-body py-3">
+                      <span class="placeholder col-6"></span>
+                  </div>
+              </div>
           </div>
       </div>
 
@@ -61,7 +86,9 @@
                   </div>
                </div>
             </div>
-         </div>      </div>
+         </div>
+      </div>
+      </div>
 
       <div class="row">
          <div class="col-md-12">
@@ -101,7 +128,11 @@ $(function () {
                     '<div class="card text-center shadow-sm category-card">' +
                     '<div class="card-body py-3">' +
                     '<h6 class="mb-0">' + cat.name + '</h6>' +
-                    '</div></div></div>';
+        var dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+        if (!dateRegex.test(date)) {
+            alert('Date format must be dd-mm-yyyy');
+            return;
+        }                    '</div></div></div>';
                 container.append(html);
             });
         } else {
