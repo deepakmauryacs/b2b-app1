@@ -1,85 +1,96 @@
 @extends('buyer.layouts.app')
-
+@section('title', 'Fixfellow - Tools Store Ecommerce')
 @section('content')
-<div class="container py-5">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">Subscribe to Newsletter</div>
-                <div class="card-body">
-                    <div id="form-errors" class="alert alert-danger d-none"></div>
-                    <div id="success-message" class="alert alert-success d-none"></div>
-                    <form id="newsletter-form">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="subscribe_date" class="form-label">Date</label>
-                            <input type="text" class="form-control" id="subscribe_date" name="subscribe_date" placeholder="dd-mm-yyyy" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Subscribe</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="flipkartStyleSlider" class="carousel slide" data-bs-ride="carousel" style="padding: 15px;">
+   <div class="carousel-inner">
+      <div class="carousel-item active">
+         <img src="https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/74f0ad81e44e6e6f.jpg" class="d-block w-100" alt="Sofa Slide">
+      </div>
+      <div class="carousel-item">
+         <img src="https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/833050f518e0f8cb.jpeg" class="d-block w-100" alt="Slide 2">
+      </div>
+      <div class="carousel-item">
+         <img src="https://rukminim2.flixcart.com/fk-p-flap/3240/540/image/74f0ad81e44e6e6f.jpg" class="d-block w-100" alt="Slide 3">
+      </div>
+   </div>
+   <button class="carousel-control-prev" type="button" data-bs-target="#flipkartStyleSlider" data-bs-slide="prev">
+   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+   <span class="visually-hidden">Previous</span>
+   </button>
+   <button class="carousel-control-next" type="button" data-bs-target="#flipkartStyleSlider" data-bs-slide="next">
+   <span class="carousel-control-next-icon" aria-hidden="true"></span>
+   <span class="visually-hidden">Next</span>
+   </button>
 </div>
+<!--fillter-section-->
+<section class="py-5"> 
+   <div class="container">
+      <!-- Category List Heading -->
+      <div class="row mb-3">
+         <div class="col-12">
+            <h5>Category List</h5>
+         </div>
+      </div>
+      <!-- Categories Row -->
+      <div class="row mb-5" id="categoryCards">
+          <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card text-center shadow-sm category-card">
+                  <div class="card-body py-3">
+                      <h6 class="mb-0">Industrial Machinery</h6>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card text-center shadow-sm category-card">
+                  <div class="card-body py-3">
+                      <h6 class="mb-0">Tools</h6>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card text-center shadow-sm category-card">
+                  <div class="card-body py-3">
+                      <h6 class="mb-0">Equipment</h6>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+              <div class="card text-center shadow-sm category-card">
+                  <div class="card-body py-3">
+                      <h6 class="mb-0">Supplies</h6>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+
+
+      <div class="row mb-4">
+         <div class="col-12">
+            <h5>Our Top Selling Products</h5>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 border shadow-sm">
+               <div class="position-relative">
+                  <img src="{{ asset('assets/buyer_assets/images/product/pro-front-09.png') }}" class="card-img-top" alt="Hammer Drill">
+               </div>
+               <div class="card-body text-center">
+                  <h6 class="card-title mb-3">
+                     <a href="product-layout1.html" class="text-decoration-none text-dark">Hammer Drill</a>
+                  </h6>
+                  <div class="d-grid gap-2">
+                     <button class="btn btn-outline-primary btn-sm gap-5"><i class="bi bi-chat-text"></i> Get Best Price</button>
+                     <button class="btn btn-primary btn-sm gap-5"><i class="bi bi-plus-square"></i> Add to RFQ</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</section>
+
+
+<!--fillter-section end-->
 @endsection
-
-@push('scripts')
-<script>
-    $(function () {
-        if (typeof flatpickr !== 'undefined') {
-            flatpickr('#subscribe_date', {dateFormat: 'd-m-Y'});
-        }
-        $('#newsletter-form').on('submit', function (e) {
-            e.preventDefault();
-            const formErrors = $('#form-errors').addClass('d-none').empty();
-            const successMsg = $('#success-message').addClass('d-none').empty();
-
-            const email = $('#email').val();
-            const date = $('#subscribe_date').val();
-            const datePattern = /^\d{2}-\d{2}-\d{4}$/;
-            let errors = [];
-
-            if (!email) {
-                errors.push('Email is required');
-            }
-
-            if (!datePattern.test(date)) {
-                errors.push('Date must be in dd-mm-yyyy format');
-            }
-
-            if (errors.length) {
-                formErrors.removeClass('d-none').html(errors.join('<br>'));
-                return;
-            }
-
-            $.ajax({
-                url: '{{ route('newsletter.subscribe') }}',
-                method: 'POST',
-                data: {email: email, subscribe_date: date},
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    successMsg.removeClass('d-none').text(response.message);
-                    $('#newsletter-form')[0].reset();
-                },
-                error: function (xhr) {
-                    if (xhr.status === 422) {
-                        let serverErrors = [];
-                        $.each(xhr.responseJSON.errors, function (k, msgs) {
-                            serverErrors.push(msgs.join('<br>'));
-                        });
-                        formErrors.removeClass('d-none').html(serverErrors.join('<br>'));
-                    } else {
-                        formErrors.removeClass('d-none').text('An error occurred.');
-                    }
-                }
-            });
-        });
-    });
-</script>
-@endpush
