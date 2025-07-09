@@ -70,22 +70,9 @@
             <h5>Our Top Selling Products</h5>
          </div>
       </div>
-      <div class="row">
-         <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card h-100 border shadow-sm">
-               <div class="position-relative">
-                  <img src="{{ asset('assets/buyer_assets/images/product/pro-front-09.png') }}" class="card-img-top" alt="Hammer Drill">
-               </div>
-               <div class="card-body text-center">
-                  <h6 class="card-title mb-3">
-                     <a href="product-layout1.html" class="text-decoration-none text-dark">Hammer Drill</a>
-                  </h6>
-                  <div class="d-grid gap-2">
-                     <button class="btn btn-outline-primary btn-sm gap-5"><i class="bi bi-chat-text"></i> Get Best Price</button>
-                     <button class="btn btn-primary btn-sm gap-5"><i class="bi bi-plus-square"></i> Add to RFQ</button>
-                  </div>
-               </div>
-            </div>
+      <div class="row" id="topProductCards">
+         <div class="col-12">
+            <p class="text-center mb-0">Loading...</p>
          </div>
       </div>
       </div>
@@ -119,6 +106,7 @@
 @push('scripts')
 <script>
 $(function () {
+    // Load categories
     $.get('{{ route('buyer.categories') }}', function(data) {
         var container = $('#categoryCards');
         container.empty();
@@ -128,17 +116,43 @@ $(function () {
                     '<div class="card text-center shadow-sm category-card">' +
                     '<div class="card-body py-3">' +
                     '<h6 class="mb-0">' + cat.name + '</h6>' +
-        var dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-        if (!dateRegex.test(date)) {
-            alert('Date format must be dd-mm-yyyy');
-            return;
-        }                    '</div></div></div>';
+                    '</div></div></div>';
                 container.append(html);
             });
         } else {
             container.append('<div class="col-12"><p class="text-center mb-0">No categories found.</p></div>');
         }
     });
+
+    // Load top products
+    $.get('{{ route('buyer.top-products') }}', function(data) {
+        var container = $('#topProductCards');
+        container.empty();
+        if (data.length) {
+            $.each(data, function(_, prod) {
+                var imageSection = prod.product_image
+                    ? '<div class="position-relative"><img src="' + prod.product_image + '" class="card-img-top" alt="' + prod.product_name + '"></div>'
+                    : '<div class="d-flex align-items-center justify-content-center" style="height:180px;"><span class="fw-bold">' + prod.product_name + '</span></div>';
+                var card = '<div class="col-md-3 col-sm-6 mb-4">' +
+                    '<div class="card h-100 border shadow-sm">' +
+                        imageSection +
+                        '<div class="card-body text-center">' +
+                            '<h6 class="card-title mb-3">' + prod.product_name + '</h6>' +
+                            '<div class="d-grid gap-2">' +
+                                '<button class="btn btn-outline-primary btn-sm gap-5"><i class="bi bi-chat-text"></i> Get Best Price</button>' +
+                                '<button class="btn btn-primary btn-sm gap-5"><i class="bi bi-plus-square"></i> Add to RFQ</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                container.append(card);
+            });
+        } else {
+            container.append('<div class="col-12"><p class="text-center mb-0">No products found.</p></div>');
+        }
+    });
+
+    // Newsletter form validation
     $('#newsletterForm').on('submit', function (e) {
         e.preventDefault();
         var form = $(this);
@@ -156,6 +170,11 @@ $(function () {
         }
         if (!date) {
             alert('Subscribe date is required');
+            return;
+        }
+        var dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+        if (!dateRegex.test(date)) {
+            alert('Date format must be dd-mm-yyyy');
             return;
         }
 
@@ -178,5 +197,4 @@ $(function () {
         });
     });
 });
-</script>
-@endpush
+</script>@endpush
