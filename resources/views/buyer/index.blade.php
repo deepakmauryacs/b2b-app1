@@ -33,33 +33,8 @@
       </div>
       <!-- Categories Row -->
       <div class="row mb-5" id="categoryCards">
-          <div class="col-md-3 col-sm-6 mb-3">
-              <div class="card text-center shadow-sm category-card">
-                  <div class="card-body py-3">
-                      <h6 class="mb-0">Industrial Machinery</h6>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-3 col-sm-6 mb-3">
-              <div class="card text-center shadow-sm category-card">
-                  <div class="card-body py-3">
-                      <h6 class="mb-0">Tools</h6>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-3 col-sm-6 mb-3">
-              <div class="card text-center shadow-sm category-card">
-                  <div class="card-body py-3">
-                      <h6 class="mb-0">Equipment</h6>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-3 col-sm-6 mb-3">
-              <div class="card text-center shadow-sm category-card">
-                  <div class="card-body py-3">
-                      <h6 class="mb-0">Supplies</h6>
-                  </div>
-              </div>
+          <div class="col-12 text-center">
+              <span class="text-muted">Loading categories...</span>
           </div>
       </div>
 
@@ -86,6 +61,25 @@
                   </div>
                </div>
             </div>
+         </div>      </div>
+
+      <div class="row">
+         <div class="col-md-12">
+            <div class="card">
+               <div class="card-body">
+                  <form id="newsletterForm">
+                     <div class="mb-3">
+                        <label for="newsletterEmail" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="newsletterEmail" name="email" required>
+                     </div>
+                     <div class="mb-3">
+                        <label for="subscribeDate" class="form-label">Subscribe Date</label>
+                        <input type="text" class="form-control date-picker" id="subscribeDate" name="subscribe_date" required>
+                     </div>
+                     <button type="submit" class="btn btn-primary">Subscribe</button>
+                  </form>
+               </div>
+            </div>
          </div>
       </div>
    </div>
@@ -94,3 +88,64 @@
 
 <!--fillter-section end-->
 @endsection
+
+@push('scripts')
+<script>
+$(function () {
+    $.get('{{ route('buyer.categories') }}', function(data) {
+        var container = $('#categoryCards');
+        container.empty();
+        if (data.length) {
+            $.each(data, function(_, cat) {
+                var html = '<div class="col-md-3 col-sm-6 mb-3">' +
+                    '<div class="card text-center shadow-sm category-card">' +
+                    '<div class="card-body py-3">' +
+                    '<h6 class="mb-0">' + cat.name + '</h6>' +
+                    '</div></div></div>';
+                container.append(html);
+            });
+        } else {
+            container.append('<div class="col-12"><p class="text-center mb-0">No categories found.</p></div>');
+        }
+    });
+    $('#newsletterForm').on('submit', function (e) {
+        e.preventDefault();
+        var form = $(this);
+        var email = $('#newsletterEmail').val().trim();
+        var date = $('#subscribeDate').val().trim();
+
+        if (!email) {
+            alert('Email is required');
+            return;
+        }
+        var emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            alert('Invalid email');
+            return;
+        }
+        if (!date) {
+            alert('Subscribe date is required');
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route('newsletter.subscribe') }}',
+            method: 'POST',
+            data: form.serialize(),
+            success: function (res) {
+                alert(res.message);
+                form[0].reset();
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                    alert(Object.values(errors).join('\n'));
+                } else {
+                    alert('An error occurred');
+                }
+            }
+        });
+    });
+});
+</script>
+@endpush
