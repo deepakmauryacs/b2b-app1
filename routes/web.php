@@ -202,6 +202,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{id}', [VendorProductController::class, 'show'])->name('show');
         Route::delete('delete/{id}', [VendorProductController::class, 'destroy'])->name('destroy');
         Route::get('export-data', [VendorProductController::class, 'exportData'])->name('export-data');
+        Route::get('export/init', [VendorProductController::class, 'exportInit'])->name('export.init');
     });
 
     Route::prefix('vendor/help-support')->name('vendor.help-support.')->group(function () {

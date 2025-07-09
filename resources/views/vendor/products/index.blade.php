@@ -16,7 +16,7 @@
                     <h4 class="card-title flex-grow-1">{{ $pageTitle ?? 'All Product List' }}</h4>
 
                     <div class="d-flex gap-1">
-                        <button type="button" id="export-products" class="btn btn-sm btn-success">
+                        <button type="button" id="start-export" class="btn btn-primary">
                             <i class="bi bi-download"></i> Export
                         </button>
                         <a href="{{ route('vendor.products.create') }}" class="btn btn-sm btn-primary">
@@ -26,6 +26,10 @@
 
                </div>
                <div class="card-body">
+                    <div class="progress mb-2" id="export-progress-container" style="height:20px; display:none;">
+                        <div id="export-progress" class="progress-bar" role="progressbar" style="width:0%">0%</div>
+                    </div>
+                    <div id="export-status" class="mb-2"></div>
                     <form id="filter-form" class="row g-2 align-items-end mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Product Name</label>
@@ -213,59 +217,76 @@ $(document).ready(function() {
         }
     });
 
-    $('#export-products').on('click', function() {
-        exportProducts();
-    });
+    let exporting = false;
+    $('#start-export').on('click', function() {
+        if (exporting) return;
+        exporting = true;
+        $('#export-progress').css('width', '0%').text('0%');
+        $('#export-progress-container').show();
+        $('#export-status').text('Preparing export...');
 
-    async function exportProducts() {
-        let offset = 0;
         const filters = {
             status: $('#status').val(),
             product_name: $('#product_name').val()
         };
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Products');
-        worksheet.addRow(['ID','Name','Price','Qty','Status','Created At']);
 
-        while (true) {
-            try {
-                const chunk = await $.ajax({
-                    url: "{{ route('vendor.products.export-data') }}",
-                    method: 'GET',
-                    data: { offset: offset, limit: 500, ...filters }
-                });
+        $.ajax({
+            url: "{{ route('vendor.products.export.init') }}",
+            method: 'GET',
+            data: filters,
+            success: function(init) {
+                const total = init.total;
+                const limit = init.chunk_size;
+                let offset = 0;
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('Products');
+                worksheet.addRow(['ID','Name','Price','Qty','Status','Created At']);
 
-                if (chunk.length === 0) {
-                    break;
-                }
+                const fetchChunk = () => {
+                    if (offset >= total) {
+                        workbook.xlsx.writeBuffer().then(buffer => {
+                            const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'products_'+Date.now()+'.xlsx';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            $('#export-progress').css('width', '100%').text('100%');
+                            $('#export-status').text('Export complete');
+                            exporting = false;
+                        });
+                        return;
+                    }
 
-                chunk.forEach(row => {
-                    worksheet.addRow([
-                        row.id,
-                        row.product_name,
-                        row.price,
-                        row.quantity,
-                        row.status,
-                        row.created_at
-                    ]);
-                });
-                offset += chunk.length;
-            } catch (e) {
-                toastr.error('Export failed');
-                return;
+                    $('#export-status').text('Exporting '+(offset+1)+'-'+Math.min(offset+limit, total)+' of '+total);
+                    $.ajax({
+                        url: "{{ route('vendor.products.export-data') }}",
+                        method: 'GET',
+                        data: { offset: offset, limit: limit, ...filters },
+                        success: function(chunk) {
+                            chunk.forEach(row => {
+                                worksheet.addRow([row.id, row.product_name, row.price, row.quantity, row.status, row.created_at]);
+                            });
+                            offset += chunk.length;
+                            const percent = Math.round(Math.min(offset, total) / total * 100);
+                            $('#export-progress').css('width', percent+'%').text(percent+'%');
+                            fetchChunk();
+                        },
+                        error: function(xhr) {
+                            $('#export-status').text(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error fetching data');
+                            exporting = false;
+                        }
+                    });
+                };
+                fetchChunk();
+            },
+            error: function(xhr) {
+                $('#export-status').text(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error initializing export');
+                exporting = false;
             }
-        }
-
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'products_'+Date.now()+'.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-});
-</script>@endsection
+        });
+    });
+});</script>@endsection
