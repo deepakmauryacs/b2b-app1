@@ -14,25 +14,15 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4 class="card-title">Export Inventory</h4>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center gap-1">
+                <h4 class="card-title flex-grow-1">Inventory Management</h4>
             </div>
             <div class="card-body">
                 <div class="progress mb-2" id="export-progress-container" style="height:20px; display:none;">
                     <div id="export-progress" class="progress-bar" role="progressbar" style="width:0%">0%</div>
                 </div>
                 <div id="export-status" class="mb-2"></div>
-                <button type="button" id="start-export" class="btn btn-primary">Export Inventory</button>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                <h4 class="card-title flex-grow-1">Inventory Management</h4>
-            </div>
-            <div class="card-body">
                 <form id="filter-form" class="row g-2 align-items-end mb-3">
                     <div class="col-md-4">
                         <label class="form-label">Product Name</label>
@@ -59,6 +49,9 @@
                         </button>
                         <button type="button" id="reset" class="btn btn-outline-danger">
                             <i class="bi bi-arrow-clockwise"></i> RESET
+                        </button>
+                        <button type="button" id="start-export" class="btn btn-primary">
+                            <i class="bi bi-download"></i> Export
                         </button>
                     </div>
                 </form>
