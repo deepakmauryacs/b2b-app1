@@ -106,7 +106,7 @@
          <div class="col-md-12">
             <div class="card">
                <div class="card-body">
-                  <form id="newsletterForm">
+                  <form id="newsletterForm" class="ajax">
                      <div class="mb-3">
                         <label for="newsletterEmail" class="form-label">Email address</label>
                         <input type="email" class="form-control" id="newsletterEmail" name="email" required>
@@ -177,49 +177,5 @@ $(function () {
         }
     });
 
-    // Newsletter form validation
-    $('#newsletterForm').on('submit', function (e) {
-        e.preventDefault();
-        var form = $(this);
-        var email = $('#newsletterEmail').val().trim();
-        var date = $('#subscribeDate').val().trim();
-
-        if (!email) {
-            alert('Email is required');
-            return;
-        }
-        var emailRegex = /^\S+@\S+\.\S+$/;
-        if (!emailRegex.test(email)) {
-            alert('Invalid email');
-            return;
-        }
-        if (!date) {
-            alert('Subscribe date is required');
-            return;
-        }
-        var dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-        if (!dateRegex.test(date)) {
-            alert('Date format must be dd-mm-yyyy');
-            return;
-        }
-
-        $.ajax({
-            url: '{{ route('newsletter.subscribe') }}',
-            method: 'POST',
-            data: form.serialize(),
-            success: function (res) {
-                alert(res.message);
-                form[0].reset();
-            },
-            error: function (xhr) {
-                if (xhr.status === 422) {
-                    var errors = xhr.responseJSON.errors;
-                    alert(Object.values(errors).join('\n'));
-                } else {
-                    alert('An error occurred');
-                }
-            }
-        });
-    });
 });
 </script>@endpush
