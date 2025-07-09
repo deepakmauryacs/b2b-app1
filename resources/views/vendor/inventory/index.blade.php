@@ -249,7 +249,9 @@ $(document).ready(function(){
                             a.click();
                             document.body.removeChild(a);
                             URL.revokeObjectURL(url);
+                            $('#export-progress').css('width', '100%').text('100%');
                             $('#export-status').text('Export complete');
+                            setTimeout(() => { location.reload(); }, 1500);
                             exporting = false;
                         });
                         return;
