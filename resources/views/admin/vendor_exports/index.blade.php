@@ -83,7 +83,7 @@ $(function(){
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 $('#export-status').text('Export complete');
-                setTimeout(() => location.reload(), 1000);
+                setTimeout(() => window.location.reload(), 1000);
             },
             error: function(xhr){
                 $('#export-status').text('Error fetching data');

@@ -256,6 +256,7 @@ $(document).ready(function() {
                             URL.revokeObjectURL(url);
                             $('#export-progress').css('width', '100%').text('100%');
                             $('#export-status').text('Export complete');
+                            setTimeout(() => window.location.reload(), 1000);
                             exporting = false;
                         });
                         return;
