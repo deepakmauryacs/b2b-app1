@@ -37,16 +37,32 @@
                                     <i class="fa fa-user"></i>
                                 </div>
                                 <div class="account_content">
-                                    <div class="account_text"><a href="#">Sign In</a></div>
+                                    @auth
+                                        <div class="account_text">Hi, {{ Auth::user()->name }}</div>
+                                    @else
+                                        <div class="account_text"><a href="{{ route('login') }}">Sign In</a></div>
+                                    @endauth
                                 </div>
                             </div>
                             <div class="account_extra dropdown_link" data-toggle="dropdown">Account</div>
                             <aside class="widget_account dropdown_content">
                                 <div class="widget_account_content">
                                     <ul>
-                                        <li><i class="fa fa-sign-in mr-2"></i><a href="{{ route('login') }}">Login</a></li>
-                                        <li><i class="fa fa-sign-in mr-2"></i><a href="{{ route('register') }}">Register</a></li>
+                                        @auth
+                                            <li>
+                                                <i class="fa fa-sign-out mr-2"></i>
+                                                <a href="#" onclick="event.preventDefault(); document.getElementById('buyer-logout-form').submit();">Logout</a>
+                                            </li>
+                                        @else
+                                            <li><i class="fa fa-sign-in mr-2"></i><a href="{{ route('login') }}">Login</a></li>
+                                            <li><i class="fa fa-user-plus mr-2"></i><a href="{{ route('register') }}">Register</a></li>
+                                        @endauth
                                     </ul>
+                                    @auth
+                                        <form id="buyer-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                            @csrf
+                                        </form>
+                                    @endauth
                                 </div>
                             </aside>
                         </div>
@@ -98,102 +114,8 @@
                                     <div class="cat_icon"><i class="fa fa-bars"></i></div>
                                     <div class="cat_text"><span>Shop by</span><h4>Categories</h4></div>
                                 </a>
-                                <ul class="cat_menu_list menu-vertical">
+                                <ul class="cat_menu_list menu-vertical" id="headerCategoryList">
                                     <li><a href="#" class="close-side"><i class="fa fa-times"></i></a></li>
-                                    <li class="parent">
-                                        <a href="#">Toolbox</a>
-                                        <div class="sub-menu megamenu column3">
-                                            <ul class="list-unstyled childs_1">
-                                                <li class="title"><a href="#">Materials</a>
-                                                    <div class="sub-menu">
-                                                        <ul class="list-unstyled childs_2">
-                                                            <li><a href="#">Miter Box</a></li>
-                                                            <li><a href="#">Scraper</a></li>
-                                                            <li><a href="#">Screwdriver</a></li>
-                                                            <li><a href="#">Glass Cutter</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <ul class="list-unstyled childs_1">
-                                                <li class="title"><a href="#">Accessories</a>
-                                                    <div class="sub-menu">
-                                                        <ul class="list-unstyled childs_2">
-                                                            <li><a href="#">Hacksaw</a></li>
-                                                            <li><a href="#">Pitchfork</a></li>
-                                                            <li><a href="#">Circular Saw</a></li>
-                                                            <li><a href="#">Hex Wrench</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <ul class="list-unstyled childs_1">
-                                                <li class="title"><a href="#">Cutting Tools‎ </a>
-                                                    <div class="sub-menu">
-                                                        <ul class="list-unstyled childs_2">
-                                                            <li><a href="#">Axes‎</a></li>
-                                                            <li><a href="#">Scissors</a></li>
-                                                            <li><a href="#">Saws‎</a></li>
-                                                            <li><a href="#">Knives</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
-                                    <li class="parent">
-                                        <a href="#">Hand Tool</a>
-                                        <div class="sub-menu megamenu column3">
-                                            <ul class="list-unstyled childs_1">
-                                                <li class="title"><a href="#">Gas Equipment</a>
-                                                    <div class="sub-menu">
-                                                        <ul class="list-unstyled childs_2">
-                                                            <li><a href="#">Dust Collector</a></li>
-                                                            <li><a href="#">Heat Guns</a></li>
-                                                            <li><a href="#">Impact Drivers</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <ul class="list-unstyled childs_1">
-                                                <li class="title"><a href="#">Cordless Tools</a>
-                                                    <div class="sub-menu">
-                                                        <ul class="list-unstyled childs_2">
-                                                            <li><a href="#">Bare Tools</a></li>
-                                                            <li><a href="#">Grinders</a></li>
-                                                            <li><a href="#">Impact Drivers</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <ul class="list-unstyled childs_1">
-                                                <li class="title"><a href="#">Air Tools</a>
-                                                    <div class="sub-menu">
-                                                        <ul class="list-unstyled childs_2">
-                                                            <li><a href="#">Air Hoses</a></li>
-                                                            <li><a href="#">Chipping Hammers</a></li>
-                                                            <li><a href="#">Compressors</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
-                                    <li><a href="#">Cutter Wood</a></li>
-                                    <li><a href="#">Power Tools</a></li>
-                                    <li><a href="#">Saw Map</a></li>
-                                    <li><a href="#">Electric Tools</a></li>
-                                    <li><a href="#">Collapsible</a></li>
-                                    <li><a href="#">Corded Planer</a></li>
-                                    <li class="parent-plus"><a href="#">More Categories</a>
-                                        <div class="plus-menu">
-                                            <ul class="list-unstyled">
-                                                <li><a href="#">Hacksaw</a></li>
-                                                <li><a href="#">Post Hole</a></li>
-                                                <li><a href="#">Tool Belt</a></li>
-                                            </ul>
-                                        </div>
-                                    </li>
                                 </ul>
                             </div>
                             <!--site-navigation -->
@@ -303,3 +225,26 @@
         </div>
     </div><!-- site-header-menu end -->
 </header><!--header end-->
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        axios.get('{{ route('buyer.categories') }}').then(function(response){
+            var list = document.getElementById('headerCategoryList');
+            if(list){
+                list.querySelectorAll('li:not(:first-child)').forEach(function(el){ el.remove(); });
+                var data = response.data;
+                if(data.length){
+                    data.forEach(function(cat){
+                        var li = document.createElement('li');
+                        li.innerHTML = '<a href="#">'+cat.name+'</a>';
+                        list.appendChild(li);
+                    });
+                } else {
+                    var li = document.createElement('li');
+                    li.className = 'px-3 py-2 text-muted';
+                    li.textContent = 'No categories found';
+                    list.appendChild(li);
+                }
+            }
+        });
+    });
+</script>
