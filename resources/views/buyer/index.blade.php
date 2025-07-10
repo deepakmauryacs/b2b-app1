@@ -130,31 +130,33 @@
 
 @push('scripts')
 <script>
-$(function () {
+document.addEventListener('DOMContentLoaded', function () {
     // Load categories
-    $.get('{{ route('buyer.categories') }}', function(data) {
-        var container = $('#categoryCards');
-        container.empty();
+    axios.get('{{ route('buyer.categories') }}').then(function (response) {
+        var container = document.getElementById('categoryCards');
+        container.innerHTML = '';
+        var data = response.data;
         if (data.length) {
-            $.each(data, function(_, cat) {
+            data.forEach(function (cat) {
                 var html = '<div class="col-md-3 col-sm-6 mb-3">' +
                     '<div class="card text-center shadow-sm category-card">' +
                     '<div class="card-body py-3">' +
                     '<h6 class="mb-0">' + cat.name + '</h6>' +
                     '</div></div></div>';
-                container.append(html);
+                container.insertAdjacentHTML('beforeend', html);
             });
         } else {
-            container.append('<div class="col-12"><p class="text-center mb-0">No categories found.</p></div>');
+            container.innerHTML = '<div class="col-12"><p class="text-center mb-0">No categories found.</p></div>';
         }
     });
 
     // Load top products
-    $.get('{{ route('buyer.top-products') }}', function(data) {
-        var container = $('#topProductCards');
-        container.empty();
+    axios.get('{{ route('buyer.top-products') }}').then(function (response) {
+        var container = document.getElementById('topProductCards');
+        container.innerHTML = '';
+        var data = response.data;
         if (data.length) {
-            $.each(data, function(_, prod) {
+            data.forEach(function (prod) {
                 var imageSection = prod.product_image
                     ? '<div class="position-relative"><img src="' + prod.product_image + '" class="card-img-top" alt="' + prod.product_name + '"></div>'
                     : '<div class="d-flex align-items-center justify-content-center" style="height:180px;"><span class="fw-bold">' + prod.product_name + '</span></div>';
@@ -170,12 +172,59 @@ $(function () {
                         '</div>' +
                     '</div>' +
                 '</div>';
-                container.append(card);
+                container.insertAdjacentHTML('beforeend', card);
             });
         } else {
-            container.append('<div class="col-12"><p class="text-center mb-0">No products found.</p></div>');
+            container.innerHTML = '<div class="col-12"><p class="text-center mb-0">No products found.</p></div>';
         }
     });
 
+    // Newsletter subscription
+    var newsletterForm = document.getElementById('newsletterForm');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var emailField = document.getElementById('newsletterEmail');
+            var dateField = document.getElementById('subscribeDate');
+            var email = emailField.value.trim();
+            var date = dateField.value.trim();
+            var valid = true;
+            emailField.classList.remove('is-invalid');
+            dateField.classList.remove('is-invalid');
+
+            if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+                emailField.classList.add('is-invalid');
+                valid = false;
+            }
+            if (!date || !/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+                dateField.classList.add('is-invalid');
+                valid = false;
+            }
+            if (!valid) {
+                return;
+            }
+
+            var formData = new FormData(newsletterForm);
+            axios.post('{{ route('newsletter.subscribe') }}', formData)
+                .then(function (res) {
+                    if (res.data.success) {
+                        toastr.success(res.data.message);
+                        newsletterForm.reset();
+                    }
+                })
+                .catch(function (error) {
+                    if (error.response && error.response.status === 422) {
+                        var errors = error.response.data.errors;
+                        Object.keys(errors).forEach(function (k) {
+                            var field = k === 'email' ? emailField : dateField;
+                            field.classList.add('is-invalid');
+                            toastr.error(errors[k][0]);
+                        });
+                    } else {
+                        toastr.error('Something went wrong');
+                    }
+                });
+        });
+    }
 });
 </script>@endpush
