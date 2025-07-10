@@ -53,7 +53,7 @@
                 </a>
             </div>
             <div class="card-body">
-                <form action="{{ route('vendor.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="productForm">
+                <form action="{{ route('vendor.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="productForm" class="ajax-form">
                     @csrf
                     @method('PUT')
                     <div class="row gy-3">

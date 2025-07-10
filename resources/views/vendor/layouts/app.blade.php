@@ -36,6 +36,10 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+<!-- SumoSelect -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/sumoselect.min.css" integrity="sha512-9sIgpQ/Y5bE5B7hR9x8RJWb1x1o1t4bm/FvGV8eK3opgDdGztqKqRR3YKHyCuXapnwXCfJOLLmObEWj1vDLhkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.sumoselect/3.1.6/jquery.sumoselect.min.js" integrity="sha512-XQCIUQtdgQXl3k5ufADG7n2AFDzy83H8XTur2qxGn8pY/+bexdFv+DE5jBqFaUG2RgxN6E466+vWXTjhBMWrOA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <style>
     .bi-bell,
@@ -420,6 +424,61 @@ $(function(){
     if (typeof flatpickr !== 'undefined') {
         $('.date-picker').flatpickr({ dateFormat: 'd-m-Y' });
     }
+    if (typeof $.fn.SumoSelect !== 'undefined') {
+        $('select').each(function(){
+            if (!$(this).hasClass('SumoUnder')) {
+                $(this).SumoSelect({search: true, searchText: 'Search...'});
+            }
+        });
+    }
+
+    $('form.ajax-form').on('submit', function(e){
+        e.preventDefault();
+        const $form = $(this);
+        const formData = new FormData(this);
+        $form.find('.is-invalid').removeClass('is-invalid');
+        $form.find('.error-message').remove();
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method') || 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            beforeSend: function(){
+                $form.find('button[type="submit"]').prop('disabled', true);
+            },
+            success: function(res){
+                if(res.status){
+                    toastr.success(res.message || 'Success');
+                    if(res.redirect){
+                        setTimeout(function(){ window.location.href = res.redirect; }, 800);
+                    }
+                }else{
+                    toastr.error(res.message || 'An error occurred');
+                }
+            },
+            error: function(xhr){
+                if(xhr.responseJSON && xhr.responseJSON.errors){
+                    $.each(xhr.responseJSON.errors, function(key, val){
+                        const $inp = $form.find('[name="'+key+'"]');
+                        $inp.addClass('is-invalid');
+                        if($inp.next('.error-message').length === 0){
+                            $inp.after('<span class="error-message text-danger">'+val[0]+'</span>');
+                        }
+                        toastr.error(val[0]);
+                    });
+                }else if(xhr.responseJSON && xhr.responseJSON.message){
+                    toastr.error(xhr.responseJSON.message);
+                }else{
+                    toastr.error('An error occurred. Please try again.');
+                }
+            },
+            complete: function(){
+                $form.find('button[type="submit"]').prop('disabled', false);
+            }
+        });
+    });
 });
 </script>
 <script>

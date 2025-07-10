@@ -13,7 +13,7 @@
                 @endif
             </div>
             <div class="card-body">
-                <form id="subscriptionForm" action="{{ route('vendor.subscription.store') }}" method="POST">
+                <form id="subscriptionForm" action="{{ route('vendor.subscription.store') }}" method="POST" class="ajax-form">
                     @csrf
                     <div class="row">
                         <div class="mb-3 col-md-6 col-lg-4">
