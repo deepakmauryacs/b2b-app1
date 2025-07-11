@@ -240,5 +240,6 @@ Route::get('/buyer/dashboard', function () {
 Route::get('/buyer', [HomeController::class, 'index'])->name('buyer.index');
 Route::get('/buyer/categories', [HomeController::class, 'categories'])->name('buyer.categories');
 Route::get('/buyer/top-products', [HomeController::class, 'topProducts'])->name('buyer.top-products');
+Route::get('/buyer/search-suggestions', [HomeController::class, 'searchSuggestions'])->name('buyer.search-suggestions');
 
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'store'])->name('newsletter.subscribe');

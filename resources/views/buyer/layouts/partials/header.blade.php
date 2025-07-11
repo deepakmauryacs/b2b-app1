@@ -19,10 +19,11 @@
                         <div class="header_search_content">
                             <div id="search_block_top" class="search_block_top">
                                 <form id="searchbox" method="get" action="#">
-                                    <input class="search_query form-control" type="text" id="search_query_top" name="s" placeholder="Search For Product...." value="">           
-                                   
+                                    <input class="search_query form-control" type="text" id="search_query_top" name="s" placeholder="Search For Product...." value="">
+
                                     <button type="submit" name="submit_search" class="btn btn-default button-search"><i class="fa fa-search"></i></button>
                                 </form>
+                                <div id="searchSuggestionContainer" class="mt-2"></div>
                             </div>
                         </div>
                     </div>    
@@ -278,5 +279,49 @@
                 }
             }
         });
+
+        var searchInput = document.getElementById('search_query_top');
+        var suggestionContainer = document.getElementById('searchSuggestionContainer');
+
+        function renderSuggestions(data) {
+            var html = '';
+            if ((data.products && data.products.length) || (data.categories && data.categories.length)) {
+                html += '<div class="row"><div class="col-md-12"><div class="card"><div class="card-body p-2">';
+                if (data.products && data.products.length) {
+                    html += '<ul class="list-group list-group-flush">';
+                    data.products.forEach(function (p) {
+                        var date = p.date ? ' <span class="text-muted small">(' + p.date + ')</span>' : '';
+                        html += '<li class="list-group-item">' + p.name + date + '</li>';
+                    });
+                    html += '</ul>';
+                }
+                if (data.categories && data.categories.length) {
+                    html += '<ul class="list-group list-group-flush mt-2">';
+                    data.categories.forEach(function (c) {
+                        html += '<li class="list-group-item">' + c.name + '</li>';
+                    });
+                    html += '</ul>';
+                }
+                html += '</div></div></div></div>';
+            }
+            suggestionContainer.innerHTML = html;
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function () {
+                var q = this.value.trim();
+                if (q.length < 2) {
+                    suggestionContainer.innerHTML = '';
+                    return;
+                }
+                axios.get('{{ route('buyer.search-suggestions') }}', { params: { q: q } })
+                    .then(function (res) {
+                        renderSuggestions(res.data);
+                    })
+                    .catch(function () {
+                        suggestionContainer.innerHTML = '';
+                    });
+            });
+        }
     });
 </script>
