@@ -45,4 +45,41 @@ class HomeController extends Controller
 
         return response()->json($products);
     }
+
+    /**
+     * Return product and category suggestions for search.
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $validated = $request->validate([
+            'q' => 'required|string|min:1',
+        ]);
+
+        $query = $validated['q'];
+
+        $products = Product::where('status', 'approved')
+            ->where('product_name', 'like', "%{$query}%")
+            ->select('product_name', 'created_at')
+            ->orderBy('product_name')
+            ->take(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->product_name,
+                    'date' => optional($item->created_at)->format('d-m-Y'),
+                ];
+            });
+
+        $categories = Category::where('status', 1)
+            ->where('name', 'like', "%{$query}%")
+            ->select('name')
+            ->orderBy('name')
+            ->take(5)
+            ->get();
+
+        return response()->json([
+            'products' => $products,
+            'categories' => $categories,
+        ]);
+    }
 }
