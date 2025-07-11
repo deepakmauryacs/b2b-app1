@@ -22,6 +22,9 @@ class HomeController extends Controller
     {
         $categories = Category::where('status', 1)
             ->where('parent_id', 0)
+            ->with(['children' => function ($q) {
+                $q->where('status', 1)->orderBy('name');
+            }])
             ->orderBy('name')
             ->get(['id', 'name']);
 
