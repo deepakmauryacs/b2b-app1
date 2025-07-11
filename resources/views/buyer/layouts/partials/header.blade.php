@@ -225,17 +225,49 @@
         </div>
     </div><!-- site-header-menu end -->
 </header><!--header end-->
+<style>
+    /* Basic dropdown styles for categories */
+    #headerCategoryList li { position: relative; }
+    #headerCategoryList .submenu {
+        list-style: none;
+        margin: 0;
+        padding-left: 0;
+        position: absolute;
+        top: 0;
+        left: 100%;
+        min-width: 180px;
+        display: none;
+        background: #fff;
+        z-index: 1000;
+    }
+    #headerCategoryList li:hover > .submenu { display: block; }
+</style>
 <script>
-    document.addEventListener('DOMContentLoaded', function(){
-        axios.get('{{ route('buyer.categories') }}').then(function(response){
+    document.addEventListener('DOMContentLoaded', function () {
+        axios.get('{{ route('buyer.categories') }}').then(function (response) {
             var list = document.getElementById('headerCategoryList');
-            if(list){
-                list.querySelectorAll('li:not(:first-child)').forEach(function(el){ el.remove(); });
+            if (list) {
+                list.querySelectorAll('li:not(:first-child)').forEach(function (el) { el.remove(); });
                 var data = response.data;
-                if(data.length){
-                    data.forEach(function(cat){
+                if (data.length) {
+                    data.forEach(function (cat) {
                         var li = document.createElement('li');
-                        li.innerHTML = '<a href="#">'+cat.name+'</a>';
+                        li.className = 'position-relative';
+                        var anchor = document.createElement('a');
+                        anchor.href = '#';
+                        anchor.textContent = cat.name;
+                        anchor.className = 'd-block px-3 py-2';
+                        li.appendChild(anchor);
+                        if (cat.children && cat.children.length) {
+                            var subUl = document.createElement('ul');
+                            subUl.className = 'submenu shadow-sm';
+                            cat.children.forEach(function (sub) {
+                                var subLi = document.createElement('li');
+                                subLi.innerHTML = '<a href="#" class="d-block px-3 py-2">' + sub.name + '</a>';
+                                subUl.appendChild(subLi);
+                            });
+                            li.appendChild(subUl);
+                        }
                         list.appendChild(li);
                     });
                 } else {
