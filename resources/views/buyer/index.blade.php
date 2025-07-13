@@ -65,6 +65,8 @@
 
 
 
+
+
       <div class="row mb-4">
          <div class="col-12">
             <h5>Our Top Selling Products</h5>
@@ -131,6 +133,16 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    function attachCategoryHandlers() {
+        document.querySelectorAll('.category-card').forEach(function (el) {
+            el.addEventListener('click', function () {
+                var id = this.getAttribute('data-id');
+                if (!/^\d+$/.test(id)) return;
+                window.location.href = '/buyer/category/' + id + '/sub-categories';
+            });
+        });
+    }
+
     // Load categories
     axios.get('{{ route('buyer.categories') }}').then(function (response) {
         var container = document.getElementById('categoryCards');
@@ -139,12 +151,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.length) {
             data.forEach(function (cat) {
                 var html = '<div class="col-md-3 col-sm-6 mb-3">' +
-                    '<div class="card text-center shadow-sm category-card">' +
+                    '<div class="card text-center shadow-sm category-card" data-id="' + cat.id + '">' +
                     '<div class="card-body py-3">' +
                     '<h6 class="mb-0">' + cat.name + '</h6>' +
                     '</div></div></div>';
                 container.insertAdjacentHTML('beforeend', html);
             });
+            attachCategoryHandlers();
         } else {
             container.innerHTML = '<div class="col-12"><p class="text-center mb-0">No categories found.</p></div>';
         }
