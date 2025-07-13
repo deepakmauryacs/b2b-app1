@@ -135,9 +135,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     function attachCategoryHandlers() {
         document.querySelectorAll('.category-card').forEach(function (el) {
-            el.addEventListener('click', function () {
+            el.addEventListener('click', function (e) {
                 var id = this.getAttribute('data-id');
                 if (!/^\d+$/.test(id)) return;
+                e.preventDefault();
                 window.location.href = '/buyer/category/' + id + '/sub-categories';
             });
         });
@@ -150,11 +151,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var data = response.data;
         if (data.length) {
             data.forEach(function (cat) {
+                var url = '/buyer/category/' + cat.id + '/sub-categories';
                 var html = '<div class="col-md-3 col-sm-6 mb-3">' +
-                    '<div class="card text-center shadow-sm category-card" data-id="' + cat.id + '">' +
+                    '<a href="' + url + '" class="card text-center shadow-sm category-card" data-id="' + cat.id + '">' +
                     '<div class="card-body py-3">' +
                     '<h6 class="mb-0">' + cat.name + '</h6>' +
-                    '</div></div></div>';
+                    '</div></a></div>';
                 container.insertAdjacentHTML('beforeend', html);
             });
             attachCategoryHandlers();
