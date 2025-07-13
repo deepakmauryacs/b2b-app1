@@ -7,12 +7,37 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
 {
     public function index()
     {
         return view('buyer.index');
+    }
+
+    /**
+     * Display sub category page for selected category.
+     */
+    public function subCategoryPage($categoryId)
+    {
+        $data = Validator::make(['id' => $categoryId], [
+            'id' => 'required|integer|exists:categories,id',
+        ])->validate();
+
+        return view('buyer.subcategories', ['categoryId' => $data['id']]);
+    }
+
+    /**
+     * Display product page for selected sub category.
+     */
+    public function productPage($subCategoryId)
+    {
+        $data = Validator::make(['id' => $subCategoryId], [
+            'id' => 'required|integer|exists:categories,id',
+        ])->validate();
+
+        return view('buyer.products', ['subCategoryId' => $data['id']]);
     }
 
     /**
@@ -81,5 +106,39 @@ class HomeController extends Controller
             'products' => $products,
             'categories' => $categories,
         ]);
+    }
+
+    /**
+     * Return sub categories for given category.
+     */
+    public function subCategories($categoryId)
+    {
+        $data = Validator::make(['id' => $categoryId], [
+            'id' => 'required|integer|exists:categories,id',
+        ])->validate();
+
+        $sub = Category::where('status', 1)
+            ->where('parent_id', $data['id'])
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json($sub);
+    }
+
+    /**
+     * Return products list for selected sub category.
+     */
+    public function productsBySubCategory($subCategoryId)
+    {
+        $data = Validator::make(['id' => $subCategoryId], [
+            'id' => 'required|integer|exists:categories,id',
+        ])->validate();
+
+        $products = Product::where('status', 'approved')
+            ->where('sub_category_id', $data['id'])
+            ->orderBy('product_name')
+            ->get(['product_name', 'product_image']);
+
+        return response()->json($products);
     }
 }
