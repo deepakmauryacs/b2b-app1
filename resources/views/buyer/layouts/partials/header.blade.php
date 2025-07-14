@@ -129,91 +129,12 @@
                                 <!-- menu -->
                                 <nav class="menu menu-mobile" id="menu">
                                     <ul class="nav">
-                                        <li class="mega-menu-item active">
-                                            <a href="#" class="mega-menu-link">Home</a>
-                                            <ul class="mega-submenu">
-                                                <li><a href="{{ url('/') }}">Sample Homepage 1</a></li>
-                                                <li><a href="{{ url('/home-2') }}">Sample Homepage 2</a></li>
-                                                <li class="active"><a href="{{ url('/home-3') }}">Sample Homepage 3</a></li>
-                                                <li class="mega-menu-item">
-                                                    <a href="#" class="mega-menu-link">Header Styles</a>
-                                                    <ul class="mega-submenu">
-                                                        <li><a href="{{ url('/') }}">Header Style 01</a></li>
-                                                        <li><a target="_blank" href="{{ url('/header-style-02') }}">Header Style 02</a></li>
-                                                        <li><a target="_blank" href="{{ url('/header-style-03') }}">Header Style 03</a></li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                        <li class="mega-menu-item">
-                                            <a href="#" class="mega-menu-link">Pages</a>
-                                            <ul class="mega-submenu">
-                                                <li><a href="#">About Us</a></li>
-                                                <li><a href="#">Login</a></li>
-                                                <li><a href="#">Register</a></li>
-                                                <li><a href="#">Contact Us</a></li>
-                                                <li><a href="#">Error Page</a></li>
-                                            </ul>
-                                        </li>
-                                        <li class="mega-menu-item megamenu-fw">
-                                            <a href="#" class="mega-menu-link">Shop</a>
-                                            <ul class="mega-submenu megamenu-content" role="menu">
-                                                <li>
-                                                    <div class="row">
-                                                        <div class="col-menu col-md-3">
-                                                            <h6 class="title">Shop Page Layout</h6>
-                                                            <div class="content">
-                                                                <ul class="menu-col">
-                                                                    <li><a href="#">Shop Default</a></li>
-                                                                    <li><a href="#">Shop Left Sidebar</a></li>
-                                                                    <li><a href="#">Shop Right Sidebar</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div><!-- end col-3 -->
-                                                        <div class="col-menu col-md-3">
-                                                            <h6 class="title">Shop Pages</h6>
-                                                            <div class="content">
-                                                                <ul class="menu-col">
-                                                                    <li><a href="#">Cart</a></li>
-                                                                    <li><a href="#">Checkout</a></li>
-                                                                    <li><a href="#">Account/Login</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div><!-- end col-3 -->
-                                                        <div class="col-menu col-md-3">
-                                                            <h6 class="title">Shop Product Layout</h6>
-                                                            <div class="content">
-                                                                <ul class="menu-col">
-                                                                    <li><a href="#">Product Layout 1</a></li>
-                                                                    <li><a href="#">Product Layout 2</a></li>
-                                                                    <li><a href="#">Product Layout 3</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>    
-                                                        <div class="col-menu col-md-3">
-                                                            <div class="content">
-                                                                <ul class="menu-col">
-                                                                    <li><a href="#">
-                                                                        <img class="img-fluid" src="{{ asset('images/menu-item-banner.jpg') }}" alt="bimg">
-                                                                    </a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div><!-- end col-3 -->
-                                                    </div><!-- end row -->
-                                                </li>
-                                            </ul>
-                                        </li>
-                                        <li class="mega-menu-item">
-                                            <a href="#" class="mega-menu-link">Blog</a>
-                                            <ul class="mega-submenu">
-                                                <li class=""><a href="#">Blog Classic</a></li>
-                                                <li class=""><a href="#">Blog Grid</a></li>
-                                                <li class=""><a href="#">Single Blog View</a></li>
-                                            </ul>
-                                        </li>
+                                        <li><a href="{{ route('buyer.index') }}">Home</a></li>
+                                        <li><a href="#">Product List</a></li>
+                                        <li><a href="#">Get Best Deal</a></li>
                                         <li><a href="#">Contact Us</a></li>
                                     </ul>
-                                </nav>  
+                                </nav>
                             </div><!-- site-navigation end-->
                             <div class="user_zone_block d-flex flex-row align-items-center justify-content-end ml-auto">
                                 <div class="icon"><i class="bi bi-graph-up-arrow"></i></div>
@@ -310,6 +231,10 @@
         if (searchInput) {
             searchInput.addEventListener('keyup', function () {
                 var q = this.value.trim();
+                if (!/^[a-zA-Z0-9\s]*$/.test(q)) {
+                    suggestionContainer.innerHTML = '<div class="text-danger p-2">Invalid characters.</div>';
+                    return;
+                }
                 if (q.length < 2) {
                     suggestionContainer.innerHTML = '';
                     return;
