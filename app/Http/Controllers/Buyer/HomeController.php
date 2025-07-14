@@ -90,7 +90,7 @@ class HomeController extends Controller
     public function searchSuggestions(Request $request)
     {
         $validated = $request->validate([
-            'q' => 'required|string|min:1',
+            'q' => ['required', 'string', 'min:1', 'regex:/^[\pL\pN\s]+$/u'],
         ]);
 
         $query = $validated['q'];
