@@ -249,4 +249,8 @@ Route::get('/buyer/search-suggestions', [HomeController::class, 'searchSuggestio
 Route::get('/buyer/post-buy', [BuyRequirementController::class, 'create'])->name('buyer.post-buy.create');
 Route::post('/buyer/post-buy', [BuyRequirementController::class, 'store'])->name('buyer.post-buy.store');
 
+// Product list with load more
+Route::get('/buyer/products-list', [\App\Http\Controllers\Buyer\ProductController::class, 'index'])->name('buyer.products.list-page');
+Route::get('/buyer/products-list/data', [\App\Http\Controllers\Buyer\ProductController::class, 'list'])->name('buyer.products.list');
+
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'store'])->name('newsletter.subscribe');
