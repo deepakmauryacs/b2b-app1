@@ -139,7 +139,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 var slug = this.getAttribute('data-slug');
                 if (!slug) return;
                 e.preventDefault();
-                window.location.href = '/buyer/category/' + slug;
+                var categoryUrl = '{{ route('buyer.sub-category-page', ['slug' => '__slug__']) }}'.replace('__slug__', slug);
+                window.location.href = categoryUrl;
             });
         });
     }
@@ -150,8 +151,9 @@ document.addEventListener('DOMContentLoaded', function () {
         container.innerHTML = '';
         var data = response.data;
         if (data.length) {
+            var urlTemplate = '{{ route('buyer.sub-category-page', ['slug' => '__slug__']) }}';
             data.forEach(function (cat) {
-                var url = '/buyer/category/' + cat.slug;
+                var url = urlTemplate.replace('__slug__', cat.slug);
                 var html = '<div class="col-md-3 col-sm-6 mb-3">' +
                     '<a href="' + url + '" class="card text-center shadow-sm category-card" data-slug="' + cat.slug + '">' +
                     '<div class="card-body py-3">' +
