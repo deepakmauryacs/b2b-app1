@@ -19,13 +19,26 @@ class HomeController extends Controller
     /**
      * Display sub category page for selected category.
      */
-    public function subCategoryPage($categoryId)
+    public function subCategoryPage($slug)
     {
-        $data = Validator::make(['id' => $categoryId], [
-            'id' => 'required|integer|exists:categories,id',
+        $data = Validator::make(['slug' => $slug], [
+            'slug' => 'required|string|exists:categories,slug',
         ])->validate();
 
-        return view('buyer.subcategories', ['categoryId' => $data['id']]);
+        $category = Category::where('slug', $data['slug'])
+            ->where('parent_id', 0)
+            ->where('status', 1)
+            ->firstOrFail();
+
+        $subcategories = Category::where('status', 1)
+            ->where('parent_id', $category->id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('buyer.subcategories', [
+            'category' => $category,
+            'subcategories' => $subcategories,
+        ]);
     }
 
     /**
@@ -51,7 +64,7 @@ class HomeController extends Controller
                 $q->where('status', 1)->orderBy('name');
             }])
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'slug']);
 
         return response()->json($categories);
     }

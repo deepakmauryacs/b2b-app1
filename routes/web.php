@@ -238,7 +238,7 @@ Route::get('/buyer/dashboard', function () {
 
 
 Route::get('/buyer', [HomeController::class, 'index'])->name('buyer.index');
-Route::get('/buyer/category/{category}/sub-categories', [HomeController::class, 'subCategoryPage'])->name('buyer.sub-category-page');
+Route::get('/buyer/category/{slug}', [HomeController::class, 'subCategoryPage'])->name('buyer.sub-category-page');
 Route::get('/buyer/sub-category/{subCategory}/products', [HomeController::class, 'productPage'])->name('buyer.product-page');
 Route::get('/buyer/categories', [HomeController::class, 'categories'])->name('buyer.categories');
 Route::get('/buyer/sub-categories/{category}', [HomeController::class, 'subCategories'])->name('buyer.sub-categories');
