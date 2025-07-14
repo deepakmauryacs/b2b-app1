@@ -22,6 +22,7 @@ use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorSubscriptionController;
 use App\Http\Controllers\Vendor\VendorPasswordController;
 use App\Http\Controllers\Buyer\HomeController;
+use App\Http\Controllers\Buyer\BuyRequirementController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('optimize:clear');
@@ -245,5 +246,7 @@ Route::get('/buyer/sub-categories/{category}', [HomeController::class, 'subCateg
 Route::get('/buyer/products/{subCategory}', [HomeController::class, 'productsBySubCategory'])->name('buyer.subcategory-products');
 Route::get('/buyer/top-products', [HomeController::class, 'topProducts'])->name('buyer.top-products');
 Route::get('/buyer/search-suggestions', [HomeController::class, 'searchSuggestions'])->name('buyer.search-suggestions');
+Route::get('/buyer/post-buy', [BuyRequirementController::class, 'create'])->name('buyer.post-buy.create');
+Route::post('/buyer/post-buy', [BuyRequirementController::class, 'store'])->name('buyer.post-buy.store');
 
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'store'])->name('newsletter.subscribe');
