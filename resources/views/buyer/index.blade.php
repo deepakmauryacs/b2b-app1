@@ -104,25 +104,6 @@
       </div>
       </div>
 
-      <div class="row">
-         <div class="col-md-12">
-            <div class="card">
-               <div class="card-body">
-                  <form id="newsletterForm" class="ajax">
-                     <div class="mb-3">
-                        <label for="newsletterEmail" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="newsletterEmail" name="email" required>
-                     </div>
-                     <div class="mb-3">
-                        <label for="subscribeDate" class="form-label">Subscribe Date</label>
-                        <input type="text" class="form-control date-picker" id="subscribeDate" name="subscribe_date" placeholder="dd-mm-yyyy" required>
-                     </div>
-                     <button type="submit" class="btn btn-primary">Subscribe</button>
-                  </form>
-               </div>
-            </div>
-         </div>
-      </div>
    </div>
 </section>
 
@@ -196,52 +177,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Newsletter subscription
-    var newsletterForm = document.getElementById('newsletterForm');
-    if (newsletterForm) {
-        newsletterForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            var emailField = document.getElementById('newsletterEmail');
-            var dateField = document.getElementById('subscribeDate');
-            var email = emailField.value.trim();
-            var date = dateField.value.trim();
-            var valid = true;
-            emailField.classList.remove('is-invalid');
-            dateField.classList.remove('is-invalid');
-
-            if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-                emailField.classList.add('is-invalid');
-                valid = false;
-            }
-            if (!date || !/^\d{2}-\d{2}-\d{4}$/.test(date)) {
-                dateField.classList.add('is-invalid');
-                valid = false;
-            }
-            if (!valid) {
-                return;
-            }
-
-            var formData = new FormData(newsletterForm);
-            axios.post('{{ route('newsletter.subscribe') }}', formData)
-                .then(function (res) {
-                    if (res.data.success) {
-                        toastr.success(res.data.message);
-                        newsletterForm.reset();
-                    }
-                })
-                .catch(function (error) {
-                    if (error.response && error.response.status === 422) {
-                        var errors = error.response.data.errors;
-                        Object.keys(errors).forEach(function (k) {
-                            var field = k === 'email' ? emailField : dateField;
-                            field.classList.add('is-invalid');
-                            toastr.error(errors[k][0]);
-                        });
-                    } else {
-                        toastr.error('Something went wrong');
-                    }
-                });
-        });
-    }
 });
 </script>@endpush
