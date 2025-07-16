@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data.forEach(function (cat) {
                 var url = urlTemplate.replace('__slug__', cat.slug);
                 var html = '<div class="col-md-3 col-sm-6 mb-3">' +
-                    '<a href="' + url + '" class="card text-center shadow-sm category-card" data-slug="' + cat.slug + '">' +
+                    '<a href="' + url + '" class="card text-center shadow-sm category-card" style="background-color: #e6f2ff;" data-slug="' + cat.slug + '">' +
                     '<div class="card-body py-3">' +
                     '<h6 class="mb-0">' + cat.name + '</h6>' +
                     '</div></a></div>';
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data.forEach(function (prod) {
                 var imageSection = prod.product_image
                     ? '<div class="position-relative"><img src="' + prod.product_image + '" class="card-img-top" alt="' + prod.product_name + '"></div>'
-                    : '<div class="d-flex align-items-center justify-content-center" style="height:180px;"><span class="fw-bold">' + prod.product_name + '</span></div>';
+                    : '<div class="d-flex align-items-center justify-content-center" style="height:180px;background-color: #e7f2ff;margin: 20px;"><span class="fw-bold">' + prod.product_name + '</span></div>';
                 var card = '<div class="col-md-3 col-sm-6 mb-4">' +
                     '<div class="card h-100 border shadow-sm">' +
                         imageSection +
@@ -178,4 +178,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
-</script>@endpush
+</script>
+@endpush

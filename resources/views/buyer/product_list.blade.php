@@ -1,7 +1,7 @@
 @extends('buyer.layouts.app')
 @section('title', 'Products')
 @section('content')
- <!-- page-title -->
+<!-- page-title -->
 <div class="ttm-page-title-row">
     <div class="container">
         <div class="row">
@@ -90,7 +90,7 @@
                         </div>
 
                         <div class="text-center mt-3">
-                            <button id="loadMoreBtn" class="btn btn-primary">Load More</button>
+                            <button id="loadMoreBtn" class="btn btn-outline-primary">Load More</button>
                         </div>
                     
             </div>
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ? '<div class="position-relative" style="height:180px; overflow:hidden;">' + 
                     '<img src="' + prod.product_image + '" class="card-img-top h-100 object-fit-cover" alt="' + prod.product_name + '">' +
                   '</div>'
-                : '<div class="d-flex align-items-center justify-content-center bg-light border-bottom" style="height:180px;">' +
+                : '<div class="d-flex align-items-center justify-content-center border-bottom" style="height:180px;background-color: #e7f2ff;margin: 20px;">' +
                     '<span class="fw-bold text-muted">' + prod.product_name + '</span>' +
                   '</div>';
 
