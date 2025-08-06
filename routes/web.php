@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserAccountController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\VendorExportController;
@@ -99,6 +100,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('store', [UserController::class, 'store'])->name('store');
         Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [UserController::class, 'update'])->name('update');
+    });
+
+    Route::prefix('admin/user-accounts')->name('admin.user-accounts.')->group(function () {
+        Route::get('list', [UserAccountController::class, 'index'])->name('index');
+        Route::get('create', [UserAccountController::class, 'create'])->name('create');
+        Route::post('store', [UserAccountController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [UserAccountController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [UserAccountController::class, 'update'])->name('update');
     });
 
     Route::prefix('admin/categories')->name('admin.categories.')->group(function () {

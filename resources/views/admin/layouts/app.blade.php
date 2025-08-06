@@ -479,6 +479,9 @@
                                 <li class="sub-nav-item">
                                     <a class="sub-nav-link" href="{{ route('admin.users.index') }}">Admin User</a>
                                 </li>
+                                <li class="sub-nav-item">
+                                    <a class="sub-nav-link" href="{{ route('admin.user-accounts.index') }}">User Accounts</a>
+                                </li>
                             </ul>
                         </div>
                     </li>
