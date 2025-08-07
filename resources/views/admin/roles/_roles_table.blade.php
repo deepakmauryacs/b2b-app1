@@ -6,6 +6,9 @@
             <td>{{ htmlspecialchars($role->name) }}</td>
             <td>{{ $role->parent ? htmlspecialchars($role->parent->name) : '-' }}</td>
             <td>
+                <a href="{{ route('admin.roles.permissions', $role->id) }}" class="btn btn-sm btn-soft-secondary me-1" title="Permissions">
+                    <i class="bi bi-lock"></i>
+                </a>
                 <a href="{{ route('admin.roles.edit', $role->id) }}" class="btn btn-sm btn-soft-primary" title="Edit">
                     <iconify-icon icon="solar:pen-2-broken" class="fs-18"></iconify-icon>
                 </a>

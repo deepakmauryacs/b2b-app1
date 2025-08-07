@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\RolePermission;
+use App\Models\Module;
 use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
@@ -46,7 +47,9 @@ class RoleController extends Controller
                 return $role->parent ? $role->parent->name : '-';
             })
             ->addColumn('action', function ($role) {
-                return '<a href="'.route('admin.roles.edit', $role->id).'" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>';
+                $permBtn = '<a href="'.route('admin.roles.permissions', $role->id).'" class="btn btn-soft-secondary btn-sm me-1"><i class="bi bi-lock"></i></a>';
+                $editBtn = '<a href="'.route('admin.roles.edit', $role->id).'" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>';
+                return $permBtn.$editBtn;
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -56,8 +59,8 @@ class RoleController extends Controller
     public function create()
     {
         $roles = Role::orderBy('name', 'asc')->get();
-        $modules = config('modules');
-        $actions = ['add', 'edit', 'view', 'export'];
+        $modules = Module::where('status', '1')->orderBy('name')->get();
+        $actions = ['add', 'edit', 'view', 'delete'];
         return view('admin.roles.create', compact('roles', 'modules', 'actions'));
     }
 
@@ -66,8 +69,8 @@ class RoleController extends Controller
     {
         $role = Role::with('permissions')->findOrFail($id);
         $roles = Role::where('id', '!=', $id)->orderBy('name', 'asc')->get();
-        $modules = config('modules');
-        $actions = ['add', 'edit', 'view', 'export'];
+        $modules = Module::where('status', '1')->orderBy('name')->get();
+        $actions = ['add', 'edit', 'view', 'delete'];
         return view('admin.roles.edit', compact('role', 'roles', 'modules', 'actions'));
     }
 
@@ -79,7 +82,7 @@ class RoleController extends Controller
             'permissions' => 'array',
             'permissions.*' => 'array',
         ]);
-        $modules = config('modules');
+        $modules = Module::pluck('id')->toArray();
 
         $role = Role::create([
             'name' => $data['name'],
@@ -87,17 +90,17 @@ class RoleController extends Controller
         ]);
 
         if (!empty($data['permissions'])) {
-            foreach ($data['permissions'] as $module => $perms) {
-                if (!in_array($module, $modules)) {
+            foreach ($data['permissions'] as $moduleId => $perms) {
+                if (!in_array($moduleId, $modules)) {
                     continue;
                 }
                 RolePermission::create([
                     'role_id' => $role->id,
-                    'module' => $module,
+                    'module_id' => $moduleId,
                     'can_add' => in_array('add', $perms),
                     'can_edit' => in_array('edit', $perms),
                     'can_view' => in_array('view', $perms),
-                    'can_export' => in_array('export', $perms),
+                    'can_delete' => in_array('delete', $perms),
                 ]);
             }
         }
@@ -115,7 +118,7 @@ class RoleController extends Controller
             'permissions' => 'array',
             'permissions.*' => 'array',
         ]);
-        $modules = config('modules');
+        $modules = Module::pluck('id')->toArray();
 
         $role->update([
             'name' => $data['name'],
@@ -124,17 +127,57 @@ class RoleController extends Controller
 
         if (isset($data['permissions'])) {
             $role->permissions()->delete();
-            foreach ($data['permissions'] as $module => $perms) {
-                if (!in_array($module, $modules)) {
+            foreach ($data['permissions'] as $moduleId => $perms) {
+                if (!in_array($moduleId, $modules)) {
                     continue;
                 }
                 RolePermission::create([
                     'role_id' => $role->id,
-                    'module' => $module,
+                    'module_id' => $moduleId,
                     'can_add' => in_array('add', $perms),
                     'can_edit' => in_array('edit', $perms),
                     'can_view' => in_array('view', $perms),
-                    'can_export' => in_array('export', $perms),
+                    'can_delete' => in_array('delete', $perms),
+                ]);
+            }
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function permissions($id)
+    {
+        $role = Role::with('permissions')->findOrFail($id);
+        $modules = Module::where('status', '1')->orderBy('name')->get();
+        $actions = ['add', 'edit', 'view', 'delete'];
+        return view('admin.roles.permissions', compact('role', 'modules', 'actions'));
+    }
+
+    public function updatePermissions(Request $request, $id)
+    {
+        $role = Role::findOrFail($id);
+
+        $data = $request->validate([
+            'permissions' => 'array',
+            'permissions.*' => 'array',
+        ]);
+
+        $modules = Module::pluck('id')->toArray();
+
+        $role->permissions()->delete();
+
+        if (!empty($data['permissions'])) {
+            foreach ($data['permissions'] as $moduleId => $perms) {
+                if (!in_array($moduleId, $modules)) {
+                    continue;
+                }
+                RolePermission::create([
+                    'role_id' => $role->id,
+                    'module_id' => $moduleId,
+                    'can_add' => in_array('add', $perms),
+                    'can_edit' => in_array('edit', $perms),
+                    'can_view' => in_array('view', $perms),
+                    'can_delete' => in_array('delete', $perms),
                 ]);
             }
         }

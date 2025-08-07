@@ -1,56 +1,34 @@
 @extends('admin.layouts.app')
-@section('title', 'Add Role | Deal24hours')
+@section('title', 'Role Permissions | Deal24hours')
 @section('content')
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                    <h4 class="card-title flex-grow-1">Add New Role</h4>
+                    <h4 class="card-title flex-grow-1">Permissions - {{ $role->name }}</h4>
                     <a href="{{ route('admin.roles.index') }}" class="badge border border-secondary text-secondary px-2 py-1 fs-13">← Back to List</a>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.roles.store') }}" method="POST" id="roleForm">
+                    <form action="{{ route('admin.roles.permissions.update', $role->id) }}" method="POST" id="permissionForm">
                         @csrf
                         <div class="row gy-3">
                             <div class="col-md-12">
-                                <label for="name" class="form-label">Role Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" id="name" class="form-control" placeholder="Enter role name" value="{{ old('name') }}" />
-                            </div>
-                            <div class="col-md-12">
-                                <label for="parent_id" class="form-label">Parent Role</label>
-                                <select name="parent_id" id="parent_id" class="form-select">
-                                    <option value="">-- None --</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-12">
-                                <label class="form-label">Permissions</label>
                                 <div class="mb-3">
                                     <div class="form-check mb-3">
                                         <input class="form-check-input" type="checkbox" id="select_all">
                                         <label class="form-check-label" for="select_all">Select All Permissions</label>
                                     </div>
-
-                                    @php($actions = ['view' => 'View', 'add' => 'Add', 'edit' => 'Edit', 'delete' => 'Delete'])
+                                    @php($rolePerms = $role->permissions->keyBy('module_id'))
                                     @foreach ($modules as $module)
+                                        @php($perm = $rolePerms->get($module->id))
                                         <div class="card mb-3 module-block" data-module="{{ $module->id }}">
                                             <div class="card-header fw-semibold text-capitalize">{{ $module->name }}</div>
                                             <div class="card-body d-flex flex-wrap gap-3">
                                                 @foreach ($actions as $key => $label)
                                                     <div class="d-flex flex-column align-items-start border rounded p-3" style="min-width: 180px;">
-                                                        <label class="form-check-label mb-2" for="{{ $module->id }}_{{ $key }}">
-                                                            {{ $label }} {{ ucfirst($module->name) }}
-                                                        </label>
+                                                        <label class="form-check-label mb-2" for="{{ $module->id }}_{{ $key }}">{{ $label }} {{ ucfirst($module->name) }}</label>
                                                         <div class="form-check form-switch">
-                                                            <input
-                                                                class="form-check-input perm-checkbox"
-                                                                type="checkbox"
-                                                                name="permissions[{{ $module->id }}][]"
-                                                                value="{{ $key }}"
-                                                                data-module="{{ $module->id }}"
-                                                                id="{{ $module->id }}_{{ $key }}">
+                                                            <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[{{ $module->id }}][]" value="{{ $key }}" data-module="{{ $module->id }}" id="{{ $module->id }}_{{ $key }}" @if($perm && $perm->{'can_'.$key}) checked @endif>
                                                         </div>
                                                     </div>
                                                 @endforeach
@@ -60,7 +38,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Save Role</button>
+                        <button type="submit" class="btn btn-primary mt-3">Save Permissions</button>
                     </form>
                 </div>
             </div>
@@ -68,51 +46,48 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script>
-        $(function() {
+        $(function(){
             function updateGlobalSelect() {
                 $('#select_all').prop('checked', $('.perm-checkbox:checked').length === $('.perm-checkbox').length);
             }
 
-            $('#select_all').on('change', function() {
+            $('#select_all').on('change', function(){
                 const checked = $(this).prop('checked');
                 $('.perm-checkbox').prop('checked', checked);
             });
 
-            $('.perm-checkbox').on('change', function() {
+            $('.perm-checkbox').on('change', function(){
                 updateGlobalSelect();
             });
 
             updateGlobalSelect();
 
-            $('#roleForm').validate({
-                rules: {
-                    name: 'required'
-                },
-                submitHandler: function(form) {
+            $('#permissionForm').validate({
+                submitHandler: function(form){
                     $.ajax({
                         url: $(form).attr('action'),
                         type: 'POST',
                         data: $(form).serialize(),
-                        beforeSend: function() {
+                        beforeSend: function(){
                             $('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
                         },
-                        success: function(res) {
-                            if (res.status === 'success') {
-                                toastr.success('Role created successfully');
-                                setTimeout(function() { window.location.href = "{{ route('admin.roles.index') }}"; }, 1000);
+                        success: function(res){
+                            if(res.status === 'success') {
+                                toastr.success('Permissions updated successfully');
+                                setTimeout(function(){ window.location.href = "{{ route('admin.roles.index') }}"; }, 1000);
                             } else {
-                                toastr.error('Failed to create role');
+                                toastr.error('Failed to update permissions');
                             }
                         },
-                        error: function(xhr) {
-                            if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                $.each(xhr.responseJSON.errors, function(key, val) { toastr.error(val[0]); });
+                        error: function(xhr){
+                            if(xhr.responseJSON && xhr.responseJSON.errors) {
+                                $.each(xhr.responseJSON.errors, function(key, val){ toastr.error(val[0]); });
                             } else {
                                 toastr.error('An error occurred');
                             }
                         },
-                        complete: function() {
-                            $('button[type="submit"]').prop('disabled', false).html('Save Role');
+                        complete: function(){
+                            $('button[type="submit"]').prop('disabled', false).html('Save Permissions');
                         }
                     });
                     return false;

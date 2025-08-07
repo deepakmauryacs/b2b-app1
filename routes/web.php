@@ -91,6 +91,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('store', [RoleController::class, 'store'])->name('store');
         Route::get('edit/{id}', [RoleController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [RoleController::class, 'update'])->name('update');
+        Route::get('permissions/{id}', [RoleController::class, 'permissions'])->name('permissions');
+        Route::post('permissions/{id}', [RoleController::class, 'updatePermissions'])->name('permissions.update');
     });
 
     Route::prefix('admin/users')->name('admin.users.')->group(function () {

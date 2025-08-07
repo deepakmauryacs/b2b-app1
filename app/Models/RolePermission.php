@@ -12,15 +12,20 @@ class RolePermission extends Model
 
     protected $fillable = [
         'role_id',
-        'module',
+        'module_id',
         'can_add',
         'can_edit',
         'can_view',
-        'can_export'
+        'can_delete'
     ];
 
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function module(): BelongsTo
+    {
+        return $this->belongsTo(Module::class);
     }
 }
