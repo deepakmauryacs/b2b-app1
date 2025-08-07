@@ -2,7 +2,7 @@
 @section('title', 'Edit Role | Deal24hours')
 @section('content')
     <div class="row">
-        <div class="col-xl-12">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center gap-1">
                     <h4 class="card-title flex-grow-1">Edit Role</h4>
@@ -34,26 +34,26 @@
                                         <label class="form-check-label" for="select_all">Select All Permissions</label>
                                     </div>
 
-                                    @php($rolePerms = $role->permissions->keyBy('module'))
-                                    @php($actions = ['view' => 'Show', 'add' => 'Add', 'edit' => 'Edit', 'export' => 'Export'])
+                                    @php($rolePerms = $role->permissions->keyBy('module_id'))
+                                    @php($actions = ['view' => 'View', 'add' => 'Add', 'edit' => 'Edit', 'delete' => 'Delete'])
                                     @foreach ($modules as $module)
-                                        @php($perm = $rolePerms->get($module))
-                                        <div class="card mb-3 module-block" data-module="{{ $module }}">
-                                            <div class="card-header fw-semibold text-capitalize">{{ $module }}</div>
+                                        @php($perm = $rolePerms->get($module->id))
+                                        <div class="card mb-3 module-block" data-module="{{ $module->id }}">
+                                            <div class="card-header fw-semibold text-capitalize">{{ $module->name }}</div>
                                             <div class="card-body d-flex flex-wrap gap-3">
                                                 @foreach ($actions as $key => $label)
                                                     <div class="d-flex flex-column align-items-start border rounded p-3" style="min-width: 180px;">
-                                                        <label class="form-check-label mb-2" for="{{ $module }}_{{ $key }}">
-                                                            {{ $label }} {{ ucfirst($module) }}
+                                                        <label class="form-check-label mb-2" for="{{ $module->id }}_{{ $key }}">
+                                                            {{ $label }} {{ ucfirst($module->name) }}
                                                         </label>
                                                         <div class="form-check form-switch">
                                                             <input
                                                                 class="form-check-input perm-checkbox"
                                                                 type="checkbox"
-                                                                name="permissions[{{ $module }}][]"
+                                                                name="permissions[{{ $module->id }}][]"
                                                                 value="{{ $key }}"
-                                                                data-module="{{ $module }}"
-                                                                id="{{ $module }}_{{ $key }}" @if($perm && $perm->{'can_'.$key}) checked @endif>
+                                                                data-module="{{ $module->id }}"
+                                                                id="{{ $module->id }}_{{ $key }}" @if($perm && $perm->{'can_'.$key}) checked @endif>
                                                         </div>
                                                     </div>
                                                 @endforeach
