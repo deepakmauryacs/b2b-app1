@@ -196,48 +196,54 @@ class VendorProductController extends Controller
         }
 
         try {
-            $product = new Product();
+            DB::transaction(function () use ($request) {
+                $product = new Product();
 
-            // Sanitize input data
-            $product_name = strip_tags(trim($request->product_name));
-            $slug = $request->slug ? strip_tags(trim($request->slug)) : Str::slug($product_name);
-            $description = $request->description ? strip_tags(trim($request->description)) : null;
-            $unit = $request->unit ? strip_tags(trim($request->unit)) : null;
-            $hsn_code = $request->hsn_code ? strip_tags(trim($request->hsn_code)) : null;
+                // Sanitize input data
+                $product_name = strip_tags(trim($request->product_name));
+                $slug = $request->slug ? strip_tags(trim($request->slug)) : Str::slug($product_name);
+                $description = $request->description ? strip_tags(trim($request->description)) : null;
+                $unit = $request->unit ? strip_tags(trim($request->unit)) : null;
+                $hsn_code = $request->hsn_code ? strip_tags(trim($request->hsn_code)) : null;
 
-            // Set product properties
-            $product->vendor_id = Auth::id();
-            $product->category_id = $request->category_id;
-            $product->sub_category_id = $request->sub_category_id;
-            $product->product_name = $product_name;
-            $product->slug = $slug;
-            $product->description = $description;
-            $product->price = $request->price;
-            $product->unit = $unit;
-            $product->min_order_qty = $request->min_order_qty ?? 1;
-            $product->hsn_code = $hsn_code;
-            $product->gst_rate = $request->gst_rate;
-            $product->status = 'pending';
+                // Set product properties
+                $product->vendor_id = Auth::id();
+                $product->category_id = $request->category_id;
+                $product->sub_category_id = $request->sub_category_id;
+                $product->product_name = $product_name;
+                $product->slug = $slug;
+                $product->description = $description;
+                $product->price = $request->price;
+                $product->unit = $unit;
+                $product->min_order_qty = $request->min_order_qty ?? 1;
+                $product->hsn_code = $hsn_code;
+                $product->gst_rate = $request->gst_rate;
+                $product->status = 'pending';
+                $product->stock_quantity = $request->stock_quantity ?? 0;
 
-            // Handle image upload
-            if ($request->hasFile('product_image')) {
-                $product->product_image = $request->file('product_image')->store('uploads/products', 'public');
-            }
+                // Handle image upload
+                if ($request->hasFile('product_image')) {
+                    $product->product_image = $request->file('product_image')->store('uploads/products', 'public');
+                }
 
-            $product->save();
+                $product->save();
 
-            $warehouse = Warehouse::where('id', $request->warehouse_id)
-                ->where('vendor_id', Auth::id())
-                ->first();
+                $aliasSource = $request->input('alias', $request->input('tag', $product_name));
+                $this->syncProductAlias($product, $aliasSource, $request->input('edit_status', 2));
 
-            if ($warehouse) {
-                WarehouseProduct::updateOrCreate([
-                    'warehouse_id' => $warehouse->id,
-                    'product_id' => $product->id,
-                ], [
-                    'quantity' => $product->stock_quantity,
-                ]);
-            }
+                $warehouse = Warehouse::where('id', $request->warehouse_id)
+                    ->where('vendor_id', Auth::id())
+                    ->first();
+
+                if ($warehouse) {
+                    WarehouseProduct::updateOrCreate([
+                        'warehouse_id' => $warehouse->id,
+                        'product_id' => $product->id,
+                    ], [
+                        'quantity' => $product->stock_quantity,
+                    ]);
+                }
+            });
 
             if ($request->ajax()) {
                 return response()->json([
@@ -317,24 +323,37 @@ class VendorProductController extends Controller
                 'product_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
-            // Update product with validated data
-            $product->category_id = $request->category_id;
-            $product->sub_category_id = $request->sub_category_id;
-            $product->product_name = $validatedData['product_name'];
-            $product->slug = $validatedData['slug'] ?? Str::slug($validatedData['product_name']);
-            $product->description = $request->description;
-            $product->price = $validatedData['price'];
-            $product->unit = $request->unit;
-            $product->min_order_qty = $request->min_order_qty ?? 1;
-            $product->hsn_code = $request->hsn_code;
-            $product->gst_rate = $request->gst_rate;
+            DB::transaction(function () use ($request, $product, $validatedData) {
+                // Sanitize input data
+                $product_name = strip_tags(trim($validatedData['product_name']));
+                $slugInput = $validatedData['slug'] ?? null;
+                $slug = $slugInput ? strip_tags(trim($slugInput)) : Str::slug($product_name);
+                $description = $request->description ? strip_tags(trim($request->description)) : null;
+                $unit = $request->unit ? strip_tags(trim($request->unit)) : null;
+                $hsn_code = $request->hsn_code ? strip_tags(trim($request->hsn_code)) : null;
 
-            // Image upload
-            if ($request->hasFile('product_image')) {
-                $product->product_image = $request->file('product_image')->store('uploads/products', 'public');
-            }
+                // Update product with validated data
+                $product->category_id = $request->category_id;
+                $product->sub_category_id = $request->sub_category_id;
+                $product->product_name = $product_name;
+                $product->slug = $slug;
+                $product->description = $description;
+                $product->price = $validatedData['price'];
+                $product->unit = $unit;
+                $product->min_order_qty = $request->min_order_qty ?? 1;
+                $product->hsn_code = $hsn_code;
+                $product->gst_rate = $request->gst_rate;
 
-            $product->save();
+                // Image upload
+                if ($request->hasFile('product_image')) {
+                    $product->product_image = $request->file('product_image')->store('uploads/products', 'public');
+                }
+
+                $product->save();
+
+                $aliasSource = $request->input('alias', $request->input('tag', $product_name));
+                $this->syncProductAlias($product, $aliasSource, $request->input('edit_status'));
+            });
 
             if ($request->ajax()) {
                 return response()->json([
@@ -355,6 +374,15 @@ class VendorProductController extends Controller
             }
 
             throw $e; // Re-throw the exception for non-AJAX requests
+        } catch (\Throwable $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Failed to update product: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            throw $e;
         }
     }
 
@@ -469,5 +497,63 @@ class VendorProductController extends Controller
         });
 
         return response()->json($data);
+    }
+
+    /**
+     * Sync vendor specific alias for a product.
+     */
+    protected function syncProductAlias(Product $product, ?string $alias, $editStatus = null): void
+    {
+        $alias = $alias !== null ? strip_tags(trim($alias)) : '';
+
+        if ($alias === '') {
+            return;
+        }
+
+        $productId = $product->getAttribute('product_id') ?? $product->getKey();
+
+        if (! $productId) {
+            $product->refresh();
+            $productId = $product->getAttribute('product_id') ?? $product->getKey();
+        }
+
+        if (! $productId) {
+            throw new \RuntimeException('Unable to resolve product id for alias synchronisation.');
+        }
+
+        $vendorId = $product->getAttribute('vendor_id') ?? Auth::id();
+        $now = Carbon::now();
+
+        $payload = [
+            'alias' => $alias,
+            'updated_by' => $vendorId,
+            'updated_at' => $now,
+        ];
+
+        if (! is_null($editStatus)) {
+            $payload['is_new'] = ((int) $editStatus === 2) ? null : 1;
+        }
+
+        $existingAlias = DB::table('product_alias')
+            ->where('product_id', $productId)
+            ->where('vendor_id', $vendorId)
+            ->where('alias_of', 2)
+            ->first();
+
+        if ($existingAlias) {
+            DB::table('product_alias')
+                ->where('id', $existingAlias->id)
+                ->update($payload);
+
+            return;
+        }
+
+        DB::table('product_alias')->insert(array_merge($payload, [
+            'product_id' => $productId,
+            'vendor_id' => $vendorId,
+            'alias_of' => 2,
+            'created_at' => $now,
+            'created_by' => $vendorId,
+        ]));
     }
 }
