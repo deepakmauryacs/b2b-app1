@@ -4,13 +4,14 @@ namespace App\Exports;
 
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class VendorsExport implements FromQuery, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
+class VendorsExport implements FromQuery, WithHeadings, WithMapping, WithStyles, ShouldAutoSize, WithChunkReading
 {
     protected $filters;
 
@@ -121,6 +122,6 @@ class VendorsExport implements FromQuery, WithHeadings, WithMapping, WithStyles,
 
     public function chunkSize(): int
     {
-        return 500; // Process in chunks of 500 records
+        return 2000; // Process in manageable chunks to keep memory usage low
     }
 }
