@@ -11,10 +11,23 @@ use Illuminate\Support\Facades\Validator;
 
 class VendorExportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $exports = VendorExport::latest()->paginate(20);
-        return view('admin.vendor_exports.index', compact('exports'));
+        $hasPending = $exports->contains(fn ($export) => $export->status === 'in_progress');
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.vendor_exports._exports_table', compact('exports'))->render(),
+                'hasPending' => $hasPending,
+                'page' => $exports->currentPage(),
+            ]);
+        }
+
+        return view('admin.vendor_exports.index', [
+            'exports' => $exports,
+            'hasPending' => $hasPending,
+        ]);
     }
 
     public function create()
